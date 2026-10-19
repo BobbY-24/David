@@ -1,0 +1,237 @@
+import '../domain/models.dart';
+import 'builders.dart';
+
+const _caseId = 'northline-logistics';
+const _site = 'Project Northline data room';
+
+InvestigationCase northlineCase() {
+  final evidence = <EvidenceUnit>[
+    ...readingSeries(
+      caseId: _caseId,
+      idPrefix: 'n-rev',
+      seriesId: 'revenue',
+      title: 'Reported revenue index',
+      modality: 'revenue',
+      source: 'Seller QoQ pack',
+      site: _site,
+      unit: 'index',
+      collector: 'Sell-side finance',
+      readings: [
+        Reading(utc(2025, 11, 30, 18), 100),
+        Reading(utc(2025, 12, 31, 18), 104),
+        Reading(utc(2026, 1, 31, 18), 108),
+        Reading(
+          utc(2026, 2, 28, 18),
+          138,
+          claim: 'Reported revenue rose 38 percent in the latest quarter.',
+        ),
+      ],
+    ),
+    ...readingSeries(
+      caseId: _caseId,
+      idPrefix: 'n-cash',
+      seriesId: 'collections',
+      title: 'Cash collections index',
+      modality: 'collections',
+      source: 'Bank rollforward',
+      site: _site,
+      unit: 'index',
+      collector: 'Buy-side accountant',
+      readings: [
+        Reading(utc(2025, 11, 30, 18), 100),
+        Reading(utc(2025, 12, 31, 18), 102),
+        Reading(utc(2026, 1, 31, 18), 103),
+        Reading(
+          utc(2026, 2, 28, 18),
+          104,
+          claim: 'Collections lag the revenue spike. Cash collected is not moving with billed revenue. The quarter is not a seasonal peak.',
+        ),
+      ],
+    ),
+    ...readingSeries(
+      caseId: _caseId,
+      idPrefix: 'n-miles',
+      seriesId: 'miles',
+      title: 'Fleet telematics miles index',
+      modality: 'telematics',
+      source: 'Telematics vendor feed',
+      site: _site,
+      unit: 'index',
+      collector: 'Telematics vendor',
+      readings: [
+        Reading(utc(2025, 11, 30, 18), 100),
+        Reading(utc(2025, 12, 31, 18), 98),
+        Reading(utc(2026, 1, 31, 18), 94),
+        Reading(
+          utc(2026, 2, 28, 18),
+          88,
+          claim: 'Telematics miles down 12 percent versus the prior quarter while billed orders rose. The vendor reports no integration defect and no sensor dropout.',
+        ),
+      ],
+    ),
+    ...readingSeries(
+      caseId: _caseId,
+      idPrefix: 'n-occ',
+      seriesId: 'occupancy',
+      title: 'Warehouse aisle occupancy',
+      modality: 'occupancy',
+      source: 'Aisle sensors 4-7',
+      site: 'Northline warehouse B',
+      unit: '% occupied',
+      collector: 'Warehouse gateway',
+      readings: [
+        Reading(utc(2025, 11, 30, 18), 62),
+        Reading(utc(2025, 12, 31, 18), 63),
+        Reading(utc(2026, 1, 31, 18), 61),
+        Reading(
+          utc(2026, 2, 28, 18),
+          62,
+          claim: 'Aisle 4 through 7 occupancy flat at 61 to 63 percent. Warehouse occupancy agrees with the telematics feed.',
+        ),
+      ],
+    ),
+    record(
+      id: 'n-addendum',
+      caseId: _caseId,
+      title: 'Contract addendum 7',
+      text: 'Addendum 7 authorizes bill-and-hold for customer Northline Freight Services, with goods remaining in aisle 4. The file does not contain a new contract with an independent buyer.',
+      observedAt: utc(2026, 1, 18, 15),
+      site: _site,
+      modality: 'contract',
+      source: 'Data room folder 4.2',
+      collector: 'Deal counsel',
+    ),
+    record(
+      id: 'n-related',
+      caseId: _caseId,
+      title: 'Related-party payment memo',
+      text: 'Payments of 4.2 million dollars went to Northline Freight Services LLC, a related party. The same registered agent is listed for the target and that customer. The top customer is 41 percent of revenue and is that related party.',
+      observedAt: utc(2026, 2, 20, 16),
+      site: _site,
+      modality: 'counterparty',
+      source: 'Quality of earnings draft',
+      collector: 'Buy-side accountant',
+    ),
+    record(
+      id: 'n-auditor',
+      caseId: _caseId,
+      title: 'Auditor succession note',
+      text: 'The external auditor changed in March 2025. The successor has not yet issued an opinion on revenue recognition for the latest quarter.',
+      observedAt: utc(2026, 3, 2, 11),
+      site: _site,
+      modality: 'legal',
+      source: 'Legal index L-12',
+      collector: 'Deal counsel',
+    ),
+    record(
+      id: 'n-litigation',
+      caseId: _caseId,
+      title: 'Litigation snapshot',
+      text: 'One employment complaint is open. Counsel estimates it is immaterial to the purchase price.',
+      observedAt: utc(2026, 3, 2, 11, 20),
+      site: _site,
+      modality: 'legal',
+      source: 'Legal index L-4',
+      collector: 'Deal counsel',
+    ),
+  ];
+
+  return InvestigationCase(
+    id: _caseId,
+    kind: CaseKind.dueDiligence,
+    title: 'Northline Logistics',
+    subject: 'Share purchase diligence on the latest revenue quarter',
+    question: 'What best explains the latest quarter revenue spike at Northline Logistics, and which findings should change price, escrow, or a walk-away?',
+    summary: 'Reported revenue jumped 38 percent while cash collections, fleet miles, and warehouse occupancy did not. The largest customer shares a registered agent with the target and is billed under a bill-and-hold addendum. The buyer has to decide what the quarter is worth.',
+    site: _site,
+    openedAt: utc(2026, 3, 8, 9),
+    decisionCriteria: const [
+      'Explain the revenue spike with cash, physical throughput, and counterparty identity.',
+      'Keep a legitimate demand story only if an independent customer shows up in the evidence.',
+      'Say what should move price or escrow if the lead explanation holds.',
+    ],
+    expectedModalities: const [
+      'revenue',
+      'collections',
+      'telematics',
+      'occupancy',
+      'contract',
+      'counterparty',
+    ],
+    plan: const [
+      PlannedQuery(
+        purpose: 'Revenue against cash',
+        text: 'revenue collections lag spike',
+      ),
+      PlannedQuery(
+        purpose: 'Physical throughput from fleet and warehouse',
+        text: 'telematics miles occupancy warehouse',
+      ),
+      PlannedQuery(
+        purpose: 'Contracts and the counterparty',
+        text: 'related party bill-and-hold registered agent',
+        sourceKind: SourceKind.record,
+      ),
+    ],
+    exampleQueries: const [
+      'related party',
+      'bill-and-hold',
+      'miles down',
+      'occupancy flat',
+    ],
+    evidence: evidence,
+    hypotheses: const [
+      HypothesisSpec(
+        id: 'related-party-round-trip',
+        title: 'Related-party round trip',
+        statement: 'The revenue spike is supported by a related-party customer that shares the target registered agent, so the quarter may be circular.',
+        actionIfLead: 'Escrow or re-trade revenue tied to Northline Freight Services until cash collection and an independent customer are shown.',
+        support: [
+          Signature('related party', 2.4),
+          Signature('same registered agent', 1.8),
+          Signature('top customer', 1.4),
+        ],
+        contradict: [Signature("arm's length", 1.6)],
+      ),
+      HypothesisSpec(
+        id: 'channel-stuffing',
+        title: 'Bill-and-hold channel stuffing',
+        statement: 'The target billed revenue on bill-and-hold terms without a matching rise in throughput or cash.',
+        actionIfLead: 'Sample the bill-and-hold contracts and match them to warehouse scans and cash receipts before accepting the quarter.',
+        support: [
+          Signature('bill-and-hold', 1),
+          Signature('collections lag', 0.55),
+          Signature('occupancy flat', 0.45),
+          Signature('miles down', 0.4),
+        ],
+        contradict: [Signature('cash collected in line', 1.5)],
+      ),
+      HypothesisSpec(
+        id: 'legitimate-seasonal',
+        title: 'Legitimate seasonal demand',
+        statement: 'The quarter is a real seasonal demand peak from a new independent contract.',
+        actionIfLead: 'Accept the quarter only if an independent customer, cash, and physical throughput all confirm it.',
+        support: [
+          Signature('seasonal peak', 0.8),
+          Signature('new contract', 0.8),
+        ],
+        contradict: [
+          Signature('miles down', 1.2),
+          Signature('occupancy flat', 1.1),
+          Signature('collections lag', 1.2),
+        ],
+      ),
+      HypothesisSpec(
+        id: 'telematics-defect',
+        title: 'Telematics integration defect',
+        statement: 'The miles decline is a broken telematics integration, not weaker physical throughput.',
+        actionIfLead: 'Use a telematics defect explanation only if the vendor shows dropped devices and the warehouse record disagrees.',
+        support: [
+          Signature('integration defect', 1.5),
+          Signature('sensor dropout', 1.2),
+        ],
+        contradict: [Signature('warehouse occupancy agrees', 1.5)],
+      ),
+    ],
+  );
+}
