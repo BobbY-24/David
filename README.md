@@ -1,5 +1,7 @@
 # David
 
+[![ci](https://github.com/BobbY-24/David/actions/workflows/ci.yml/badge.svg)](https://github.com/BobbY-24/David/actions/workflows/ci.yml) ![license](https://img.shields.io/badge/license-MIT-green)
+
 David is a due-diligence desk for one-person companies and small businesses. Each check is an **engagement**: a decision about a counterparty (a new customer, a vendor, a partner, a contractor, an acquisition target, or a lease). David keeps the records and metrics for that decision sealed with provenance, retrieves them as grounded evidence, scores the engagement's **risk questions**, and writes a decision memo that a person approves.
 
 The bundled engagements are synthetic fixtures. Runs go through the offline `DemoProvider` (policy `grounded-control-v4`), and the job service uses `demo-scorer-v3`. Neither calls a live model. A memo from these fixtures is not a finding about a real business, and nothing here is legal, credit, or investment advice.
