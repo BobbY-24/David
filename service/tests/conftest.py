@@ -1,6 +1,6 @@
 import os
 
-os.environ["DATABASE_URL"] = "postgresql+psycopg://fieldline:fieldline@127.0.0.1:5432/fieldline_test"
+os.environ["DATABASE_URL"] = "postgresql+psycopg://david:david@127.0.0.1:5432/david_test"
 os.environ["REDIS_DISPATCH"] = "0"
 os.environ["SWEEP"] = "0"
 os.environ["RETRY_BACKOFF_SECONDS"] = "0"
@@ -10,8 +10,8 @@ os.environ["MAX_ATTEMPTS"] = "3"
 import pytest
 from sqlalchemy import text
 
-from fieldline_lab.db import reset_engine, session_factory
-from fieldline_lab.service import init_db
+from david_lab.db import reset_engine, session_factory
+from david_lab.service import init_db
 
 
 @pytest.fixture(autouse=True)

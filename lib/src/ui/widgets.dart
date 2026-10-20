@@ -96,7 +96,7 @@ class SectionLabel extends StatelessWidget {
     return Text(
       text.toUpperCase(),
       style: const TextStyle(
-        color: FieldlineColors.faint,
+        color: DavidColors.faint,
         fontSize: 11,
         letterSpacing: 1.1,
         fontWeight: FontWeight.w700,
@@ -122,11 +122,11 @@ class EvidenceChip extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 6, bottom: 6),
       child: Material(
-        color: selected ? FieldlineColors.amber : FieldlineColors.panelRaised,
+        color: selected ? DavidColors.amber : DavidColors.panelRaised,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(99),
           side: BorderSide(
-            color: selected ? FieldlineColors.amber : FieldlineColors.line,
+            color: selected ? DavidColors.amber : DavidColors.line,
           ),
         ),
         child: InkWell(
@@ -138,8 +138,8 @@ class EvidenceChip extends StatelessWidget {
               label,
               style: TextStyle(
                 color: selected
-                    ? FieldlineColors.amberInk
-                    : FieldlineColors.ink,
+                    ? DavidColors.amberInk
+                    : DavidColors.ink,
                 fontSize: 12,
                 fontFamily: 'monospace',
               ),
@@ -165,9 +165,9 @@ class PanelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: FieldlineColors.panel,
+        color: DavidColors.panel,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: FieldlineColors.line),
+        border: Border.all(color: DavidColors.line),
       ),
       child: Padding(padding: padding, child: child),
     );
@@ -185,8 +185,8 @@ class EvidencePanel extends StatelessWidget {
     final value = formatValue(unit.numericValue, unit.unit);
     return DecoratedBox(
       decoration: const BoxDecoration(
-        color: FieldlineColors.panel,
-        border: Border(left: BorderSide(color: FieldlineColors.line)),
+        color: DavidColors.panel,
+        border: Border(left: BorderSide(color: DavidColors.line)),
       ),
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
@@ -200,7 +200,7 @@ class EvidencePanel extends StatelessWidget {
                 icon: const Icon(
                   Icons.close,
                   size: 18,
-                  color: FieldlineColors.muted,
+                  color: DavidColors.muted,
                 ),
               ),
             ],
@@ -215,7 +215,7 @@ class EvidencePanel extends StatelessWidget {
             unit.id,
             style: const TextStyle(
               fontFamily: 'monospace',
-              color: FieldlineColors.amber,
+              color: DavidColors.amber,
               fontSize: 12,
             ),
           ),
@@ -233,9 +233,9 @@ class EvidencePanel extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             formatStamp(unit.observedAt),
-            style: const TextStyle(color: FieldlineColors.muted),
+            style: const TextStyle(color: DavidColors.muted),
           ),
-          Text(unit.site, style: const TextStyle(color: FieldlineColors.muted)),
+          Text(unit.site, style: const TextStyle(color: DavidColors.muted)),
           const SizedBox(height: 14),
           Text(unit.text, style: const TextStyle(height: 1.45)),
           const SizedBox(height: 16),
@@ -249,13 +249,13 @@ class EvidencePanel extends StatelessWidget {
             Text(
               formatStamp(step.at),
               style: const TextStyle(
-                color: FieldlineColors.faint,
+                color: DavidColors.faint,
                 fontSize: 12,
               ),
             ),
             Text(
               step.note,
-              style: const TextStyle(color: FieldlineColors.muted, height: 1.4),
+              style: const TextStyle(color: DavidColors.muted, height: 1.4),
             ),
             const SizedBox(height: 10),
           ],
@@ -287,15 +287,15 @@ class _Meta extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: FieldlineColors.panelRaised,
+        color: DavidColors.panelRaised,
         borderRadius: BorderRadius.circular(99),
-        border: Border.all(color: FieldlineColors.line),
+        border: Border.all(color: DavidColors.line),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Text(
           text,
-          style: const TextStyle(fontSize: 12, color: FieldlineColors.ink),
+          style: const TextStyle(fontSize: 12, color: DavidColors.ink),
         ),
       ),
     );
@@ -321,7 +321,7 @@ class EmptyNote extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             body,
-            style: const TextStyle(color: FieldlineColors.muted, height: 1.45),
+            style: const TextStyle(color: DavidColors.muted, height: 1.45),
           ),
         ],
       ),

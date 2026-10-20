@@ -2,13 +2,13 @@ from datetime import timedelta
 
 from fastapi.testclient import TestClient
 
-from fieldline_lab.api import app, service as api_service
-from fieldline_lab.db import session_factory
-from fieldline_lab.errors import IdempotencyConflict, QueueFull
-from fieldline_lab.metrics import percentile
-from fieldline_lab.runners import churn, hypertension, investigation
-from fieldline_lab.schema import Job
-from fieldline_lab.service import JobService, utcnow
+from david_lab.api import app, service as api_service
+from david_lab.db import session_factory
+from david_lab.errors import IdempotencyConflict, QueueFull
+from david_lab.metrics import percentile
+from david_lab.runners import churn, hypertension, investigation
+from david_lab.schema import Job
+from david_lab.service import JobService, utcnow
 
 
 def test_percentile_ends():
@@ -180,7 +180,7 @@ def test_api_enqueue_requires_a_key_and_serves_metrics():
         fetched = client.get(f"/v1/jobs/{job_id}")
         assert fetched.json()["status"] == "succeeded"
         metrics = client.get("/metrics")
-        assert "fieldline_jobs_depth" in metrics.text
+        assert "david_jobs_depth" in metrics.text
         catalog = client.get("/v1/catalog")
         titles = [item["title"] for item in catalog.json()["items"]]
         assert "Cedar book" in titles

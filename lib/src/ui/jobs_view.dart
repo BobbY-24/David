@@ -20,7 +20,7 @@ class JobsView extends StatelessWidget {
         const SizedBox(height: 8),
         const Text(
           'FastAPI accepts the request, PostgreSQL keeps the job, and a Celery worker runs it. Scores on this tab are fixture-scorer-v1.',
-          style: TextStyle(color: FieldlineColors.muted, height: 1.45),
+          style: TextStyle(color: DavidColors.muted, height: 1.45),
         ),
         const SizedBox(height: 16),
         if (board == null)
@@ -51,7 +51,7 @@ class JobsView extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             desk.serviceError!,
-            style: const TextStyle(color: FieldlineColors.coral, height: 1.4),
+            style: const TextStyle(color: DavidColors.coral, height: 1.4),
           ),
         ],
       ],
@@ -103,7 +103,7 @@ class _Stat extends StatelessWidget {
           Text(
             label.toUpperCase(),
             style: const TextStyle(
-              color: FieldlineColors.faint,
+              color: DavidColors.faint,
               fontSize: 10,
               letterSpacing: 0.6,
               fontWeight: FontWeight.w700,
@@ -132,7 +132,7 @@ class _CatalogCard extends StatelessWidget {
           Text(
             item.kind.toUpperCase(),
             style: const TextStyle(
-              color: FieldlineColors.amber,
+              color: DavidColors.amber,
               fontSize: 10,
               letterSpacing: 0.8,
               fontWeight: FontWeight.w700,
@@ -146,7 +146,7 @@ class _CatalogCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             item.blurb,
-            style: const TextStyle(color: FieldlineColors.muted, height: 1.4),
+            style: const TextStyle(color: DavidColors.muted, height: 1.4),
           ),
           const SizedBox(height: 12),
           Align(
@@ -189,12 +189,12 @@ class _Latest extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             '${job!.kind} · ${job!.status} · attempt ${job!.attempts}',
-            style: const TextStyle(color: FieldlineColors.muted),
+            style: const TextStyle(color: DavidColors.muted),
           ),
           const SizedBox(height: 6),
           Text(
             'Queue wait ${_ms(job!.queueWaitMs)} · end to end ${_ms(job!.e2eMs)}',
-            style: const TextStyle(color: FieldlineColors.muted),
+            style: const TextStyle(color: DavidColors.muted),
           ),
           if (job!.detail != null) ...[
             const SizedBox(height: 8),
@@ -204,7 +204,7 @@ class _Latest extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               job!.error!,
-              style: const TextStyle(color: FieldlineColors.coral, height: 1.4),
+              style: const TextStyle(color: DavidColors.coral, height: 1.4),
             ),
           ],
         ],

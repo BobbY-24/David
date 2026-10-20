@@ -35,7 +35,7 @@ class ExplanationsView extends StatelessWidget {
       children: [
         const Text(
           'Ranked by support minus falsifiers. Evidence chips open the sealed unit.',
-          style: TextStyle(color: FieldlineColors.muted, height: 1.4),
+          style: TextStyle(color: DavidColors.muted, height: 1.4),
         ),
         const SizedBox(height: 12),
         for (var i = 0; i < run.judgments.length; i++)
@@ -87,7 +87,7 @@ class _JudgmentCard extends StatelessWidget {
                 rank.toString().padLeft(2, '0'),
                 style: const TextStyle(
                   fontFamily: 'monospace',
-                  color: FieldlineColors.faint,
+                  color: DavidColors.faint,
                 ),
               ),
               const SizedBox(width: 8),
@@ -106,7 +106,7 @@ class _JudgmentCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             judgment.statement,
-            style: const TextStyle(height: 1.4, color: FieldlineColors.muted),
+            style: const TextStyle(height: 1.4, color: DavidColors.muted),
           ),
           const SizedBox(height: 10),
           _NetBar(fraction: fraction),
@@ -116,7 +116,7 @@ class _JudgmentCard extends StatelessWidget {
             style: const TextStyle(
               fontFamily: 'monospace',
               fontSize: 12,
-              color: FieldlineColors.muted,
+              color: DavidColors.muted,
             ),
           ),
           const SizedBox(height: 12),
@@ -130,7 +130,7 @@ class _JudgmentCard extends StatelessWidget {
                 hits: judgment.supporting,
                 selectedId: selectedId,
                 onSelect: onSelect,
-                color: FieldlineColors.sage,
+                color: DavidColors.sage,
               );
               final against = _PhraseColumn(
                 title: 'Challenged by',
@@ -139,7 +139,7 @@ class _JudgmentCard extends StatelessWidget {
                 hits: judgment.contradicting,
                 selectedId: selectedId,
                 onSelect: onSelect,
-                color: FieldlineColors.coral,
+                color: DavidColors.coral,
               );
               if (stacked) {
                 return Column(
@@ -162,7 +162,7 @@ class _JudgmentCard extends StatelessWidget {
             Text(
               'Still missing: ${judgment.missingSupport.join('; ')}.',
               style: const TextStyle(
-                color: FieldlineColors.faint,
+                color: DavidColors.faint,
                 fontSize: 12,
                 height: 1.4,
               ),
@@ -181,7 +181,7 @@ class _LeadMark extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: FieldlineColors.amber,
+        color: DavidColors.amber,
         borderRadius: BorderRadius.circular(99),
       ),
       child: const Padding(
@@ -189,7 +189,7 @@ class _LeadMark extends StatelessWidget {
         child: Text(
           'Lead',
           style: TextStyle(
-            color: FieldlineColors.amberInk,
+            color: DavidColors.amberInk,
             fontSize: 11,
             fontWeight: FontWeight.w700,
           ),
@@ -220,13 +220,13 @@ class _NetPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final track = Paint()..color = FieldlineColors.line;
+    final track = Paint()..color = DavidColors.line;
     canvas.drawRRect(
       RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(99)),
       track,
     );
     final mid = size.width / 2;
-    final color = fraction >= 0 ? FieldlineColors.sage : FieldlineColors.coral;
+    final color = fraction >= 0 ? DavidColors.sage : DavidColors.coral;
     final width = (size.width / 2) * fraction.abs();
     final rect = fraction >= 0
         ? Rect.fromLTWH(mid, 0, width, size.height)

@@ -4,7 +4,7 @@ import os
 def database_url() -> str:
     return os.environ.get(
         "DATABASE_URL",
-        "postgresql+psycopg://fieldline:fieldline@127.0.0.1:5432/fieldline",
+        "postgresql+psycopg://david:david@127.0.0.1:5432/david",
     )
 
 

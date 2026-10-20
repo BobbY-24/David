@@ -64,7 +64,7 @@ class _DeskPageState extends State<DeskPage> {
                               decoration: const BoxDecoration(
                                 border: Border(
                                   right: BorderSide(
-                                    color: FieldlineColors.line,
+                                    color: DavidColors.line,
                                   ),
                                 ),
                               ),
@@ -135,8 +135,8 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: const BoxDecoration(
-        color: FieldlineColors.panel,
-        border: Border(bottom: BorderSide(color: FieldlineColors.line)),
+        color: DavidColors.panel,
+        border: Border(bottom: BorderSide(color: DavidColors.line)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -149,7 +149,7 @@ class _TopBar extends StatelessWidget {
                   width: 14,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: FieldlineColors.amber,
+                    color: DavidColors.amber,
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
@@ -170,7 +170,7 @@ class _TopBar extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: FieldlineColors.muted,
+                        color: DavidColors.muted,
                         fontSize: 13,
                       ),
                     ),
@@ -179,7 +179,7 @@ class _TopBar extends StatelessWidget {
                   const Text(
                     'Synthetic fixtures',
                     style: TextStyle(
-                      color: FieldlineColors.faint,
+                      color: DavidColors.faint,
                       fontSize: 12,
                     ),
                   ),
@@ -207,7 +207,7 @@ class _ErrorBanner extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Text(
           message,
-          style: const TextStyle(color: FieldlineColors.coral),
+          style: const TextStyle(color: DavidColors.coral),
         ),
       ),
     );
@@ -275,13 +275,13 @@ class _CaseTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final kindColor = caseFile.kind == CaseKind.physicalAnomaly
-        ? FieldlineColors.amber
-        : FieldlineColors.mist;
+        ? DavidColors.amber
+        : DavidColors.mist;
     return Material(
-      color: selected ? FieldlineColors.panelRaised : FieldlineColors.panel,
+      color: selected ? DavidColors.panelRaised : DavidColors.panel,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: selected ? kindColor : FieldlineColors.line),
+        side: BorderSide(color: selected ? kindColor : DavidColors.line),
       ),
       child: InkWell(
         onTap: onTap,
@@ -313,7 +313,7 @@ class _CaseTile extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  color: FieldlineColors.muted,
+                  color: DavidColors.muted,
                   fontSize: 12,
                   height: 1.3,
                 ),
@@ -345,7 +345,7 @@ class _CaseHeader extends StatelessWidget {
               Text(
                 '${formatKind(caseFile.kind)} · opened ${formatStamp(caseFile.openedAt)}',
                 style: const TextStyle(
-                  color: FieldlineColors.muted,
+                  color: DavidColors.muted,
                   fontSize: 12,
                 ),
               ),
@@ -406,7 +406,7 @@ class _TabStrip extends StatelessWidget {
     ];
     return DecoratedBox(
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: FieldlineColors.line)),
+        border: Border(bottom: BorderSide(color: DavidColors.line)),
       ),
       child: SingleChildScrollView(
         key: tabStripKey,
@@ -447,7 +447,7 @@ class _TabButton extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: selected ? FieldlineColors.amber : Colors.transparent,
+              color: selected ? DavidColors.amber : Colors.transparent,
               width: 2,
             ),
           ),
@@ -455,7 +455,7 @@ class _TabButton extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? FieldlineColors.ink : FieldlineColors.muted,
+            color: selected ? DavidColors.ink : DavidColors.muted,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
           ),
         ),

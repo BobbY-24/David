@@ -26,7 +26,7 @@ List<ProvenanceStep> seal({
       note: note ?? 'Captured at the source clock and handed to ingest.',
     ),
     ProvenanceStep(
-      actor: 'fieldline-ingest',
+      actor: 'david-ingest',
       action: 'seal',
       at: at.add(const Duration(minutes: 6)),
       note: 'Synthetic fixture seal $id. Not a field hash of a live site.',

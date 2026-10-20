@@ -1,7 +1,7 @@
-import 'package:fieldline/src/data/case_packs.dart';
-import 'package:fieldline/src/domain/models.dart';
-import 'package:fieldline/src/retrieval/evidence_index.dart';
-import 'package:fieldline/src/retrieval/text_match.dart';
+import 'package:david/src/data/case_packs.dart';
+import 'package:david/src/domain/models.dart';
+import 'package:david/src/retrieval/evidence_index.dart';
+import 'package:david/src/retrieval/text_match.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

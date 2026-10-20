@@ -17,7 +17,7 @@ from .service import JobService, init_db
 from .settings import sweep_enabled
 from .worker import dispatch_job
 
-log = logging.getLogger("fieldline")
+log = logging.getLogger("david")
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 service = JobService(dispatch=dispatch_job)
@@ -48,7 +48,7 @@ async def lifespan(_app: FastAPI):
     stop = threading.Event()
     thread = None
     if sweep_enabled():
-        thread = threading.Thread(target=_sweep, args=(stop,), name="fieldline-sweep", daemon=True)
+        thread = threading.Thread(target=_sweep, args=(stop,), name="david-sweep", daemon=True)
         thread.start()
     _event("api_start", scorer="fixture-scorer-v1")
     yield

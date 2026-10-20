@@ -59,7 +59,7 @@ class _RetrievalViewState extends State<RetrievalView> {
       children: [
         const Text(
           'Same index the agent searches. Filters run before BM25. A blank query browses the newest sealed units and does not pretend to be a text match.',
-          style: TextStyle(color: FieldlineColors.muted, height: 1.4),
+          style: TextStyle(color: DavidColors.muted, height: 1.4),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -69,10 +69,10 @@ class _RetrievalViewState extends State<RetrievalView> {
             for (final example in caseFile.exampleQueries)
               ActionChip(
                 label: Text(example),
-                backgroundColor: FieldlineColors.panel,
-                side: const BorderSide(color: FieldlineColors.line),
+                backgroundColor: DavidColors.panel,
+                side: const BorderSide(color: DavidColors.line),
                 labelStyle: const TextStyle(
-                  color: FieldlineColors.ink,
+                  color: DavidColors.ink,
                   fontSize: 12,
                 ),
                 onPressed: () => desk.useExample(example),
@@ -85,7 +85,7 @@ class _RetrievalViewState extends State<RetrievalView> {
           controller: _query,
           onChanged: desk.setQueryText,
           onSubmitted: (_) => desk.searchManual(),
-          style: const TextStyle(color: FieldlineColors.ink),
+          style: const TextStyle(color: DavidColors.ink),
           decoration: const InputDecoration(
             hintText: 'Search observations, records, sensors, sites',
           ),
@@ -154,7 +154,7 @@ class _RetrievalViewState extends State<RetrievalView> {
             desk.queryText.trim().isEmpty
                 ? '${desk.manualHits.length} newest units in this filter. Scores are zero because there was no query text.'
                 : '${desk.manualHits.length} hits, highest score first.',
-            style: const TextStyle(color: FieldlineColors.muted),
+            style: const TextStyle(color: DavidColors.muted),
           ),
           const SizedBox(height: 10),
           for (final hit in desk.manualHits)
@@ -190,16 +190,16 @@ class _Dropdown<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: FieldlineColors.bg,
+        color: DavidColors.bg,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: FieldlineColors.line),
+        border: Border.all(color: DavidColors.line),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: DropdownButton<T>(
           value: value,
           hint: Text(hint),
-          dropdownColor: FieldlineColors.panelRaised,
+          dropdownColor: DavidColors.panelRaised,
           underline: const SizedBox.shrink(),
           items: items,
           onChanged: onChanged,
@@ -228,11 +228,11 @@ class _HitCard extends StatelessWidget {
         ? 0.0
         : (hit.score / maxScore).clamp(0.0, 1.0);
     return Material(
-      color: FieldlineColors.panel,
+      color: DavidColors.panel,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: selected ? FieldlineColors.amber : FieldlineColors.line,
+          color: selected ? DavidColors.amber : DavidColors.line,
         ),
       ),
       child: InkWell(
@@ -255,7 +255,7 @@ class _HitCard extends StatelessWidget {
                     hit.score.toStringAsFixed(2),
                     style: const TextStyle(
                       fontFamily: 'monospace',
-                      color: FieldlineColors.amber,
+                      color: DavidColors.amber,
                     ),
                   ),
                 ],
@@ -265,7 +265,7 @@ class _HitCard extends StatelessWidget {
                 '${hit.unit.id} · ${formatModality(hit.unit.modality)} · ${hit.unit.source}',
                 style: const TextStyle(
                   fontFamily: 'monospace',
-                  color: FieldlineColors.muted,
+                  color: DavidColors.muted,
                   fontSize: 12,
                 ),
               ),
@@ -275,8 +275,8 @@ class _HitCard extends StatelessWidget {
                 child: LinearProgressIndicator(
                   minHeight: 4,
                   value: fraction.toDouble(),
-                  backgroundColor: FieldlineColors.line,
-                  color: FieldlineColors.sage,
+                  backgroundColor: DavidColors.line,
+                  color: DavidColors.sage,
                 ),
               ),
               const SizedBox(height: 8),
@@ -286,7 +286,7 @@ class _HitCard extends StatelessWidget {
                 Text(
                   'Matched ${hit.matchedTerms.join(', ')}',
                   style: const TextStyle(
-                    color: FieldlineColors.sage,
+                    color: DavidColors.sage,
                     fontSize: 12,
                   ),
                 ),
