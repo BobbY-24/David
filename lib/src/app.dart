@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'jobs/job_client.dart';
 import 'ui/desk_page.dart';
 import 'ui/theme.dart';
 
 class FieldlineApp extends StatelessWidget {
-  const FieldlineApp({super.key});
+  const FieldlineApp({super.key, this.jobClient});
+
+  final JobClient? jobClient;
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +15,7 @@ class FieldlineApp extends StatelessWidget {
       title: 'Fieldline',
       debugShowCheckedModeBanner: false,
       theme: fieldlineTheme(),
-      home: const DeskPage(),
+      home: DeskPage(jobClient: jobClient),
     );
   }
 }

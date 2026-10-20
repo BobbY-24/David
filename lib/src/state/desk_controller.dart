@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../agent/investigation_agent.dart';
 import '../data/case_packs.dart';
 import '../domain/models.dart';
+import '../jobs/job_client.dart';
 import '../retrieval/evidence_index.dart';
 
 enum DeskTab {
@@ -13,13 +16,21 @@ enum DeskTab {
   explanations,
   report,
   control,
+  jobs,
 }
 
 class DeskController extends ChangeNotifier {
-  DeskController({InvestigationAgent? agent})
-    : _agent = agent ?? const InvestigationAgent();
+  DeskController({InvestigationAgent? agent, JobClient? jobClient})
+    : _agent = agent ?? const InvestigationAgent(),
+      _jobs = jobClient ?? HttpJobClient();
 
   final InvestigationAgent _agent;
+  final JobClient _jobs;
+  Timer? _poll;
+  ServiceBoard? board;
+  ServiceJob? serviceJob;
+  String? serviceError;
+  bool enqueueing = false;
   final List<InvestigationCase> cases = CasePacks.all;
   final Map<String, EvidenceIndex> _indexes = {};
 
@@ -80,6 +91,76 @@ class DeskController extends ChangeNotifier {
   void selectTab(DeskTab next) {
     tab = next;
     notifyListeners();
+    if (next == DeskTab.jobs) {
+      refreshBoard();
+    }
+  }
+
+  Future<void> refreshBoard() async {
+    final next = await _jobs.board();
+    board = next;
+    notifyListeners();
+  }
+
+  Future<void> enqueueJob(CatalogItem item) async {
+    if (enqueueing) {
+      return;
+    }
+    enqueueing = true;
+    serviceError = null;
+    notifyListeners();
+    try {
+      serviceJob = await _jobs.enqueue(
+        kind: item.kind,
+        spec: item.spec,
+        idempotencyKey:
+            '${item.kind}-${item.title}-${DateTime.now().microsecondsSinceEpoch}',
+      );
+      _ensurePoll();
+    } on JobClientException catch (error) {
+      serviceError = error.message;
+    } finally {
+      enqueueing = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> refreshJob() async {
+    final currentJob = serviceJob;
+    if (currentJob == null) {
+      return;
+    }
+    try {
+      serviceJob = await _jobs.fetch(currentJob.id);
+      if (serviceJob?.status == 'succeeded' || serviceJob?.status == 'dead') {
+        await refreshBoard();
+      }
+      _ensurePoll();
+    } on JobClientException catch (error) {
+      serviceError = error.message;
+      _poll?.cancel();
+      _poll = null;
+      notifyListeners();
+    }
+  }
+
+  void _ensurePoll() {
+    final status = serviceJob?.status;
+    final active = status == 'queued' || status == 'running';
+    if (!active) {
+      _poll?.cancel();
+      _poll = null;
+      return;
+    }
+    _poll ??= Timer.periodic(const Duration(seconds: 1), (_) {
+      refreshJob();
+    });
+  }
+
+  @override
+  void dispose() {
+    _poll?.cancel();
+    super.dispose();
   }
 
   void selectEvidence(String? id) {

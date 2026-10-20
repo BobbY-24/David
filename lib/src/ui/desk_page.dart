@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import '../domain/format.dart';
 import '../domain/models.dart';
 import '../state/desk_controller.dart';
+import '../jobs/job_client.dart';
 import 'agent_view.dart';
 import 'brief_view.dart';
 import 'control_view.dart';
 import 'explanations_view.dart';
+import 'jobs_view.dart';
 import 'observations_view.dart';
 import 'report_view.dart';
 import 'retrieval_view.dart';
@@ -14,7 +16,9 @@ import 'theme.dart';
 import 'widgets.dart';
 
 class DeskPage extends StatefulWidget {
-  const DeskPage({super.key});
+  const DeskPage({super.key, this.jobClient});
+
+  final JobClient? jobClient;
 
   @override
   State<DeskPage> createState() => _DeskPageState();
@@ -26,7 +30,7 @@ class _DeskPageState extends State<DeskPage> {
   @override
   void initState() {
     super.initState();
-    desk = DeskController();
+    desk = DeskController(jobClient: widget.jobClient);
   }
 
   @override
@@ -119,6 +123,7 @@ class _DeskPageState extends State<DeskPage> {
       DeskTab.explanations => ExplanationsView(desk: desk),
       DeskTab.report => ReportView(desk: desk),
       DeskTab.control => ControlView(desk: desk),
+      DeskTab.jobs => JobsView(desk: desk),
     };
   }
 }
@@ -397,6 +402,7 @@ class _TabStrip extends StatelessWidget {
       (DeskTab.explanations, 'Explanations'),
       (DeskTab.report, 'Report'),
       (DeskTab.control, 'Control'),
+      (DeskTab.jobs, 'Jobs'),
     ];
     return DecoratedBox(
       decoration: const BoxDecoration(

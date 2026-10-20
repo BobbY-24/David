@@ -1,0 +1,8 @@
+fastapi==0.115.6
+uvicorn==0.34.0
+sqlalchemy==2.0.40
+psycopg[binary]==3.2.6
+celery==5.4.0
+redis==5.2.1
+httpx==0.28.1
+pytest==8.3.5

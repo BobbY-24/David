@@ -46,3 +46,9 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Python job service
+service/.venv/
+**/__pycache__/
+**/.pytest_cache/
+*.pyc

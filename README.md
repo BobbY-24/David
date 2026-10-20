@@ -2,7 +2,7 @@
 
 Fieldline is an investigation desk for business due diligence and physical-anomaly cases. It keeps sensor readings and records sealed with provenance, retrieves them as grounded evidence, and runs a multi-stage agent that scores competing explanations before writing a decision memo.
 
-The three bundled cases are synthetic fixtures. The running policy is deterministic and offline (`grounded-policy-v1`). It does not call a live model, and a memo from these fixtures is not a finding about a real site or a real transaction.
+The bundled cases are synthetic fixtures. The desk policy is deterministic and offline (`grounded-control-v2`). The job service uses `fixture-scorer-v1`. Neither calls a live model. A memo, a book weight, a risk band, or a churn score from these fixtures is not a finding about a real site, a real portfolio, a patient, or a customer.
 
 ## Run
 
@@ -55,3 +55,39 @@ Rails follow the OWASP LLM Top 10 for 2025 and the current agent-SDK split betwe
 - `lib/src/ui/` is the desk. The Control tab shows the loop, the rails, the seats, and the audit.
 
 `flutter test` checks retrieval, negation, which explanation leads each case, that cited ids were actually retrieved, and the desk at desktop and phone width.
+
+## Job plane
+
+The Jobs tab submits work to a single-host service. FastAPI accepts the request, PostgreSQL stores the job, and a Celery worker wakes from Redis and runs it. The worker claim is a conditional row update, so a duplicate delivery cannot finish the same attempt twice. Transient failures requeue until `MAX_ATTEMPTS`. A full lane returns HTTP 429. `GET /v1/metrics` reports queue depth, throughput over the last minute, and p95/p99 queue wait and end-to-end latency.
+
+The same API runs four fixture scorers:
+
+- **Investigation.** Harbor, Northline, and Vault. Phrase score only. The desk agent is still the citation path.
+- **Portfolio.** Cedar book in SQL (`positions`, `prices`). Checks a 25% single-name cap. No order is sent.
+- **Hypertension.** Points chart on eight synthetic rows. Notes cannot change a band. Not a diagnosis.
+- **Churn.** Points chart on six synthetic accounts. No message is sent.
+
+From `service/`, with PostgreSQL and Redis already running:
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -r requirements.txt
+export DATABASE_URL=postgresql+psycopg://fieldline:fieldline@127.0.0.1:5432/fieldline
+export REDIS_URL=redis://127.0.0.1:6379/0
+.venv/bin/uvicorn fieldline_lab.api:app --host 0.0.0.0 --port 43124
+.venv/bin/celery -A fieldline_lab.worker:celery_app worker --loglevel=INFO --concurrency=2
+```
+
+The local database password above is a development default.
+
+Docker Compose runs the same four processes:
+
+```bash
+docker compose -f service/docker-compose.yml up --build
+```
+
+That publishes the API on port 43124, Postgres on 54329, and Redis on 63799.
+
+```bash
+cd service && .venv/bin/pytest
+```
