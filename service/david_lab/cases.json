@@ -4,342 +4,309 @@
   "negation_window": 3,
   "cases": [
     {
-      "id": "harbor-substation-4",
-      "title": "Harbor Substation 4",
-      "kind": "physical",
-      "question": "What best explains the 14:40 UTC bushing temperature excursion on transformer T-2, and what should operations do before full load is restored?",
-      "loop": "react",
+      "id": "brightline-supply",
+      "title": "Brightline Supply",
+      "deal_type": "vendor",
+      "question": "Should we prepay Brightline Supply 50 percent on a six-month packaging contract, and on what terms?",
+      "loop": "plan-execute",
       "evidence": [
         {
-          "id": "h-ir-a-0",
-          "text": "IR camera A bushing temperature Recorded 64.0 C. IR-A thermal Harbor Substation 4 series ir-a value 64.0 unit C",
+          "id": "b-registry",
+          "text": "State registry entry The state registry lists Brightline Supply LLC as active, formed in 2016. Annual reports filed on time every year. Secretary of State extract registry Brightline Supply vendor file",
           "quarantined": false
         },
         {
-          "id": "h-ir-a-1",
-          "text": "IR camera A bushing temperature Recorded 68.0 C. IR-A thermal Harbor Substation 4 series ir-a value 68.0 unit C",
+          "id": "b-sanctions",
+          "text": "Sanctions screen Sanctions screen of Brightline Supply LLC and its two owners against the OFAC SDN and consolidated lists returned no hit. OFAC list snapshot 2026-09-01 sanctions Brightline Supply vendor file",
           "quarantined": false
         },
         {
-          "id": "h-ir-a-2",
-          "text": "IR camera A bushing temperature Recorded 74.0 C. IR-A thermal Harbor Substation 4 series ir-a value 74.0 unit C",
+          "id": "b-reviews",
+          "text": "Customer reviews digest Customer reviews mention late deliveries in peak season. Delivery delays averaged nine days in the fourth quarter. Product quality is rated well. Public review sites reviews Brightline Supply vendor file",
           "quarantined": false
         },
         {
-          "id": "h-ir-a-3",
-          "text": "IR camera A bushing temperature Recorded 89.0 C. IR-A thermal Harbor Substation 4 series ir-a value 89.0 unit C",
+          "id": "b-bank",
+          "text": "Bank reference The bank reference confirms a business account open for eight years and in good standing. Bank reference letter banking Brightline Supply vendor file",
           "quarantined": false
         },
         {
-          "id": "h-ir-a-4",
-          "text": "IR camera A bushing temperature Recorded 112.0 C. The phase B HV bushing shows a localized bushing hotspot. Paired camera IR-B read 71 C at the same minute, so the cameras disagree. IR-A thermal Harbor Substation 4 series ir-a value 112.0 unit C",
+          "id": "b-court",
+          "text": "Court record search One small-claims case from 2025 over a late delivery, settled before trial. No other civil or criminal cases. County court index litigation Brightline Supply vendor file",
           "quarantined": false
         },
         {
-          "id": "h-ir-b-0",
-          "text": "IR camera B bushing temperature Recorded 63.0 C. IR-B thermal Harbor Substation 4 series ir-b value 63.0 unit C",
+          "id": "b-liens",
+          "text": "UCC and lien search The UCC search shows no tax lien and one equipment lease filing from 2023. State UCC search liens Brightline Supply vendor file",
           "quarantined": false
         },
         {
-          "id": "h-ir-b-1",
-          "text": "IR camera B bushing temperature Recorded 66.0 C. IR-B thermal Harbor Substation 4 series ir-b value 66.0 unit C",
+          "id": "b-ontime-0",
+          "text": "On-time delivery rate Recorded 96.0 % on time. Vendor scorecard delivery Brightline Supply vendor file series on-time value 96.0 unit % on time",
           "quarantined": false
         },
         {
-          "id": "h-ir-b-2",
-          "text": "IR camera B bushing temperature Recorded 68.0 C. IR-B thermal Harbor Substation 4 series ir-b value 68.0 unit C",
+          "id": "b-ontime-1",
+          "text": "On-time delivery rate Recorded 94.0 % on time. Vendor scorecard delivery Brightline Supply vendor file series on-time value 94.0 unit % on time",
           "quarantined": false
         },
         {
-          "id": "h-ir-b-3",
-          "text": "IR camera B bushing temperature Recorded 70.0 C. IR-B thermal Harbor Substation 4 series ir-b value 70.0 unit C",
+          "id": "b-ontime-2",
+          "text": "On-time delivery rate Recorded 90.0 % on time. Vendor scorecard delivery Brightline Supply vendor file series on-time value 90.0 unit % on time",
           "quarantined": false
         },
         {
-          "id": "h-ir-b-4",
-          "text": "IR camera B bushing temperature Recorded 71.0 C. IR-B stayed near 71 C while IR-A jumped. The heads were not swapped. IR-B thermal Harbor Substation 4 series ir-b value 71.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "h-dga-0",
-          "text": "Dissolved gas acetylene Recorded 2.0 ppm. Lab DGA-19 dissolved-gas Harbor Substation 4 series acetylene value 2.0 unit ppm",
-          "quarantined": false
-        },
-        {
-          "id": "h-dga-1",
-          "text": "Dissolved gas acetylene Recorded 4.0 ppm. Lab DGA-19 dissolved-gas Harbor Substation 4 series acetylene value 4.0 unit ppm",
-          "quarantined": false
-        },
-        {
-          "id": "h-dga-2",
-          "text": "Dissolved gas acetylene Recorded 9.0 ppm. Lab DGA-19 dissolved-gas Harbor Substation 4 series acetylene value 9.0 unit ppm",
-          "quarantined": false
-        },
-        {
-          "id": "h-dga-3",
-          "text": "Dissolved gas acetylene Recorded 21.0 ppm. Lab DGA-19 dissolved-gas Harbor Substation 4 series acetylene value 21.0 unit ppm",
-          "quarantined": false
-        },
-        {
-          "id": "h-dga-4",
-          "text": "Dissolved gas acetylene Recorded 42.0 ppm. Main tank oil acetylene reached 42 ppm, with ethylene elevated, after a 2 ppm morning sample. Lab DGA-19 dissolved-gas Harbor Substation 4 series acetylene value 42.0 unit ppm",
-          "quarantined": false
-        },
-        {
-          "id": "h-vib-0",
-          "text": "Tank wall vibration Recorded 0.4 mm/s. V-14 vibration Harbor Substation 4 series vibration value 0.4 unit mm/s",
-          "quarantined": false
-        },
-        {
-          "id": "h-vib-1",
-          "text": "Tank wall vibration Recorded 0.5 mm/s. V-14 vibration Harbor Substation 4 series vibration value 0.5 unit mm/s",
-          "quarantined": false
-        },
-        {
-          "id": "h-vib-2",
-          "text": "Tank wall vibration Recorded 0.6 mm/s. V-14 vibration Harbor Substation 4 series vibration value 0.6 unit mm/s",
-          "quarantined": false
-        },
-        {
-          "id": "h-vib-3",
-          "text": "Tank wall vibration Recorded 0.7 mm/s. V-14 vibration Harbor Substation 4 series vibration value 0.7 unit mm/s",
-          "quarantined": false
-        },
-        {
-          "id": "h-vib-4",
-          "text": "Tank wall vibration Recorded 0.9 mm/s. Tank wall vibration at 120 Hz reached 0.9 mm/s rms, about twice the 0.4 mm/s morning baseline. V-14 vibration Harbor Substation 4 series vibration value 0.9 unit mm/s",
-          "quarantined": false
-        },
-        {
-          "id": "h-pd-0",
-          "text": "Acoustic partial discharge Recorded 0.0 counts/min. PD-7 acoustic Harbor Substation 4 series partial-discharge value 0.0 unit counts/min",
-          "quarantined": false
-        },
-        {
-          "id": "h-pd-1",
-          "text": "Acoustic partial discharge Recorded 1.0 counts/min. PD-7 acoustic Harbor Substation 4 series partial-discharge value 1.0 unit counts/min",
-          "quarantined": false
-        },
-        {
-          "id": "h-pd-2",
-          "text": "Acoustic partial discharge Recorded 4.0 counts/min. PD-7 acoustic Harbor Substation 4 series partial-discharge value 4.0 unit counts/min",
-          "quarantined": false
-        },
-        {
-          "id": "h-pd-3",
-          "text": "Acoustic partial discharge Recorded 11.0 counts/min. PD-7 acoustic Harbor Substation 4 series partial-discharge value 11.0 unit counts/min",
-          "quarantined": false
-        },
-        {
-          "id": "h-pd-4",
-          "text": "Acoustic partial discharge Recorded 19.0 counts/min. Partial discharge acoustic counts reached 19 per minute in the bushing hotspot window. PD-7 acoustic Harbor Substation 4 series partial-discharge value 19.0 unit counts/min",
-          "quarantined": false
-        },
-        {
-          "id": "h-pump-0",
-          "text": "Cooling oil pump current Recorded 8.2 A. P-2 cooling Harbor Substation 4 series oil-pump value 8.2 unit A",
-          "quarantined": false
-        },
-        {
-          "id": "h-pump-1",
-          "text": "Cooling oil pump current Recorded 8.1 A. P-2 cooling Harbor Substation 4 series oil-pump value 8.1 unit A",
-          "quarantined": false
-        },
-        {
-          "id": "h-pump-2",
-          "text": "Cooling oil pump current Recorded 8.3 A. P-2 cooling Harbor Substation 4 series oil-pump value 8.3 unit A",
-          "quarantined": false
-        },
-        {
-          "id": "h-pump-3",
-          "text": "Cooling oil pump current Recorded 8.2 A. P-2 cooling Harbor Substation 4 series oil-pump value 8.2 unit A",
-          "quarantined": false
-        },
-        {
-          "id": "h-pump-4",
-          "text": "Cooling oil pump current Recorded 8.1 A. Pump current steady across the excursion, between 8.1 A and 8.3 A. The pump did not stall. P-2 cooling Harbor Substation 4 series oil-pump value 8.1 unit A",
-          "quarantined": false
-        },
-        {
-          "id": "h-load-0",
-          "text": "Transformer load Recorded 70.0 % nameplate. Relay R-2 load Harbor Substation 4 series load value 70.0 unit % nameplate",
-          "quarantined": false
-        },
-        {
-          "id": "h-load-1",
-          "text": "Transformer load Recorded 74.0 % nameplate. Relay R-2 load Harbor Substation 4 series load value 74.0 unit % nameplate",
-          "quarantined": false
-        },
-        {
-          "id": "h-load-2",
-          "text": "Transformer load Recorded 81.0 % nameplate. Relay R-2 load Harbor Substation 4 series load value 81.0 unit % nameplate",
-          "quarantined": false
-        },
-        {
-          "id": "h-load-3",
-          "text": "Transformer load Recorded 78.0 % nameplate. Relay R-2 load Harbor Substation 4 series load value 78.0 unit % nameplate",
-          "quarantined": false
-        },
-        {
-          "id": "h-load-4",
-          "text": "Transformer load Recorded 76.0 % nameplate. Load stayed below nameplate all day. The 14:40 reading was 76 percent of rating. Relay R-2 load Harbor Substation 4 series load value 76.0 unit % nameplate",
-          "quarantined": false
-        },
-        {
-          "id": "h-oil-0",
-          "text": "Top oil temperature Recorded 48.0 C. OT-1 oil Harbor Substation 4 series top-oil value 48.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "h-oil-1",
-          "text": "Top oil temperature Recorded 51.0 C. OT-1 oil Harbor Substation 4 series top-oil value 51.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "h-oil-2",
-          "text": "Top oil temperature Recorded 55.0 C. OT-1 oil Harbor Substation 4 series top-oil value 55.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "h-oil-3",
-          "text": "Top oil temperature Recorded 62.0 C. OT-1 oil Harbor Substation 4 series top-oil value 62.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "h-oil-4",
-          "text": "Top oil temperature Recorded 67.0 C. Top oil reached 67 C, trailing the bushing reading rather than leading it. OT-1 oil Harbor Substation 4 series top-oil value 67.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "h-amb-0",
-          "text": "Ambient temperature Recorded 16.0 C. WX-4 ambient Harbor Substation 4 series ambient value 16.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "h-amb-1",
-          "text": "Ambient temperature Recorded 17.0 C. WX-4 ambient Harbor Substation 4 series ambient value 17.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "h-amb-2",
-          "text": "Ambient temperature Recorded 18.0 C. WX-4 ambient Harbor Substation 4 series ambient value 18.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "h-amb-3",
-          "text": "Ambient temperature Recorded 18.0 C. WX-4 ambient Harbor Substation 4 series ambient value 18.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "h-amb-4",
-          "text": "Ambient temperature Recorded 17.0 C. Ambient stayed between 16 C and 18 C under overcast skies. WX-4 ambient Harbor Substation 4 series ambient value 17.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "h-note",
-          "text": "Field inspection note Field engineer logged a localized bushing hotspot on phase B. No external oil leak. Cooling fans were running. Cameras disagree, and both heads were left in place for a repeat shot. Inspector N. Okonkwo thermal Harbor Substation 4",
-          "quarantined": false
-        },
-        {
-          "id": "h-custody",
-          "text": "Oil sample chain of custody Sample bottle HS4-T2-0312 left the transformer at 14:48 UTC, arrived at the oil lab at 15:20 UTC, and was run as DGA-19. The lab sheet reports acetylene at 42 ppm. Custody form HS4-T2-0312 dissolved-gas Harbor Substation 4",
+          "id": "b-ontime-3",
+          "text": "On-time delivery rate Recorded 81.0 % on time. On-time delivery fell to 81 percent as peak orders arrived. Vendor scorecard delivery Brightline Supply vendor file series on-time value 81.0 unit % on time",
           "quarantined": false
         }
       ],
-      "hypotheses": [
+      "risk_questions": [
         {
-          "id": "internal-thermal-fault",
-          "title": "Internal high-energy thermal fault",
+          "id": "delivery-reliability",
+          "title": "Delivery reliability risk",
           "support": [
             [
-              "acetylene",
-              2.0
+              "late deliveries",
+              1.4
             ],
             [
-              "partial discharge",
-              1.3
-            ],
-            [
-              "bushing hotspot",
-              1.2
-            ],
-            [
-              "120 hz",
-              0.7
-            ]
-          ],
-          "contradict": [
-            [
-              "ratios are normal",
-              1.6
-            ],
-            [
-              "both cameras agree",
-              1.2
-            ]
-          ]
-        },
-        {
-          "id": "cooling-failure",
-          "title": "Cooling-system failure",
-          "support": [
-            [
-              "oil pump current drop",
-              2.0
-            ],
-            [
-              "fans stopped",
-              1.2
-            ]
-          ],
-          "contradict": [
-            [
-              "pump current steady",
-              1.8
-            ],
-            [
-              "localized bushing hotspot",
+              "delivery delays",
               1.0
-            ]
-          ]
-        },
-        {
-          "id": "calibration-drift",
-          "title": "Infrared calibration drift",
-          "support": [
+            ],
             [
-              "cameras disagree",
-              1.6
+              "late delivery",
+              0.8
             ]
           ],
           "contradict": [
             [
-              "acetylene",
-              1.5
-            ],
-            [
-              "partial discharge",
+              "on time delivery above",
               1.2
             ]
           ]
         },
         {
-          "id": "sustained-overload",
-          "title": "Sustained overload",
+          "id": "shell-or-fraud",
+          "title": "Shell company or fraud",
           "support": [
             [
-              "load exceeded",
-              2.0
+              "mail drop address",
+              1.6
             ],
             [
-              "above nameplate",
+              "recently formed",
+              1.2
+            ],
+            [
+              "sanctions match",
+              2.0
+            ]
+          ],
+          "contradict": [
+            [
+              "formed in 2016",
+              1.2
+            ],
+            [
+              "annual reports filed",
+              0.8
+            ]
+          ]
+        },
+        {
+          "id": "financial-distress",
+          "title": "Financial distress",
+          "support": [
+            [
+              "overdrawn",
+              1.4
+            ],
+            [
+              "tax lien",
+              1.4
+            ],
+            [
+              "missed payroll",
+              1.2
+            ]
+          ],
+          "contradict": [
+            [
+              "good standing",
+              1.2
+            ]
+          ]
+        },
+        {
+          "id": "clean-vendor",
+          "title": "No material risk",
+          "support": [
+            [
+              "good standing",
+              0.8
+            ],
+            [
+              "annual reports filed",
+              0.6
+            ]
+          ],
+          "contradict": [
+            [
+              "late deliveries",
+              1.0
+            ],
+            [
+              "delivery delays",
+              0.8
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "corvid-retail",
+      "title": "Corvid Retail",
+      "deal_type": "customer",
+      "question": "Records conflict on whether Corvid Retail is still trading. Should we ship a 40,000 dollar first order on 60-day terms?",
+      "loop": "react",
+      "evidence": [
+        {
+          "id": "c-registry",
+          "text": "State registry entry The state registry lists Corvid Retail LLC as dissolved in June 2025. Secretary of State extract registry Corvid Retail credit file",
+          "quarantined": false
+        },
+        {
+          "id": "c-successor",
+          "text": "Successor registration A new entity, Corvid Retail Holdings LLC, registered in July 2025 at the same address and with the same manager. Secretary of State extract registry Corvid Retail credit file",
+          "quarantined": false
+        },
+        {
+          "id": "c-web",
+          "text": "Website snapshot The Corvid Retail website shows orders shipped last week and lists the same address as the registry. Website capture website Corvid Retail credit file",
+          "quarantined": false
+        },
+        {
+          "id": "c-refs",
+          "text": "Trade references Two trade references say invoices were paid within terms in 2026. Reference calls references Corvid Retail credit file",
+          "quarantined": false
+        },
+        {
+          "id": "c-ucc",
+          "text": "UCC search The UCC search shows a blanket lien held by Keystone Capital, filed against Corvid Retail Holdings in August 2025. State UCC search liens Corvid Retail credit file",
+          "quarantined": false
+        },
+        {
+          "id": "c-dbt-0",
+          "text": "Days beyond terms Recorded 12.0 days. Trade credit report payments Corvid Retail credit file series days-beyond-terms value 12.0 unit days",
+          "quarantined": false
+        },
+        {
+          "id": "c-dbt-1",
+          "text": "Days beyond terms Recorded 18.0 days. Trade credit report payments Corvid Retail credit file series days-beyond-terms value 18.0 unit days",
+          "quarantined": false
+        },
+        {
+          "id": "c-dbt-2",
+          "text": "Days beyond terms Recorded 30.0 days. Trade credit report payments Corvid Retail credit file series days-beyond-terms value 30.0 unit days",
+          "quarantined": false
+        },
+        {
+          "id": "c-dbt-3",
+          "text": "Days beyond terms Recorded 45.0 days. Payment history shows invoices 45 days beyond terms in the latest quarter. Trade credit report payments Corvid Retail credit file series days-beyond-terms value 45.0 unit days",
+          "quarantined": false
+        }
+      ],
+      "risk_questions": [
+        {
+          "id": "successor-entity",
+          "title": "Trading through a successor entity",
+          "support": [
+            [
+              "new entity",
+              1.2
+            ],
+            [
+              "same address",
+              1.0
+            ],
+            [
+              "dissolved",
+              0.8
+            ]
+          ],
+          "contradict": [
+            [
+              "still active",
               1.4
             ]
+          ]
+        },
+        {
+          "id": "phoenix-fraud",
+          "title": "Phoenix company",
+          "support": [
+            [
+              "dissolved",
+              0.8
+            ],
+            [
+              "unpaid creditors",
+              1.6
+            ],
+            [
+              "blanket lien",
+              0.6
+            ]
           ],
           "contradict": [
             [
-              "below nameplate",
-              1.6
+              "paid within terms",
+              1.4
+            ]
+          ]
+        },
+        {
+          "id": "slow-payer",
+          "title": "Slow payer",
+          "support": [
+            [
+              "beyond terms",
+              1.2
+            ],
+            [
+              "blanket lien",
+              0.6
+            ]
+          ],
+          "contradict": [
+            [
+              "paid within terms",
+              0.8
+            ]
+          ]
+        },
+        {
+          "id": "healthy-customer",
+          "title": "Healthy customer",
+          "support": [
+            [
+              "paid within terms",
+              1.0
+            ],
+            [
+              "orders shipped",
+              0.6
+            ]
+          ],
+          "contradict": [
+            [
+              "dissolved",
+              1.0
+            ],
+            [
+              "beyond terms",
+              0.8
             ]
           ]
         }
@@ -348,7 +315,7 @@
     {
       "id": "northline-logistics",
       "title": "Northline Logistics",
-      "kind": "due_diligence",
+      "deal_type": "acquisition",
       "question": "What best explains the latest quarter revenue spike at Northline Logistics, and which findings should change price, escrow, or a walk-away?",
       "loop": "panel-vote",
       "evidence": [
@@ -409,27 +376,27 @@
         },
         {
           "id": "n-miles-3",
-          "text": "Fleet telematics miles index Recorded 88.0 index. Telematics miles down 12 percent versus the prior quarter while billed orders rose. The vendor reports no integration defect and no sensor dropout. Telematics vendor feed telematics Project Northline data room series miles value 88.0 unit index",
+          "text": "Fleet telematics miles index Recorded 88.0 index. Telematics miles down 12 percent versus the prior quarter while billed orders rose. The vendor reports no integration defect and no device dropout. Telematics vendor feed telematics Project Northline data room series miles value 88.0 unit index",
           "quarantined": false
         },
         {
           "id": "n-occ-0",
-          "text": "Warehouse aisle occupancy Recorded 62.0 % occupied. Aisle sensors 4-7 occupancy Northline warehouse B series occupancy value 62.0 unit % occupied",
+          "text": "Warehouse aisle occupancy Recorded 62.0 % occupied. Warehouse management system occupancy Northline warehouse B series occupancy value 62.0 unit % occupied",
           "quarantined": false
         },
         {
           "id": "n-occ-1",
-          "text": "Warehouse aisle occupancy Recorded 63.0 % occupied. Aisle sensors 4-7 occupancy Northline warehouse B series occupancy value 63.0 unit % occupied",
+          "text": "Warehouse aisle occupancy Recorded 63.0 % occupied. Warehouse management system occupancy Northline warehouse B series occupancy value 63.0 unit % occupied",
           "quarantined": false
         },
         {
           "id": "n-occ-2",
-          "text": "Warehouse aisle occupancy Recorded 61.0 % occupied. Aisle sensors 4-7 occupancy Northline warehouse B series occupancy value 61.0 unit % occupied",
+          "text": "Warehouse aisle occupancy Recorded 61.0 % occupied. Warehouse management system occupancy Northline warehouse B series occupancy value 61.0 unit % occupied",
           "quarantined": false
         },
         {
           "id": "n-occ-3",
-          "text": "Warehouse aisle occupancy Recorded 62.0 % occupied. Aisle 4 through 7 occupancy flat at 61 to 63 percent. Warehouse occupancy agrees with the telematics feed. Aisle sensors 4-7 occupancy Northline warehouse B series occupancy value 62.0 unit % occupied",
+          "text": "Warehouse aisle occupancy Recorded 62.0 % occupied. Aisle 4 through 7 occupancy flat at 61 to 63 percent. Warehouse occupancy agrees with the telematics feed. Warehouse management system occupancy Northline warehouse B series occupancy value 62.0 unit % occupied",
           "quarantined": false
         },
         {
@@ -453,7 +420,7 @@
           "quarantined": false
         }
       ],
-      "hypotheses": [
+      "risk_questions": [
         {
           "id": "related-party-round-trip",
           "title": "Related-party round trip",
@@ -543,7 +510,7 @@
               1.5
             ],
             [
-              "sensor dropout",
+              "device dropout",
               1.2
             ]
           ],
@@ -555,353 +522,102 @@
           ]
         }
       ]
-    },
-    {
-      "id": "vault-c12",
-      "title": "Vault C-12",
-      "kind": "physical",
-      "question": "What best explains the 46 minute temperature excursion in vault C-12, and should the affected lots stay on quality hold?",
-      "loop": "plan-execute",
-      "evidence": [
-        {
-          "id": "c-temp-a-0",
-          "text": "Primary vault logger Recorded 4.9 C. Logger A temperature Clinic vault C-12 series logger-a value 4.9 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-temp-a-1",
-          "text": "Primary vault logger Recorded 5.0 C. Logger A temperature Clinic vault C-12 series logger-a value 5.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-temp-a-2",
-          "text": "Primary vault logger Recorded 5.1 C. Logger A temperature Clinic vault C-12 series logger-a value 5.1 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-temp-a-3",
-          "text": "Primary vault logger Recorded 6.4 C. Logger A temperature Clinic vault C-12 series logger-a value 6.4 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-temp-a-4",
-          "text": "Primary vault logger Recorded 7.9 C. Primary logger reached 7.9 C and stayed above 7 C inside a 46 minute excursion. Logger A temperature Clinic vault C-12 series logger-a value 7.9 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-temp-a-5",
-          "text": "Primary vault logger Recorded 6.2 C. Logger A temperature Clinic vault C-12 series logger-a value 6.2 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-temp-b-0",
-          "text": "Secondary vault logger Recorded 4.9 C. Logger B temperature Clinic vault C-12 series logger-b value 4.9 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-temp-b-1",
-          "text": "Secondary vault logger Recorded 5.0 C. Logger B temperature Clinic vault C-12 series logger-b value 5.0 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-temp-b-2",
-          "text": "Secondary vault logger Recorded 5.2 C. Logger B temperature Clinic vault C-12 series logger-b value 5.2 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-temp-b-3",
-          "text": "Secondary vault logger Recorded 6.2 C. Logger B temperature Clinic vault C-12 series logger-b value 6.2 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-temp-b-4",
-          "text": "Secondary vault logger Recorded 7.6 C. The second logger rose from 5.0 C to 7.6 C in parallel. Both loggers recorded the excursion. Logger B temperature Clinic vault C-12 series logger-b value 7.6 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-temp-b-5",
-          "text": "Secondary vault logger Recorded 6.1 C. Logger B temperature Clinic vault C-12 series logger-b value 6.1 unit C",
-          "quarantined": false
-        },
-        {
-          "id": "c-door-0",
-          "text": "Vault door contact Recorded 0.0 open. Door contact D-12 door Clinic vault C-12 series door value 0.0 unit open",
-          "quarantined": false
-        },
-        {
-          "id": "c-door-1",
-          "text": "Vault door contact Recorded 0.0 open. Door contact D-12 door Clinic vault C-12 series door value 0.0 unit open",
-          "quarantined": false
-        },
-        {
-          "id": "c-door-2",
-          "text": "Vault door contact Recorded 1.0 open. Door contact reported the door ajar at the start of the warm window. Door contact D-12 door Clinic vault C-12 series door value 1.0 unit open",
-          "quarantined": false
-        },
-        {
-          "id": "c-door-3",
-          "text": "Vault door contact Recorded 1.0 open. The door ajar state held. The door stayed open about 41 minutes. Door contact D-12 door Clinic vault C-12 series door value 1.0 unit open",
-          "quarantined": false
-        },
-        {
-          "id": "c-door-4",
-          "text": "Vault door contact Recorded 0.0 open. Door contact D-12 door Clinic vault C-12 series door value 0.0 unit open",
-          "quarantined": false
-        },
-        {
-          "id": "c-hum-0",
-          "text": "Vault humidity Recorded 45.0 %. Humidity H-12 humidity Clinic vault C-12 series humidity value 45.0 unit %",
-          "quarantined": false
-        },
-        {
-          "id": "c-hum-1",
-          "text": "Vault humidity Recorded 46.0 %. Humidity H-12 humidity Clinic vault C-12 series humidity value 46.0 unit %",
-          "quarantined": false
-        },
-        {
-          "id": "c-hum-2",
-          "text": "Vault humidity Recorded 47.0 %. Humidity H-12 humidity Clinic vault C-12 series humidity value 47.0 unit %",
-          "quarantined": false
-        },
-        {
-          "id": "c-hum-3",
-          "text": "Vault humidity Recorded 61.0 %. Humidity H-12 humidity Clinic vault C-12 series humidity value 61.0 unit %",
-          "quarantined": false
-        },
-        {
-          "id": "c-hum-4",
-          "text": "Vault humidity Recorded 72.0 %. Humidity spike from 47 percent to 72 percent while the door was open. Humidity H-12 humidity Clinic vault C-12 series humidity value 72.0 unit %",
-          "quarantined": false
-        },
-        {
-          "id": "c-hum-5",
-          "text": "Vault humidity Recorded 55.0 %. Humidity H-12 humidity Clinic vault C-12 series humidity value 55.0 unit %",
-          "quarantined": false
-        },
-        {
-          "id": "c-comp-0",
-          "text": "Compressor current Recorded 3.2 A. Compressor K-3 compressor Clinic vault C-12 series compressor value 3.2 unit A",
-          "quarantined": false
-        },
-        {
-          "id": "c-comp-1",
-          "text": "Compressor current Recorded 3.4 A. Compressor K-3 compressor Clinic vault C-12 series compressor value 3.4 unit A",
-          "quarantined": false
-        },
-        {
-          "id": "c-comp-2",
-          "text": "Compressor current Recorded 3.1 A. Compressor K-3 compressor Clinic vault C-12 series compressor value 3.1 unit A",
-          "quarantined": false
-        },
-        {
-          "id": "c-comp-3",
-          "text": "Compressor current Recorded 3.3 A. Compressor K-3 compressor Clinic vault C-12 series compressor value 3.3 unit A",
-          "quarantined": false
-        },
-        {
-          "id": "c-comp-4",
-          "text": "Compressor current Recorded 3.2 A. Compressor current normal, between 3.1 A and 3.4 A, with ordinary cycling through the excursion. Compressor K-3 compressor Clinic vault C-12 series compressor value 3.2 unit A",
-          "quarantined": false
-        },
-        {
-          "id": "c-badge",
-          "text": "Badge and night-shift sheet Contractor badge B-4417 entered at 04:12 UTC. No delivery was booked for that hour. The excursion was unplanned. The sheet lists no planned warming of the vault. Access control AC-2 access Clinic vault C-12",
-          "quarantined": false
-        },
-        {
-          "id": "c-maint",
-          "text": "Compressor maintenance log The thirty day log shows no compressor current abnormal flag and no short cycling. No defrost cycle was scheduled for the night of 4 Mar 2026. Maintenance log K-3 compressor Clinic vault C-12",
-          "quarantined": false
-        }
-      ],
-      "hypotheses": [
-        {
-          "id": "door-ajar",
-          "title": "Door left ajar after badge entry",
-          "support": [
-            [
-              "door ajar",
-              1.8
-            ],
-            [
-              "humidity spike",
-              1.2
-            ],
-            [
-              "contractor badge",
-              1.2
-            ]
-          ],
-          "contradict": [
-            [
-              "door sealed",
-              1.4
-            ]
-          ]
-        },
-        {
-          "id": "compressor-fault",
-          "title": "Compressor failure",
-          "support": [
-            [
-              "compressor current abnormal",
-              1.8
-            ],
-            [
-              "short cycling",
-              1.2
-            ]
-          ],
-          "contradict": [
-            [
-              "compressor current normal",
-              1.6
-            ]
-          ]
-        },
-        {
-          "id": "logger-fault",
-          "title": "Single-logger fault",
-          "support": [
-            [
-              "single logger",
-              1.5
-            ]
-          ],
-          "contradict": [
-            [
-              "second logger rose",
-              1.5
-            ],
-            [
-              "both loggers",
-              1.2
-            ]
-          ]
-        },
-        {
-          "id": "planned-defrost",
-          "title": "Planned defrost cycle",
-          "support": [
-            [
-              "defrost cycle",
-              1.6
-            ]
-          ],
-          "contradict": [
-            [
-              "excursion was unplanned",
-              1.4
-            ]
-          ]
-        }
-      ]
     }
   ],
   "phrase_golden": [
     [
-      "IR camera A bushing temperature Recorded 112.0 C. The phase B HV bushing shows a localized bushing hotspot. Paired camera IR-B read 71 C at the same minute, so the cameras disagree. IR-A thermal Harbor Substation 4 series ir-a value 112.0 unit C",
-      "bushing hotspot",
+      "State registry entry The state registry lists Brightline Supply LLC as active, formed in 2016. Annual reports filed on time every year. Secretary of State extract registry Brightline Supply vendor file",
+      "formed in 2016",
       true
     ],
     [
-      "IR camera A bushing temperature Recorded 112.0 C. The phase B HV bushing shows a localized bushing hotspot. Paired camera IR-B read 71 C at the same minute, so the cameras disagree. IR-A thermal Harbor Substation 4 series ir-a value 112.0 unit C",
-      "localized bushing hotspot",
+      "State registry entry The state registry lists Brightline Supply LLC as active, formed in 2016. Annual reports filed on time every year. Secretary of State extract registry Brightline Supply vendor file",
+      "annual reports filed",
       true
     ],
     [
-      "IR camera A bushing temperature Recorded 112.0 C. The phase B HV bushing shows a localized bushing hotspot. Paired camera IR-B read 71 C at the same minute, so the cameras disagree. IR-A thermal Harbor Substation 4 series ir-a value 112.0 unit C",
-      "cameras disagree",
+      "Customer reviews digest Customer reviews mention late deliveries in peak season. Delivery delays averaged nine days in the fourth quarter. Product quality is rated well. Public review sites reviews Brightline Supply vendor file",
+      "late deliveries",
       true
     ],
     [
-      "Dissolved gas acetylene Recorded 2.0 ppm. Lab DGA-19 dissolved-gas Harbor Substation 4 series acetylene value 2.0 unit ppm",
-      "acetylene",
+      "Customer reviews digest Customer reviews mention late deliveries in peak season. Delivery delays averaged nine days in the fourth quarter. Product quality is rated well. Public review sites reviews Brightline Supply vendor file",
+      "delivery delays",
       true
     ],
     [
-      "Dissolved gas acetylene Recorded 4.0 ppm. Lab DGA-19 dissolved-gas Harbor Substation 4 series acetylene value 4.0 unit ppm",
-      "acetylene",
+      "Customer reviews digest Customer reviews mention late deliveries in peak season. Delivery delays averaged nine days in the fourth quarter. Product quality is rated well. Public review sites reviews Brightline Supply vendor file",
+      "late delivery",
+      false
+    ],
+    [
+      "Bank reference The bank reference confirms a business account open for eight years and in good standing. Bank reference letter banking Brightline Supply vendor file",
+      "good standing",
       true
     ],
     [
-      "Dissolved gas acetylene Recorded 9.0 ppm. Lab DGA-19 dissolved-gas Harbor Substation 4 series acetylene value 9.0 unit ppm",
-      "acetylene",
+      "Court record search One small-claims case from 2025 over a late delivery, settled before trial. No other civil or criminal cases. County court index litigation Brightline Supply vendor file",
+      "late delivery",
       true
     ],
     [
-      "Dissolved gas acetylene Recorded 21.0 ppm. Lab DGA-19 dissolved-gas Harbor Substation 4 series acetylene value 21.0 unit ppm",
-      "acetylene",
+      "UCC and lien search The UCC search shows no tax lien and one equipment lease filing from 2023. State UCC search liens Brightline Supply vendor file",
+      "tax lien",
+      false
+    ],
+    [
+      "State registry entry The state registry lists Corvid Retail LLC as dissolved in June 2025. Secretary of State extract registry Corvid Retail credit file",
+      "dissolved",
       true
     ],
     [
-      "Dissolved gas acetylene Recorded 42.0 ppm. Main tank oil acetylene reached 42 ppm, with ethylene elevated, after a 2 ppm morning sample. Lab DGA-19 dissolved-gas Harbor Substation 4 series acetylene value 42.0 unit ppm",
-      "acetylene",
+      "Successor registration A new entity, Corvid Retail Holdings LLC, registered in July 2025 at the same address and with the same manager. Secretary of State extract registry Corvid Retail credit file",
+      "new entity",
       true
     ],
     [
-      "Tank wall vibration Recorded 0.9 mm/s. Tank wall vibration at 120 Hz reached 0.9 mm/s rms, about twice the 0.4 mm/s morning baseline. V-14 vibration Harbor Substation 4 series vibration value 0.9 unit mm/s",
-      "120 hz",
+      "Successor registration A new entity, Corvid Retail Holdings LLC, registered in July 2025 at the same address and with the same manager. Secretary of State extract registry Corvid Retail credit file",
+      "same address",
       true
     ],
     [
-      "Acoustic partial discharge Recorded 0.0 counts/min. PD-7 acoustic Harbor Substation 4 series partial-discharge value 0.0 unit counts/min",
-      "partial discharge",
+      "Website snapshot The Corvid Retail website shows orders shipped last week and lists the same address as the registry. Website capture website Corvid Retail credit file",
+      "same address",
       true
     ],
     [
-      "Acoustic partial discharge Recorded 1.0 counts/min. PD-7 acoustic Harbor Substation 4 series partial-discharge value 1.0 unit counts/min",
-      "partial discharge",
+      "Website snapshot The Corvid Retail website shows orders shipped last week and lists the same address as the registry. Website capture website Corvid Retail credit file",
+      "orders shipped",
       true
     ],
     [
-      "Acoustic partial discharge Recorded 4.0 counts/min. PD-7 acoustic Harbor Substation 4 series partial-discharge value 4.0 unit counts/min",
-      "partial discharge",
+      "Trade references Two trade references say invoices were paid within terms in 2026. Reference calls references Corvid Retail credit file",
+      "paid within terms",
       true
     ],
     [
-      "Acoustic partial discharge Recorded 11.0 counts/min. PD-7 acoustic Harbor Substation 4 series partial-discharge value 11.0 unit counts/min",
-      "partial discharge",
+      "UCC search The UCC search shows a blanket lien held by Keystone Capital, filed against Corvid Retail Holdings in August 2025. State UCC search liens Corvid Retail credit file",
+      "blanket lien",
       true
     ],
     [
-      "Acoustic partial discharge Recorded 19.0 counts/min. Partial discharge acoustic counts reached 19 per minute in the bushing hotspot window. PD-7 acoustic Harbor Substation 4 series partial-discharge value 19.0 unit counts/min",
-      "partial discharge",
+      "Days beyond terms Recorded 12.0 days. Trade credit report payments Corvid Retail credit file series days-beyond-terms value 12.0 unit days",
+      "beyond terms",
       true
     ],
     [
-      "Acoustic partial discharge Recorded 19.0 counts/min. Partial discharge acoustic counts reached 19 per minute in the bushing hotspot window. PD-7 acoustic Harbor Substation 4 series partial-discharge value 19.0 unit counts/min",
-      "bushing hotspot",
+      "Days beyond terms Recorded 18.0 days. Trade credit report payments Corvid Retail credit file series days-beyond-terms value 18.0 unit days",
+      "beyond terms",
       true
     ],
     [
-      "Cooling oil pump current Recorded 8.1 A. Pump current steady across the excursion, between 8.1 A and 8.3 A. The pump did not stall. P-2 cooling Harbor Substation 4 series oil-pump value 8.1 unit A",
-      "pump current steady",
+      "Days beyond terms Recorded 30.0 days. Trade credit report payments Corvid Retail credit file series days-beyond-terms value 30.0 unit days",
+      "beyond terms",
       true
     ],
     [
-      "Transformer load Recorded 76.0 % nameplate. Load stayed below nameplate all day. The 14:40 reading was 76 percent of rating. Relay R-2 load Harbor Substation 4 series load value 76.0 unit % nameplate",
-      "below nameplate",
-      true
-    ],
-    [
-      "Field inspection note Field engineer logged a localized bushing hotspot on phase B. No external oil leak. Cooling fans were running. Cameras disagree, and both heads were left in place for a repeat shot. Inspector N. Okonkwo thermal Harbor Substation 4",
-      "bushing hotspot",
-      true
-    ],
-    [
-      "Field inspection note Field engineer logged a localized bushing hotspot on phase B. No external oil leak. Cooling fans were running. Cameras disagree, and both heads were left in place for a repeat shot. Inspector N. Okonkwo thermal Harbor Substation 4",
-      "localized bushing hotspot",
-      true
-    ],
-    [
-      "Field inspection note Field engineer logged a localized bushing hotspot on phase B. No external oil leak. Cooling fans were running. Cameras disagree, and both heads were left in place for a repeat shot. Inspector N. Okonkwo thermal Harbor Substation 4",
-      "cameras disagree",
-      true
-    ],
-    [
-      "Oil sample chain of custody Sample bottle HS4-T2-0312 left the transformer at 14:48 UTC, arrived at the oil lab at 15:20 UTC, and was run as DGA-19. The lab sheet reports acetylene at 42 ppm. Custody form HS4-T2-0312 dissolved-gas Harbor Substation 4",
-      "acetylene",
+      "Days beyond terms Recorded 45.0 days. Payment history shows invoices 45 days beyond terms in the latest quarter. Trade credit report payments Corvid Retail credit file series days-beyond-terms value 45.0 unit days",
+      "beyond terms",
       true
     ],
     [
@@ -915,27 +631,27 @@
       false
     ],
     [
-      "Fleet telematics miles index Recorded 88.0 index. Telematics miles down 12 percent versus the prior quarter while billed orders rose. The vendor reports no integration defect and no sensor dropout. Telematics vendor feed telematics Project Northline data room series miles value 88.0 unit index",
+      "Fleet telematics miles index Recorded 88.0 index. Telematics miles down 12 percent versus the prior quarter while billed orders rose. The vendor reports no integration defect and no device dropout. Telematics vendor feed telematics Project Northline data room series miles value 88.0 unit index",
       "miles down",
       true
     ],
     [
-      "Fleet telematics miles index Recorded 88.0 index. Telematics miles down 12 percent versus the prior quarter while billed orders rose. The vendor reports no integration defect and no sensor dropout. Telematics vendor feed telematics Project Northline data room series miles value 88.0 unit index",
+      "Fleet telematics miles index Recorded 88.0 index. Telematics miles down 12 percent versus the prior quarter while billed orders rose. The vendor reports no integration defect and no device dropout. Telematics vendor feed telematics Project Northline data room series miles value 88.0 unit index",
       "integration defect",
       false
     ],
     [
-      "Fleet telematics miles index Recorded 88.0 index. Telematics miles down 12 percent versus the prior quarter while billed orders rose. The vendor reports no integration defect and no sensor dropout. Telematics vendor feed telematics Project Northline data room series miles value 88.0 unit index",
-      "sensor dropout",
+      "Fleet telematics miles index Recorded 88.0 index. Telematics miles down 12 percent versus the prior quarter while billed orders rose. The vendor reports no integration defect and no device dropout. Telematics vendor feed telematics Project Northline data room series miles value 88.0 unit index",
+      "device dropout",
       false
     ],
     [
-      "Warehouse aisle occupancy Recorded 62.0 % occupied. Aisle 4 through 7 occupancy flat at 61 to 63 percent. Warehouse occupancy agrees with the telematics feed. Aisle sensors 4-7 occupancy Northline warehouse B series occupancy value 62.0 unit % occupied",
+      "Warehouse aisle occupancy Recorded 62.0 % occupied. Aisle 4 through 7 occupancy flat at 61 to 63 percent. Warehouse occupancy agrees with the telematics feed. Warehouse management system occupancy Northline warehouse B series occupancy value 62.0 unit % occupied",
       "occupancy flat",
       true
     ],
     [
-      "Warehouse aisle occupancy Recorded 62.0 % occupied. Aisle 4 through 7 occupancy flat at 61 to 63 percent. Warehouse occupancy agrees with the telematics feed. Aisle sensors 4-7 occupancy Northline warehouse B series occupancy value 62.0 unit % occupied",
+      "Warehouse aisle occupancy Recorded 62.0 % occupied. Aisle 4 through 7 occupancy flat at 61 to 63 percent. Warehouse occupancy agrees with the telematics feed. Warehouse management system occupancy Northline warehouse B series occupancy value 62.0 unit % occupied",
       "warehouse occupancy agrees",
       true
     ],
@@ -965,68 +681,13 @@
       true
     ],
     [
-      "Secondary vault logger Recorded 7.6 C. The second logger rose from 5.0 C to 7.6 C in parallel. Both loggers recorded the excursion. Logger B temperature Clinic vault C-12 series logger-b value 7.6 unit C",
-      "second logger rose",
-      true
-    ],
-    [
-      "Secondary vault logger Recorded 7.6 C. The second logger rose from 5.0 C to 7.6 C in parallel. Both loggers recorded the excursion. Logger B temperature Clinic vault C-12 series logger-b value 7.6 unit C",
-      "both loggers",
-      true
-    ],
-    [
-      "Vault door contact Recorded 1.0 open. Door contact reported the door ajar at the start of the warm window. Door contact D-12 door Clinic vault C-12 series door value 1.0 unit open",
-      "door ajar",
-      true
-    ],
-    [
-      "Vault door contact Recorded 1.0 open. The door ajar state held. The door stayed open about 41 minutes. Door contact D-12 door Clinic vault C-12 series door value 1.0 unit open",
-      "door ajar",
-      true
-    ],
-    [
-      "Vault humidity Recorded 72.0 %. Humidity spike from 47 percent to 72 percent while the door was open. Humidity H-12 humidity Clinic vault C-12 series humidity value 72.0 unit %",
-      "humidity spike",
-      true
-    ],
-    [
-      "Compressor current Recorded 3.2 A. Compressor current normal, between 3.1 A and 3.4 A, with ordinary cycling through the excursion. Compressor K-3 compressor Clinic vault C-12 series compressor value 3.2 unit A",
-      "compressor current normal",
-      true
-    ],
-    [
-      "Badge and night-shift sheet Contractor badge B-4417 entered at 04:12 UTC. No delivery was booked for that hour. The excursion was unplanned. The sheet lists no planned warming of the vault. Access control AC-2 access Clinic vault C-12",
-      "contractor badge",
-      true
-    ],
-    [
-      "Badge and night-shift sheet Contractor badge B-4417 entered at 04:12 UTC. No delivery was booked for that hour. The excursion was unplanned. The sheet lists no planned warming of the vault. Access control AC-2 access Clinic vault C-12",
-      "excursion was unplanned",
-      true
-    ],
-    [
-      "Compressor maintenance log The thirty day log shows no compressor current abnormal flag and no short cycling. No defrost cycle was scheduled for the night of 4 Mar 2026. Maintenance log K-3 compressor Clinic vault C-12",
-      "compressor current abnormal",
+      "Our visit found no sign of a mail drop address at any point.",
+      "mail drop address",
       false
     ],
     [
-      "Compressor maintenance log The thirty day log shows no compressor current abnormal flag and no short cycling. No defrost cycle was scheduled for the night of 4 Mar 2026. Maintenance log K-3 compressor Clinic vault C-12",
-      "short cycling",
-      false
-    ],
-    [
-      "Compressor maintenance log The thirty day log shows no compressor current abnormal flag and no short cycling. No defrost cycle was scheduled for the night of 4 Mar 2026. Maintenance log K-3 compressor Clinic vault C-12",
-      "defrost cycle",
-      false
-    ],
-    [
-      "Night crew found no sign of a door ajar at any point.",
-      "door ajar",
-      false
-    ],
-    [
-      "No alarm sounded. Door ajar for eleven minutes.",
-      "door ajar",
+      "No dispute. Mail drop address on every invoice footer.",
+      "mail drop address",
       true
     ],
     [
@@ -1040,23 +701,23 @@
       false
     ],
     [
-      "Acetylene 42.5 ppm. Not a cooling issue.",
-      "acetylene 42 5 ppm",
+      "Revenue rose 38.5 percent. Not a seasonal peak.",
+      "revenue rose 38 5 percent",
       true
     ],
     [
-      "Never once was the door ajar.",
-      "door ajar",
+      "Never once was the deposit late.",
+      "deposit late",
       false
     ],
     [
-      "The door was ajar; no compressor fault.",
-      "door was ajar",
+      "The invoice was paid; no tax lien on file.",
+      "invoice was paid",
       true
     ],
     [
-      "The door was ajar; no compressor fault.",
-      "compressor fault",
+      "The invoice was paid; no tax lien on file.",
+      "tax lien",
       false
     ],
     [

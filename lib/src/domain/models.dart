@@ -1,13 +1,16 @@
-/// Domain types for a David investigation.
+/// Domain types for a David due-diligence engagement.
 ///
-/// Evidence units are the retrieval atoms. A case carries the brief, the sealed
-/// corpus, the planned retrieval passes, and the competing explanations the
+/// Evidence units are the retrieval atoms. An engagement carries the brief,
+/// the sealed corpus, the planned retrieval passes, and the risk questions the
 /// agent is allowed to score.
 library;
 
-enum CaseKind { dueDiligence, physicalAnomaly }
+/// The kind of counterparty decision a one-person company is making.
+enum DealType { customer, vendor, partner, contractor, acquisition, lease }
 
-enum SourceKind { sensorObservation, record }
+/// A metric is one point of a numeric series (revenue, collections, on-time
+/// rate). A record is a document, registry entry, or screening result.
+enum SourceKind { metric, record }
 
 enum AgentStage { scope, retrieve, gap, adjudicate, report }
 
@@ -74,8 +77,8 @@ class Signature {
   final double weight;
 }
 
-class HypothesisSpec {
-  const HypothesisSpec({
+class RiskQuestion {
+  const RiskQuestion({
     required this.id,
     required this.title,
     required this.statement,
@@ -106,10 +109,10 @@ class PlannedQuery {
   final SourceKind? sourceKind;
 }
 
-class InvestigationCase {
-  const InvestigationCase({
+class Engagement {
+  const Engagement({
     required this.id,
-    required this.kind,
+    required this.dealType,
     required this.title,
     required this.subject,
     required this.question,
@@ -121,11 +124,11 @@ class InvestigationCase {
     required this.plan,
     required this.exampleQueries,
     required this.evidence,
-    required this.hypotheses,
+    required this.riskQuestions,
   });
 
   final String id;
-  final CaseKind kind;
+  final DealType dealType;
   final String title;
   final String subject;
   final String question;
@@ -137,7 +140,7 @@ class InvestigationCase {
   final List<PlannedQuery> plan;
   final List<String> exampleQueries;
   final List<EvidenceUnit> evidence;
-  final List<HypothesisSpec> hypotheses;
+  final List<RiskQuestion> riskQuestions;
 }
 
 class RetrievalQuery {
@@ -177,7 +180,7 @@ class AgentStep {
     this.tool,
     this.query,
     this.evidenceIds = const [],
-    this.hypothesisProbe = false,
+    this.riskProbe = false,
   });
 
   final String id;
@@ -187,12 +190,12 @@ class AgentStep {
   final String? tool;
   final String? query;
   final List<String> evidenceIds;
-  final bool hypothesisProbe;
+  final bool riskProbe;
 }
 
-class HypothesisJudgment {
-  const HypothesisJudgment({
-    required this.hypothesisId,
+class RiskJudgment {
+  const RiskJudgment({
+    required this.riskId,
     required this.title,
     required this.statement,
     required this.actionIfLead,
@@ -206,7 +209,7 @@ class HypothesisJudgment {
     required this.missingSupport,
   });
 
-  final String hypothesisId;
+  final String riskId;
   final String title;
   final String statement;
   final String actionIfLead;
@@ -224,7 +227,7 @@ class InvestigationReport {
   const InvestigationReport({
     required this.headline,
     required this.resolved,
-    required this.leadHypothesisId,
+    required this.leadRiskId,
     required this.confidence,
     required this.decisionNote,
     required this.recommendedAction,
@@ -237,7 +240,7 @@ class InvestigationReport {
 
   final String headline;
   final bool resolved;
-  final String? leadHypothesisId;
+  final String? leadRiskId;
   final double confidence;
   final String decisionNote;
   final String recommendedAction;
@@ -259,13 +262,13 @@ class AgentRun {
     required this.control,
   });
 
-  static const policyIdValue = 'grounded-control-v3';
+  static const policyIdValue = 'grounded-control-v4';
 
   final String caseId;
   final String policyId;
   final List<AgentStep> steps;
   final List<RetrievalHit> retrieved;
-  final List<HypothesisJudgment> judgments;
+  final List<RiskJudgment> judgments;
   final InvestigationReport report;
   final ControlRecord control;
 }
@@ -313,16 +316,16 @@ class SeatVote {
   const SeatVote({
     required this.seatId,
     required this.seatTitle,
-    required this.hypothesisId,
-    required this.hypothesisTitle,
+    required this.riskId,
+    required this.riskTitle,
     required this.net,
     this.margin = 0,
   });
 
   final String seatId;
   final String seatTitle;
-  final String? hypothesisId;
-  final String hypothesisTitle;
+  final String? riskId;
+  final String riskTitle;
   final double net;
 
   /// Lead net minus runner-up net in this seat. Zero on a tie.

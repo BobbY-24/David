@@ -19,13 +19,13 @@ class JobsView extends StatelessWidget {
         const SectionLabel('Job plane'),
         const SizedBox(height: 8),
         const Text(
-          'FastAPI accepts the request, PostgreSQL keeps the job, and a Celery worker runs it. Scores on this tab are fixture-scorer-v2.',
+          'FastAPI accepts the request, PostgreSQL keeps the job, and a Celery worker runs it. Scores on this tab come from demo-scorer-v3, not a model.',
           style: TextStyle(color: DavidColors.muted, height: 1.45),
         ),
         const SizedBox(height: 16),
         if (board == null)
           const EmptyNote(
-            title: 'Reading the job service',
+            title: 'MetricPoint the job service',
             body: 'Checking health, the catalog, and the latency snapshot.',
           )
         else if (!board.ok)
@@ -173,7 +173,7 @@ class _Latest extends StatelessWidget {
     if (job == null) {
       return const EmptyNote(
         title: 'No job from this desk yet',
-        body: 'Enqueue a case, the Cedar book, the ward cohort, or the Northwind accounts.',
+        body: 'Enqueue an engagement to score it on the job service.',
       );
     }
     return PanelCard(

@@ -18,14 +18,14 @@ class ReportView extends StatelessWidget {
         children: const [
           EmptyNote(
             title: 'No memo yet',
-            body: 'Run the investigation to draft a decision memo. Findings will cite evidence ids from this run, and the recommended action follows the lead explanation only when the margin clears.',
+            body: 'Run diligence to draft a decision memo. Findings will cite evidence ids from this run, and the recommended action follows the lead risk only when the margin clears.',
           ),
         ],
       );
     }
 
     final report = run.report;
-    final caseFile = desk.current;
+    final engagement = desk.current;
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
       children: [
@@ -34,7 +34,7 @@ class ReportView extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 12),
             child: EmptyNote(
               title: 'Approval hold',
-              body: 'This run cannot re-energize equipment, release lots, or move money. A person has to approve the memo before any of those actions.',
+              body: 'This run cannot pay, sign, place an order, or contact the counterparty. A person has to approve the memo before any of those actions.',
             ),
           ),
         Center(
@@ -59,7 +59,7 @@ class ReportView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'FIELD MEMO',
+                        'DECISION MEMO',
                         style: TextStyle(
                           color: DavidColors.memoMuted,
                           letterSpacing: 1.4,
@@ -69,7 +69,7 @@ class ReportView extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        caseFile.title,
+                        engagement.title,
                         style: const TextStyle(
                           color: DavidColors.memoInk,
                           fontSize: 26,
@@ -79,7 +79,7 @@ class ReportView extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        caseFile.subject,
+                        engagement.subject,
                         style: const TextStyle(
                           color: DavidColors.memoMuted,
                           height: 1.4,
@@ -138,7 +138,7 @@ class ReportView extends StatelessWidget {
                           ),
                         ),
                       const SizedBox(height: 8),
-                      const _MemoLabel('Competing explanations'),
+                      const _MemoLabel('Competing risks'),
                       const SizedBox(height: 6),
                       for (final line in report.competitors)
                         Padding(
@@ -194,7 +194,7 @@ class ReportView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       const Text(
-                        'Decision support only. This policy ranks sealed fixture evidence. It does not establish legal fault, a transaction price, or a physical root cause, and it did not call a live model.',
+                        'Decision support only, not legal, credit, or investment advice. The demo provider ranks sealed fixture evidence and did not call a live model.',
                         style: TextStyle(
                           color: DavidColors.memoMuted,
                           fontSize: 12,

@@ -12,7 +12,7 @@ from .db import session_factory
 from .errors import IdempotencyConflict, PermanentJobError, QueueFull, TransientJobError
 from .metrics import snapshot as metrics_snapshot
 from .runners import run
-from .schema import Account, Job, Position, Price
+from .schema import Job
 from .settings import lease_seconds, max_attempts, queue_cap, retry_backoff_seconds
 
 
@@ -298,33 +298,7 @@ def _backoff(attempt: int) -> float:
     return min(8.0, base * (2 ** max(0, attempt - 1)))
 
 
-def seed_book(factory=None) -> None:
-    factory = factory or session_factory
-    session = factory()
-    try:
-        if session.get(Account, "cedar") is None:
-            session.add(Account(id="cedar", name="Cedar sleeve", base_ccy="USD"))
-            session.add_all(
-                [
-                    Position(account_id="cedar", symbol="NVDA", quantity=150),
-                    Position(account_id="cedar", symbol="AAPL", quantity=400),
-                    Position(account_id="cedar", symbol="MSFT", quantity=80),
-                    Position(account_id="cedar", symbol="USD", quantity=8000),
-                ]
-            )
-        for symbol, px in (("NVDA", 900.0), ("AAPL", 190.0), ("MSFT", 420.0), ("USD", 1.0)):
-            row = session.get(Price, symbol)
-            if row is None:
-                session.add(Price(symbol=symbol, px=px, asof="2026-09-30"))
-            else:
-                row.px = px
-        session.commit()
-    finally:
-        session.close()
-
-
 def init_db() -> None:
     from .db import Base, get_engine
 
     Base.metadata.create_all(get_engine())
-    seed_book()

@@ -13,12 +13,12 @@ class BriefView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final caseFile = desk.current;
-    final sensors = caseFile.evidence
-        .where((unit) => unit.sourceKind == SourceKind.sensorObservation)
+    final engagement = desk.current;
+    final metrics = engagement.evidence
+        .where((unit) => unit.sourceKind == SourceKind.metric)
         .length;
-    final records = caseFile.evidence.length - sensors;
-    final series = caseFile.evidence
+    final records = engagement.evidence.length - metrics;
+    final series = engagement.evidence
         .map((unit) => unit.seriesId)
         .whereType<String>()
         .toSet();
@@ -27,7 +27,7 @@ class BriefView extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
       children: [
         Text(
-          caseFile.summary,
+          engagement.summary,
           style: const TextStyle(fontSize: 16, height: 1.5),
         ),
         const SizedBox(height: 16),
@@ -35,16 +35,16 @@ class BriefView extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            _Stat('$sensors sensor readings'),
+            _Stat('$metrics metric points'),
             _Stat('$records records'),
             _Stat('${series.length} series'),
-            _Stat(caseFile.site),
+            _Stat(engagement.site),
           ],
         ),
         const SizedBox(height: 22),
         const SectionLabel('Decision criteria'),
         const SizedBox(height: 8),
-        for (final criterion in caseFile.decisionCriteria)
+        for (final criterion in engagement.decisionCriteria)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Row(
@@ -63,7 +63,7 @@ class BriefView extends StatelessWidget {
         const SizedBox(height: 12),
         const SectionLabel('Retrieval plan the agent will run'),
         const SizedBox(height: 8),
-        for (final pass in caseFile.plan)
+        for (final pass in engagement.plan)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: PanelCard(
@@ -104,16 +104,16 @@ class BriefView extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 8),
-        const SectionLabel('Competing explanations on the book'),
+        const SectionLabel('Risk questions on the table'),
         const SizedBox(height: 8),
-        for (final hypothesis in caseFile.hypotheses)
+        for (final risk in engagement.riskQuestions)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Text(hypothesis.title, style: const TextStyle(height: 1.4)),
+            child: Text(risk.title, style: const TextStyle(height: 1.4)),
           ),
         const SizedBox(height: 8),
         Text(
-          'Required modalities: ${caseFile.expectedModalities.map(formatModality).join(', ')}.',
+          'Required modalities: ${engagement.expectedModalities.map(formatModality).join(', ')}.',
           style: const TextStyle(color: DavidColors.muted, height: 1.4),
         ),
       ],

@@ -33,28 +33,3 @@ class Job(Base):
     result: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     worker_token: Mapped[str | None] = mapped_column(String(64), nullable=True)
-
-
-class Account(Base):
-    __tablename__ = "accounts"
-
-    id: Mapped[str] = mapped_column(String(40), primary_key=True)
-    name: Mapped[str] = mapped_column(String(120))
-    base_ccy: Mapped[str] = mapped_column(String(8))
-
-
-class Position(Base):
-    __tablename__ = "positions"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    account_id: Mapped[str] = mapped_column(String(40), index=True)
-    symbol: Mapped[str] = mapped_column(String(16))
-    quantity: Mapped[float] = mapped_column(Float)
-
-
-class Price(Base):
-    __tablename__ = "prices"
-
-    symbol: Mapped[str] = mapped_column(String(16), primary_key=True)
-    px: Mapped[float] = mapped_column(Float)
-    asof: Mapped[str] = mapped_column(String(32))

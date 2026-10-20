@@ -19,7 +19,7 @@ class ControlView extends StatelessWidget {
         children: const [
           EmptyNote(
             title: 'No control record yet',
-            body: 'Run the investigation. The router will pick plan-and-execute, ReAct, or a panel vote, and the gateway will audit every search.',
+            body: 'Run diligence. The router will pick plan-and-execute, ReAct, or a panel vote, and the gateway will audit every search.',
           ),
         ],
       );
@@ -113,7 +113,7 @@ class ControlView extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 8),
               child: PanelCard(
                 child: Text(
-                  '${vote.seatTitle}: ${vote.hypothesisTitle} · net ${vote.net.toStringAsFixed(2)}',
+                  '${vote.seatTitle}: ${vote.riskTitle} · net ${vote.net.toStringAsFixed(2)}',
                   style: const TextStyle(height: 1.4),
                 ),
               ),

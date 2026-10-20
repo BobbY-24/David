@@ -5,7 +5,7 @@
     "display": "standalone",
     "background_color": "#101410",
     "theme_color": "#101410",
-    "description": "Grounded agentic investigations for business due diligence and physical anomalies.",
+    "description": "Grounded due-diligence agent for one-person companies.",
     "orientation": "any",
     "prefer_related_applications": false,
     "icons": [

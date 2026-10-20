@@ -6,19 +6,20 @@ import '../state/desk_controller.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
-class ObservationsView extends StatelessWidget {
-  const ObservationsView({super.key, required this.desk});
+class EvidenceView extends StatelessWidget {
+  const EvidenceView({super.key, required this.desk});
 
   final DeskController desk;
 
   @override
   Widget build(BuildContext context) {
-    final caseFile = desk.current;
+    final engagement = desk.current;
     final modalities =
-        caseFile.evidence.map((unit) => unit.modality).toSet().toList()..sort();
-    final visible = caseFile.evidence.where((unit) {
-      return desk.observationModality == 'all' ||
-          unit.modality == desk.observationModality;
+        engagement.evidence.map((unit) => unit.modality).toSet().toList()
+          ..sort();
+    final visible = engagement.evidence.where((unit) {
+      return desk.evidenceModality == 'all' ||
+          unit.modality == desk.evidenceModality;
     }).toList();
     final seriesIds =
         visible
@@ -34,7 +35,7 @@ class ObservationsView extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
       children: [
         const Text(
-          'Sensor readings stay attached to the instrument, the clock, and the ingest seal. Open a point to read provenance.',
+          'Records and metric points stay attached to their source, collection time, and ingest seal. Open one to read provenance.',
           style: TextStyle(color: DavidColors.muted, height: 1.4),
         ),
         const SizedBox(height: 12),
@@ -44,22 +45,22 @@ class ObservationsView extends StatelessWidget {
           children: [
             _FilterChip(
               label: 'All',
-              selected: desk.observationModality == 'all',
-              onTap: () => desk.setObservationModality('all'),
+              selected: desk.evidenceModality == 'all',
+              onTap: () => desk.setEvidenceModality('all'),
             ),
             for (final modality in modalities)
               _FilterChip(
                 label: formatModality(modality),
-                selected: desk.observationModality == modality,
-                onTap: () => desk.setObservationModality(modality),
+                selected: desk.evidenceModality == modality,
+                onTap: () => desk.setEvidenceModality(modality),
               ),
           ],
         ),
         const SizedBox(height: 16),
         if (seriesIds.isEmpty && records.isEmpty)
           const EmptyNote(
-            title: 'No sealed observations',
-            body: 'This filter has no sensor series and no records.',
+            title: 'No sealed evidence',
+            body: 'This filter has no metric series and no records.',
           ),
         LayoutBuilder(
           builder: (context, constraints) {

@@ -2,36 +2,27 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
-import '../agent/investigation_agent.dart';
-import '../data/case_packs.dart';
+import '../agent/provider.dart';
+import '../data/engagement_packs.dart';
 import '../domain/models.dart';
 import '../jobs/job_client.dart';
 import '../retrieval/evidence_index.dart';
 
-enum DeskTab {
-  brief,
-  observations,
-  retrieve,
-  agent,
-  explanations,
-  report,
-  control,
-  jobs,
-}
+enum DeskTab { brief, evidence, retrieve, agent, risks, report, control, jobs }
 
 class DeskController extends ChangeNotifier {
-  DeskController({InvestigationAgent? agent, JobClient? jobClient})
-    : _agent = agent ?? const InvestigationAgent(),
+  DeskController({EngagementProvider? provider, JobClient? jobClient})
+    : provider = provider ?? const DemoProvider(),
       _jobs = jobClient ?? HttpJobClient();
 
-  final InvestigationAgent _agent;
+  final EngagementProvider provider;
   final JobClient _jobs;
   Timer? _poll;
   ServiceBoard? board;
   ServiceJob? serviceJob;
   String? serviceError;
   bool enqueueing = false;
-  final List<InvestigationCase> cases = CasePacks.all;
+  final List<Engagement> cases = EngagementPacks.all;
   final Map<String, EvidenceIndex> _indexes = {};
 
   int caseIndex = 0;
@@ -45,14 +36,14 @@ class DeskController extends ChangeNotifier {
   SourceKind? kindFilter;
   List<RetrievalHit> manualHits = const [];
   bool manualSearched = false;
-  String observationModality = 'all';
+  String evidenceModality = 'all';
 
-  InvestigationCase get current => cases[caseIndex];
+  Engagement get current => cases[caseIndex];
 
-  EvidenceIndex indexFor(InvestigationCase caseFile) {
+  EvidenceIndex indexFor(Engagement engagement) {
     return _indexes.putIfAbsent(
-      caseFile.id,
-      () => EvidenceIndex(caseFile.evidence),
+      engagement.id,
+      () => EvidenceIndex(engagement.evidence),
     );
   }
 
@@ -84,7 +75,7 @@ class DeskController extends ChangeNotifier {
     kindFilter = null;
     manualHits = const [];
     manualSearched = false;
-    observationModality = 'all';
+    evidenceModality = 'all';
     notifyListeners();
   }
 
@@ -183,8 +174,8 @@ class DeskController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setObservationModality(String modality) {
-    observationModality = modality;
+  void setEvidenceModality(String modality) {
+    evidenceModality = modality;
     notifyListeners();
   }
 
@@ -206,7 +197,7 @@ class DeskController extends ChangeNotifier {
     searchManual();
   }
 
-  Future<void> runInvestigation() async {
+  Future<void> runDiligence() async {
     if (running) {
       return;
     }
@@ -221,7 +212,7 @@ class DeskController extends ChangeNotifier {
       return;
     }
     try {
-      run = _agent.investigate(current);
+      run = provider.run(current);
       tab = DeskTab.agent;
     } catch (caught) {
       error = 'The investigation policy stopped: $caught';

@@ -7,9 +7,9 @@ import '../jobs/job_client.dart';
 import 'agent_view.dart';
 import 'brief_view.dart';
 import 'control_view.dart';
-import 'explanations_view.dart';
+import 'risks_view.dart';
 import 'jobs_view.dart';
-import 'observations_view.dart';
+import 'evidence_view.dart';
 import 'report_view.dart';
 import 'retrieval_view.dart';
 import 'theme.dart';
@@ -115,10 +115,10 @@ class _DeskPageState extends State<DeskPage> {
   Widget _tabBody(DeskController desk) {
     return switch (desk.tab) {
       DeskTab.brief => BriefView(desk: desk),
-      DeskTab.observations => ObservationsView(desk: desk),
+      DeskTab.evidence => EvidenceView(desk: desk),
       DeskTab.retrieve => RetrievalView(desk: desk),
       DeskTab.agent => AgentView(desk: desk),
-      DeskTab.explanations => ExplanationsView(desk: desk),
+      DeskTab.risks => RisksView(desk: desk),
       DeskTab.report => ReportView(desk: desk),
       DeskTab.control => ControlView(desk: desk),
       DeskTab.jobs => JobsView(desk: desk),
@@ -164,7 +164,7 @@ class _TopBar extends StatelessWidget {
                   const SizedBox(width: 12),
                   const Expanded(
                     child: Text(
-                      'Due diligence and physical anomaly investigations',
+                      'Due diligence for one-person companies',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: DavidColors.muted, fontSize: 13),
@@ -221,7 +221,7 @@ class CaseRail extends StatelessWidget {
           return SizedBox(
             width: 240,
             child: _CaseTile(
-              caseFile: desk.cases[index],
+              engagement: desk.cases[index],
               selected: index == desk.caseIndex,
               onTap: () => desk.selectCase(index),
             ),
@@ -234,13 +234,13 @@ class CaseRail extends StatelessWidget {
       children: [
         const Padding(
           padding: EdgeInsets.fromLTRB(6, 4, 6, 10),
-          child: SectionLabel('Cases'),
+          child: SectionLabel('Engagements'),
         ),
         for (var index = 0; index < desk.cases.length; index++)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: _CaseTile(
-              caseFile: desk.cases[index],
+              engagement: desk.cases[index],
               selected: index == desk.caseIndex,
               onTap: () => desk.selectCase(index),
             ),
@@ -252,20 +252,20 @@ class CaseRail extends StatelessWidget {
 
 class _CaseTile extends StatelessWidget {
   const _CaseTile({
-    required this.caseFile,
+    required this.engagement,
     required this.selected,
     required this.onTap,
   });
 
-  final InvestigationCase caseFile;
+  final Engagement engagement;
   final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final kindColor = caseFile.kind == CaseKind.physicalAnomaly
-        ? DavidColors.amber
-        : DavidColors.mist;
+    final kindColor = engagement.dealType == DealType.acquisition
+        ? DavidColors.mist
+        : DavidColors.amber;
     return Material(
       color: selected ? DavidColors.panelRaised : DavidColors.panel,
       shape: RoundedRectangleBorder(
@@ -281,7 +281,7 @@ class _CaseTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                formatKind(caseFile.kind).toUpperCase(),
+                formatDealType(engagement.dealType).toUpperCase(),
                 style: TextStyle(
                   color: kindColor,
                   fontSize: 10,
@@ -291,14 +291,14 @@ class _CaseTile extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                caseFile.title,
+                engagement.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 2),
               Text(
-                caseFile.subject,
+                engagement.subject,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -322,7 +322,7 @@ class _CaseHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final caseFile = desk.current;
+    final engagement = desk.current;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: LayoutBuilder(
@@ -332,12 +332,12 @@ class _CaseHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${formatKind(caseFile.kind)} · opened ${formatStamp(caseFile.openedAt)}',
+                '${formatDealType(engagement.dealType)} · opened ${formatStamp(engagement.openedAt)}',
                 style: const TextStyle(color: DavidColors.muted, fontSize: 12),
               ),
               const SizedBox(height: 4),
               Text(
-                caseFile.title,
+                engagement.title,
                 style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w600,
@@ -345,13 +345,13 @@ class _CaseHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              Text(caseFile.question, style: const TextStyle(height: 1.4)),
+              Text(engagement.question, style: const TextStyle(height: 1.4)),
             ],
           );
           final button = FilledButton(
-            key: runInvestigationKey,
-            onPressed: desk.running ? null : desk.runInvestigation,
-            child: Text(desk.running ? 'Running…' : 'Run investigation'),
+            key: runDiligenceKey,
+            onPressed: desk.running ? null : desk.runDiligence,
+            child: Text(desk.running ? 'Running…' : 'Run diligence'),
           );
           if (stacked) {
             return Column(
@@ -382,10 +382,10 @@ class _TabStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     const tabs = [
       (DeskTab.brief, 'Brief'),
-      (DeskTab.observations, 'Observations'),
+      (DeskTab.evidence, 'Evidence'),
       (DeskTab.retrieve, 'Retrieve'),
       (DeskTab.agent, 'Agent'),
-      (DeskTab.explanations, 'Explanations'),
+      (DeskTab.risks, 'Risks'),
       (DeskTab.report, 'Report'),
       (DeskTab.control, 'Control'),
       (DeskTab.jobs, 'Jobs'),

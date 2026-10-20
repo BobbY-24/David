@@ -27,7 +27,7 @@ class AgentView extends StatelessWidget {
         children: const [
           EmptyNote(
             title: 'The agent has not run this case',
-            body: 'Run investigation to scope the question, search the sealed corpus, probe each competing explanation, and write a memo. The trace below will show every search, including the falsifier probes.',
+            body: 'Run diligence to scope the question, search the sealed records, probe each risk question, and write a memo. The trace below shows every search, including the falsifier probes.',
           ),
         ],
       );
@@ -96,7 +96,7 @@ class _StepTile extends StatelessWidget {
           children: [
             Text(
               '${step.stage.name.toUpperCase()} · $index'
-              '${step.hypothesisProbe ? ' · PROBE' : ''}',
+              '${step.riskProbe ? ' · PROBE' : ''}',
               style: TextStyle(
                 color: color,
                 fontSize: 11,

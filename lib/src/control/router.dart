@@ -1,5 +1,4 @@
 import '../domain/models.dart';
-import '../retrieval/text_match.dart';
 
 class LoopDecision {
   const LoopDecision({
@@ -13,29 +12,30 @@ class LoopDecision {
   final String standard;
 }
 
-/// Picks the loop from the shape of the case, before any search.
+/// Picks the loop from the shape of the engagement, before any search.
 ///
-/// Due diligence goes to a panel vote. A physical case whose next query
-/// depends on coverage or a sensor conflict goes to ReAct. A short, already
-/// decomposed brief stays on plan-and-execute so the searches can be batched.
+/// An acquisition moves price, escrow, or a walk-away, so it goes to a panel
+/// vote. A brief that reports conflicting records, or needs six or more kinds
+/// of evidence, goes to ReAct so the next search depends on what is missing.
+/// Everything else is a checklist that runs as one batch (plan and execute).
 class LoopRouter {
   const LoopRouter();
 
-  static LoopDecision decide(InvestigationCase caseFile) {
-    if (caseFile.kind == CaseKind.dueDiligence) {
+  static LoopDecision decide(Engagement engagement) {
+    if (engagement.dealType == DealType.acquisition) {
       return const LoopDecision(
         kind: AgentLoopKind.panelVote,
         reason: 'The question moves price, escrow, or a walk-away, so one scorer is not enough.',
-        standard: 'Panel vote. Operations scores plainly, measurement drops the strongest unit behind each explanation, and adversary doubles falsifiers. A majority is required and a tied seat abstains. Anthropic parallelization and voting; multi-agent voting when roles disagree.',
+        standard: 'Panel vote. The analyst scores plainly, the robustness seat drops the strongest record behind each risk, and the skeptic doubles falsifiers. A majority is required and a tied seat abstains. Anthropic parallelization and voting.',
       );
     }
-    final conflict = _sensorConflict(caseFile);
-    if (conflict || caseFile.expectedModalities.length >= 6) {
+    final conflict = _recordsConflict(engagement);
+    if (conflict || engagement.expectedModalities.length >= 6) {
       return LoopDecision(
         kind: AgentLoopKind.react,
         reason: conflict
-            ? 'A sensor conflict is in the brief, so the next search depends on what is still missing.'
-            : 'Six or more modalities are required, so coverage is checked one pass at a time.',
+            ? 'The brief reports conflicting records, so the next search depends on what is still missing.'
+            : 'Six or more kinds of evidence are required, so coverage is checked one pass at a time.',
         standard: 'ReAct. Thought, search, observation, and a repeat stop. Yao et al. 2022. Used when the path is not fixed in advance.',
       );
     }
@@ -47,12 +47,12 @@ class LoopRouter {
   }
 }
 
-bool _sensorConflict(InvestigationCase caseFile) {
-  final question = caseFile.question.toLowerCase();
-  if (question.contains('disagree') || question.contains('conflict')) {
-    return true;
-  }
-  return caseFile.evidence.any(
-    (unit) => phraseMatches(unit.searchableText, 'cameras disagree'),
-  );
+bool _recordsConflict(Engagement engagement) {
+  final question = engagement.question.toLowerCase();
+  return const [
+    'conflict',
+    'disagree',
+    'inconsistent',
+    'contradict',
+  ].any(question.contains);
 }
