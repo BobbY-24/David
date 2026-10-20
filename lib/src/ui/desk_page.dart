@@ -5,6 +5,7 @@ import '../domain/models.dart';
 import '../state/desk_controller.dart';
 import 'agent_view.dart';
 import 'brief_view.dart';
+import 'control_view.dart';
 import 'explanations_view.dart';
 import 'observations_view.dart';
 import 'report_view.dart';
@@ -117,6 +118,7 @@ class _DeskPageState extends State<DeskPage> {
       DeskTab.agent => AgentView(desk: desk),
       DeskTab.explanations => ExplanationsView(desk: desk),
       DeskTab.report => ReportView(desk: desk),
+      DeskTab.control => ControlView(desk: desk),
     };
   }
 }
@@ -394,6 +396,7 @@ class _TabStrip extends StatelessWidget {
       (DeskTab.agent, 'Agent'),
       (DeskTab.explanations, 'Explanations'),
       (DeskTab.report, 'Report'),
+      (DeskTab.control, 'Control'),
     ];
     return DecoratedBox(
       decoration: const BoxDecoration(

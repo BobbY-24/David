@@ -256,9 +256,10 @@ class AgentRun {
     required this.retrieved,
     required this.judgments,
     required this.report,
+    required this.control,
   });
 
-  static const policyIdValue = 'grounded-policy-v1';
+  static const policyIdValue = 'grounded-control-v2';
 
   final String caseId;
   final String policyId;
@@ -266,4 +267,105 @@ class AgentRun {
   final List<RetrievalHit> retrieved;
   final List<HypothesisJudgment> judgments;
   final InvestigationReport report;
+  final ControlRecord control;
+}
+
+enum AgentLoopKind { planExecute, react, panelVote }
+
+enum RailVerdict { pass, block }
+
+class GuardrailCheck {
+  const GuardrailCheck({
+    required this.rail,
+    required this.name,
+    required this.verdict,
+    required this.detail,
+  });
+
+  final String rail;
+  final String name;
+  final RailVerdict verdict;
+  final String detail;
+}
+
+class AuditEvent {
+  const AuditEvent({
+    required this.seq,
+    required this.tool,
+    required this.decision,
+    required this.caseId,
+    required this.redactedQuery,
+    required this.prevHash,
+    required this.hash,
+  });
+
+  final int seq;
+  final String tool;
+  final String decision;
+  final String caseId;
+  final String redactedQuery;
+  final String prevHash;
+  final String hash;
+}
+
+class SeatVote {
+  const SeatVote({
+    required this.seatId,
+    required this.seatTitle,
+    required this.hypothesisId,
+    required this.hypothesisTitle,
+    required this.net,
+  });
+
+  final String seatId;
+  final String seatTitle;
+  final String? hypothesisId;
+  final String hypothesisTitle;
+  final double net;
+}
+
+/// What the control plane decided for one run.
+///
+/// The memo stays a grounded score. This record is the router verdict,
+/// the rails, the hash-chained tool audit, and the approval hold.
+class ControlRecord {
+  const ControlRecord({
+    required this.principalId,
+    required this.loop,
+    required this.reason,
+    required this.standard,
+    required this.escalated,
+    required this.guardrails,
+    required this.audit,
+    required this.toolCalls,
+    required this.toolBudget,
+    required this.batched,
+    required this.approvalRequired,
+    required this.approvalNote,
+    required this.votes,
+    required this.quarantinedEvidenceIds,
+    required this.restrictedEvidenceIds,
+  });
+
+  final String principalId;
+  final AgentLoopKind loop;
+  final String reason;
+  final String standard;
+  final bool escalated;
+  final List<GuardrailCheck> guardrails;
+  final List<AuditEvent> audit;
+  final int toolCalls;
+  final int toolBudget;
+  final bool batched;
+  final bool approvalRequired;
+  final String approvalNote;
+  final List<SeatVote> votes;
+  final List<String> quarantinedEvidenceIds;
+  final List<String> restrictedEvidenceIds;
+
+  String get loopLabel => switch (loop) {
+    AgentLoopKind.planExecute => 'Plan and execute',
+    AgentLoopKind.react => 'ReAct',
+    AgentLoopKind.panelVote => 'Panel vote',
+  };
 }

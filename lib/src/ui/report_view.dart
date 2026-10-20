@@ -29,6 +29,14 @@ class ReportView extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
       children: [
+        if (run.control.approvalRequired)
+          const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: EmptyNote(
+              title: 'Approval hold',
+              body: 'This run cannot re-energize equipment, release lots, or move money. A person has to approve the memo before any of those actions.',
+            ),
+          ),
         Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 760),

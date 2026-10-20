@@ -5,7 +5,15 @@ import '../data/case_packs.dart';
 import '../domain/models.dart';
 import '../retrieval/evidence_index.dart';
 
-enum DeskTab { brief, observations, retrieve, agent, explanations, report }
+enum DeskTab {
+  brief,
+  observations,
+  retrieve,
+  agent,
+  explanations,
+  report,
+  control,
+}
 
 class DeskController extends ChangeNotifier {
   DeskController({InvestigationAgent? agent})

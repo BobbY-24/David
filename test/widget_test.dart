@@ -24,6 +24,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Scope the question'), findsOneWidget);
+    expect(find.textContaining('ReAct'), findsWidgets);
+
+    await tester.ensureVisible(find.text('Control'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Control'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Allowlist and budget'), findsOneWidget);
 
     await tester.tap(find.text('Explanations'));
     await tester.pumpAndSettle();

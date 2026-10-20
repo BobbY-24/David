@@ -37,9 +37,11 @@ class AgentView extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
       children: [
         Text(
-          '${run.steps.length} steps · ${run.retrieved.length} unique evidence units · ${run.policyId}',
+          '${run.control.loopLabel} · ${run.steps.length} steps · ${run.retrieved.length} evidence units · ${run.policyId}',
           style: const TextStyle(color: FieldlineColors.muted),
         ),
+        const SizedBox(height: 4),
+        Text(run.control.reason, style: const TextStyle(height: 1.4)),
         const SizedBox(height: 12),
         for (var i = 0; i < run.steps.length; i++)
           _StepTile(
