@@ -4,21 +4,50 @@ import '../domain/models.dart';
 ///
 /// OWASP LLM01:2025. A match on a question blocks the run. A match inside
 /// evidence quarantines that unit so it cannot support a hypothesis.
+///
+/// Patterns run on [normalizeForScreen] output, so case, zero-width
+/// characters, and punctuation between words do not slip past them. This is
+/// a tripwire, not a classifier. A paraphrase can still get through.
 final instructionOverrides = <RegExp>[
-  RegExp(r'ignore (all |any )?(previous|prior|above)', caseSensitive: false),
-  RegExp(r'disregard (the |all )?(instructions|rules)', caseSensitive: false),
-  RegExp(r'you are now', caseSensitive: false),
-  RegExp(r'system prompt', caseSensitive: false),
-  RegExp(r'\bexfiltrate\b', caseSensitive: false),
-  RegExp(r'reveal (the |your )?(api key|secret)', caseSensitive: false),
+  RegExp(
+    r'\bignore (?:all |any |the |your |of |these |those )*(?:previous|prior|above|earlier|preceding)\b',
+  ),
+  RegExp(
+    r'\b(?:disregard|forget|override|bypass) (?:all |any |the |your |these |those |previous |prior |above |earlier )*(?:instructions|rules|policy|guardrails|prompt)\b',
+  ),
+  RegExp(r'\bnew instructions\b'),
+  RegExp(r'\byou are now\b'),
+  RegExp(
+    r'\bact as (?:an? |the )?(?:admin|administrator|developer|system|root)\b',
+  ),
+  RegExp(r'\bsystem prompt\b'),
+  RegExp(r'\bexfiltrate\b'),
+  RegExp(r'\breveal (?:the |your )?(?:api key|secret|password|token)s?\b'),
 ];
+
+final _invisible = RegExp('[\u00AD\u200B-\u200F\u2060\uFEFF]');
+final _nonWord = RegExp(r'[^a-z0-9]+');
+
+/// Lowercase, drop invisible characters, and collapse everything that is not
+/// a letter or digit to one space.
+String normalizeForScreen(String text) {
+  final visible = text.toLowerCase().replaceAll(_invisible, '');
+  return ' ${visible.replaceAll(_nonWord, ' ').trim()} ';
+}
 
 final _badge = RegExp(r'\bB-\d{3,}\b');
 final _email = RegExp(r'[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}');
 final _secret = RegExp(r'\b(?:sk|api)[_-][A-Za-z0-9]{8,}\b');
 
 bool containsInstructionOverride(String text) {
-  return instructionOverrides.any((pattern) => pattern.hasMatch(text));
+  final normalized = normalizeForScreen(text);
+  return instructionOverrides.any((pattern) => pattern.hasMatch(normalized));
+}
+
+/// True when [text] speaks as if an operational or commercial action already
+/// ran. Nothing on the allowlist can do that, so the memo would be lying.
+bool claimsExecutedAction(String text) {
+  return _executedAction.hasMatch(normalizeForScreen(text));
 }
 
 /// Audit and model-context view of a string.
@@ -110,7 +139,12 @@ class OutputScreen {
     final missing = report.citedEvidenceIds
         .where((id) => !retrievedIds.contains(id))
         .toList();
-    final claimsAction = _executedAction.hasMatch(report.recommendedAction);
+    final claimsAction = [
+      report.headline,
+      report.decisionNote,
+      report.recommendedAction,
+      ...report.findings,
+    ].any(claimsExecutedAction);
     if (missing.isNotEmpty || claimsAction || report.confidence > 0.95) {
       return OutputScreen(
         allowed: false,
@@ -120,7 +154,9 @@ class OutputScreen {
           verdict: RailVerdict.block,
           detail: missing.isNotEmpty
               ? 'Citation ${missing.first} was not retrieved in this run.'
-              : 'The memo claimed an action the allowlist cannot perform, or a confidence above the cap.',
+              : claimsAction
+              ? 'The memo spoke as if an action ran that the allowlist cannot perform.'
+              : 'Confidence ${(report.confidence * 100).round()}% is above the 95% cap.',
         ),
         report: InvestigationReport(
           headline: 'Output rail held the memo',
@@ -137,6 +173,8 @@ class OutputScreen {
               'Ungrounded citation: ${missing.join(', ')}.',
             if (claimsAction)
               'The draft spoke as if an operational tool had already run.',
+            if (report.confidence > 0.95)
+              'Draft confidence ${(report.confidence * 100).round()}% exceeded the 95% cap.',
           ],
           nextCollections: report.nextCollections,
           citedEvidenceIds: const [],
@@ -157,6 +195,10 @@ class OutputScreen {
 }
 
 final _executedAction = RegExp(
-  r'\b(re-energized|reenergized|lots released|payment sent|wire sent)\b',
-  caseSensitive: false,
+  r'\b(?:re ?energi[sz]ed'
+  r'|(?:has|have|was|were) been (?:energi[sz]ed|released|wired|transferred|executed)'
+  r'|lots? (?:(?:was|were|have been|has been) )?released'
+  r'|(?:payment|wire|funds?) (?:(?:was|were|has been|have been) )?(?:sent|wired|transferred|released)'
+  r'|breaker (?:[a-z0-9]+ )?(?:(?:was|has been) )?closed'
+  r'|order (?:(?:was|has been) )?(?:placed|executed|filled))\b',
 );

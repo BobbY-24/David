@@ -2,7 +2,7 @@
 
 David is built for small businesses and one-person companies, a kind of firm that is becoming more common. It is an investigation desk for due diligence and physical-anomaly cases. It keeps sensor readings and records sealed with provenance, retrieves them as grounded evidence, and runs a multi-stage agent that scores competing explanations before writing a decision memo.
 
-The bundled cases are synthetic fixtures. The desk policy is deterministic and offline (`grounded-control-v2`). The job service uses `fixture-scorer-v1`. Neither calls a live model. A memo, a book weight, a risk band, or a churn score from these fixtures is not a finding about a real site, a real portfolio, a patient, or a customer.
+The bundled cases are synthetic fixtures. The desk policy is deterministic and offline (`grounded-control-v3`). The job service uses `fixture-scorer-v2`. Neither calls a live model. A memo, a book weight, a risk band, or a churn score from these fixtures is not a finding about a real site, a real portfolio, a patient, or a customer.
 
 ## Run
 
@@ -25,23 +25,28 @@ Open http://127.0.0.1:43123
 - **Explanations.** Support minus falsifiers, with the evidence ids that fired.
 - **Report.** Decision memo. Every citation is an id retrieved in that run.
 
-A phrase does not count when `no`, `not`, `without`, `never`, or `none` appears within the three tokens in front of it. "No integration defect" is not evidence of an integration defect.
+A phrase does not count when `no`, `not`, `without`, `never`, or `none` appears among the three content words in front of it, inside the same sentence. Function words such as "of" and "a" do not use up the window, so "no sign of a door ajar" is negated. A sentence break ends it, so "No alarm. Door ajar." is not. "No integration defect" is not evidence of an integration defect.
 
 ## Control plane
 
 The router picks the loop from the case before any search:
 
 - **Plan and execute** when the brief already decomposes the work. Searches run as a batch, then one memo. Vault C-12. This is the ReWOO shape: fewer dependent steps, higher throughput.
-- **ReAct** when a sensor conflict is present or six or more modalities are required. The next search depends on what is still missing, and a repeated query stops the loop. Harbor Substation 4. A margin under 0.45 escalates to the panel instead of another open-ended loop.
-- **Panel vote** for due diligence. Operations, measurement, and adversary seats score the same retrieved set. A majority has to match the unweighted lead or the memo stays held. Northline Logistics.
+- **ReAct** when a sensor conflict is present or six or more modalities are required. The next search depends on what is still missing, and a repeated query stops the loop. Harbor Substation 4. A margin under 0.45 escalates to the panel instead of another open-ended loop. After escalation the memo is released only if all three seats agree on a strict lead, and its confidence is capped at 50%.
+- **Panel vote** for due diligence. Northline Logistics. The three seats read the same retrieved set through different tests, and no seat is weighted toward a named explanation:
+  - Operations scores it plainly.
+  - Measurement drops the single strongest supporting unit behind each explanation, so a lead that rests on one record does not survive.
+  - Adversary counts falsifiers double.
+
+  A seat with a tie abstains. A majority has to match the unweighted lead or the memo stays held. A dissenting seat is written into the memo's gaps. On Northline the measurement seat dissents: the related-party lead rests on one payment memo.
 
 Rails follow the OWASP LLM Top 10 for 2025 and the current agent-SDK split between automatic checks and human approval:
 
 - Input rail blocks instruction overrides and missing case grants before a tool call (LLM01).
-- Evidence that contains an instruction override is quarantined and cannot support a hypothesis.
+- Evidence that contains an instruction override is quarantined and cannot support a hypothesis. The data rail shows a flag when that happens. Patterns run on lowercased text with zero-width characters and punctuation removed. They are a tripwire, not a classifier, so a paraphrase can still get through.
 - The tool gateway allowlists `search`, checks the case grant, and spends a per-run call budget. `reenergize` and any other tool is denied and still audited (LLM06, excessive agency).
 - The audit log stores a redacted query and a hash chain, not the raw evidence text (LLM02, RAG logging guidance).
-- The output rail holds a memo whose citations were not retrieved, whose confidence exceeds 95%, or that speaks as if an operational action already ran.
+- The output rail holds a memo whose citations were not retrieved, whose confidence exceeds 95%, or whose headline, note, findings, or action speak as if an operational action already ran. The scorer itself has no ceiling, so the rail is the only place the cap is enforced.
 - Approval is required before anything that would re-energize equipment, release lots, or move money. No such tool exists on the allowlist.
 
 `InvestigationQueue` is the batch lane: a fixed number of runs in flight and a hard cap on the batch. A larger submit is rejected.
@@ -54,15 +59,23 @@ Rails follow the OWASP LLM Top 10 for 2025 and the current agent-SDK split betwe
 - `lib/src/data/` holds Harbor Substation 4, Northline Logistics, and Vault C-12.
 - `lib/src/ui/` is the desk. The Control tab shows the loop, the rails, the seats, and the audit.
 
-`flutter test` checks retrieval, negation, which explanation leads each case, that cited ids were actually retrieved, and the desk at desktop and phone width.
+`flutter test` checks:
+
+- retrieval, negation, and which explanation leads each case
+- that cited ids were actually retrieved
+- the desk at desktop and phone width
+- the rails on forged drafts: an unretrieved citation, confidence over the cap, a claim that an action ran, and obfuscated instruction overrides (`test/rails_test.dart`)
+- escalation: a thin margin that holds up is released, and a thin lead that rests on one record is not
+- `test/heldout_test.dart`, a set of cases written to break a phrase scorer: a far negation, a negation across a sentence break, keyword stuffing, a planted zero-width instruction, a tie, and every explanation falsified. Three of them fail on the matcher and rails before this change. This set is a regression check for the scorer, not a measure of model quality. The signatures are still written by hand.
+- that `service/fieldline_lab/cases.json` matches the desk case packs
 
 ## Job plane
 
-The Jobs tab submits work to a single-host service. FastAPI accepts the request, PostgreSQL stores the job, and a Celery worker wakes from Redis and runs it. The worker claim is a conditional row update, so a duplicate delivery cannot finish the same attempt twice. Transient failures requeue until `MAX_ATTEMPTS`. A full lane returns HTTP 429. `GET /v1/metrics` reports queue depth, throughput over the last minute, and p95/p99 queue wait and end-to-end latency.
+The Jobs tab submits work to a single-host service. FastAPI accepts the request, PostgreSQL stores the job, and a Celery worker wakes from Redis and runs it. The worker claim is a conditional row update, so a duplicate delivery cannot finish the same attempt twice. Transient failures requeue until `MAX_ATTEMPTS`. Each retry is scheduled on the broker with a countdown, so a job in backoff does not hold a worker slot. CORS allows only the desk dev server (`http://127.0.0.1:43123` and `http://localhost:43123`) by default. Set `CORS_ORIGINS` to a comma-separated list to change that. The API has no authentication, so keep it on a local host. A full lane returns HTTP 429. `GET /v1/metrics` reports queue depth, throughput over the last minute, and p95/p99 queue wait and end-to-end latency.
 
 The same API runs four fixture scorers:
 
-- **Investigation.** Harbor, Northline, and Vault. Phrase score only. The desk agent is still the citation path.
+- **Investigation.** Harbor, Northline, and Vault, read from `fieldline_lab/cases.json`. That file is exported from the desk case packs with `dart run tool/export_cases.dart`, so the desk is the only place a case is written. The service ports the desk phrase matcher, and its tests check it against every match verdict the desk exported. It sums signature weights without BM25, so a margin is on a different scale from the desk. The desk agent is still the citation path.
 - **Portfolio.** Cedar book in SQL (`positions`, `prices`). Checks a 25% single-name cap. No order is sent.
 - **Hypertension.** Points chart on eight synthetic rows. Notes cannot change a band. Not a diagnosis.
 - **Churn.** Points chart on six synthetic accounts. No message is sent.
@@ -91,3 +104,7 @@ That publishes the API on port 43124, Postgres on 54329, and Redis on 63799.
 ```bash
 cd service && .venv/bin/pytest
 ```
+
+The tests use `postgresql+psycopg://fieldline:fieldline@127.0.0.1:5432/fieldline_test` unless `TEST_DATABASE_URL` is set.
+
+CI (`.github/workflows/ci.yml`) runs format, analyze, and `flutter test`, checks that the exported fixtures are current, and runs pytest against Postgres 16.

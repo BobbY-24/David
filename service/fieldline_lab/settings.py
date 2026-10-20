@@ -30,3 +30,12 @@ def retry_backoff_seconds() -> float:
 
 def sweep_enabled() -> bool:
     return os.environ.get("SWEEP", "1") != "0"
+
+
+def cors_origins() -> list[str]:
+    """Browser origins allowed to call the API. The desk dev server by default."""
+    raw = os.environ.get(
+        "CORS_ORIGINS",
+        "http://127.0.0.1:43123,http://localhost:43123",
+    )
+    return [origin.strip() for origin in raw.split(",") if origin.strip()]

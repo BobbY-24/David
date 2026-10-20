@@ -57,12 +57,33 @@ List<String> indexTokens(String input) {
       .toList();
 }
 
-/// True when [phrase] occurs as consecutive tokens and the three tokens in
-/// front of that occurrence do not negate it.
+/// A period, semicolon, question or exclamation mark followed by space or the
+/// end, or a newline. "42.5 ppm" stays one sentence.
+final _sentenceBreak = RegExp(r'[.;!?](?=\s|$)|\n');
+
+/// How many content tokens in front of a phrase a negation can reach.
+const negationWindow = 3;
+
+/// True when [phrase] occurs as consecutive tokens and no negation word sits
+/// among the three content tokens in front of it, inside the same sentence.
+///
+/// Function words do not use up the window, so "no sign of a door ajar" is
+/// negated. A sentence break ends it, so "No alarm. Door ajar." is not.
 bool phraseMatches(String text, String phrase) {
-  final tokens = phraseTokens(text);
   final need = phraseTokens(phrase);
-  if (need.isEmpty || need.length > tokens.length) {
+  if (need.isEmpty) {
+    return false;
+  }
+  for (final sentence in text.split(_sentenceBreak)) {
+    if (_matchesIn(phraseTokens(sentence), need)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool _matchesIn(List<String> tokens, List<String> need) {
+  if (need.length > tokens.length) {
     return false;
   }
   for (var i = 0; i + need.length <= tokens.length; i++) {
@@ -76,12 +97,24 @@ bool phraseMatches(String text, String phrase) {
     if (!aligned) {
       continue;
     }
-    final windowStart = i >= 3 ? i - 3 : 0;
-    final prefix = tokens.sublist(windowStart, i);
-    if (prefix.any(negationWords.contains)) {
+    if (_negatedBefore(tokens, i)) {
       continue;
     }
     return true;
+  }
+  return false;
+}
+
+bool _negatedBefore(List<String> tokens, int start) {
+  var content = 0;
+  for (var k = start - 1; k >= 0 && content < negationWindow; k--) {
+    final token = tokens[k];
+    if (negationWords.contains(token)) {
+      return true;
+    }
+    if (!indexStopwords.contains(token)) {
+      content += 1;
+    }
   }
   return false;
 }

@@ -54,6 +54,11 @@ class InvestigationQueue {
   }
 }
 
+/// Counting semaphore.
+///
+/// A release with someone waiting hands the slot straight to the oldest
+/// waiter instead of freeing it, so a caller arriving in the same turn cannot
+/// take the slot first and push the lane over [limit].
 class Lane {
   int limit = 1;
   int inFlight = 0;
@@ -68,16 +73,14 @@ class Lane {
     }
     final waiter = Completer<void>();
     _waiters.add(waiter);
-    return waiter.future.then((_) {
-      inFlight += 1;
-      maxSeen = math.max(maxSeen, inFlight);
-    });
+    return waiter.future;
   }
 
   void release() {
-    inFlight -= 1;
-    if (_waiters.isNotEmpty && inFlight < limit) {
+    if (_waiters.isNotEmpty && inFlight <= limit) {
       _waiters.removeAt(0).complete();
+      return;
     }
+    inFlight -= 1;
   }
 }

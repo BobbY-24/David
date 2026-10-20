@@ -55,10 +55,13 @@ class JobService:
     immediately. Transient errors requeue until max_attempts.
     """
 
-    def __init__(self, factory=None, cap: int | None = None, dispatch=None) -> None:
+    def __init__(self, factory=None, cap: int | None = None, dispatch=None, dispatch_later=None) -> None:
         self._factory = factory or session_factory
         self.cap = queue_cap() if cap is None else cap
         self.dispatch = dispatch or (lambda job_id: None)
+        # A retry is scheduled on the broker, not slept on, so a backing-off
+        # job does not hold a worker slot. Without a scheduler, wake now.
+        self.dispatch_later = dispatch_later or (lambda job_id, _delay: self.dispatch(job_id))
 
     def session(self) -> Session:
         return self._factory()
@@ -160,8 +163,7 @@ class JobService:
         except TransientJobError as exc:
             action = self._fail(job_id, token, str(exc), retry=True)
             if action == "requeue":
-                time.sleep(_backoff(claimed["attempts"]))
-                self._wake(job_id)
+                self._wake(job_id, delay=_backoff(claimed["attempts"]))
         except PermanentJobError as exc:
             self._fail(job_id, token, str(exc), retry=False)
         except Exception as exc:
@@ -274,9 +276,12 @@ class JobService:
             self._wake(job_id)
         return ids
 
-    def _wake(self, job_id: str) -> None:
+    def _wake(self, job_id: str, delay: float = 0.0) -> None:
         try:
-            self.dispatch(job_id)
+            if delay > 0:
+                self.dispatch_later(job_id, delay)
+            else:
+                self.dispatch(job_id)
         except Exception:
             return
         self._mark_dispatched(job_id)

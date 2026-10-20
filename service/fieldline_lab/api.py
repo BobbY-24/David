@@ -9,18 +9,19 @@ from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
+from . import SCORER_ID
 from .db import session_factory
 from .errors import IdempotencyConflict, QueueFull
 from .metrics import prometheus
 from .runners import catalog
 from .service import JobService, init_db
-from .settings import sweep_enabled
-from .worker import dispatch_job
+from .settings import cors_origins, sweep_enabled
+from .worker import dispatch_job, dispatch_job_later
 
 log = logging.getLogger("fieldline")
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-service = JobService(dispatch=dispatch_job)
+service = JobService(dispatch=dispatch_job, dispatch_later=dispatch_job_later)
 
 
 class JobRequest(BaseModel):
@@ -50,7 +51,7 @@ async def lifespan(_app: FastAPI):
     if sweep_enabled():
         thread = threading.Thread(target=_sweep, args=(stop,), name="fieldline-sweep", daemon=True)
         thread.start()
-    _event("api_start", scorer="fixture-scorer-v1")
+    _event("api_start", scorer=SCORER_ID)
     yield
     stop.set()
     if thread is not None:
@@ -60,9 +61,9 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(title="David jobs", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=cors_origins(),
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Idempotency-Key"],
 )
 
 
@@ -75,12 +76,12 @@ def health():
         raise HTTPException(status_code=503, detail=f"Database is not reachable: {exc}") from exc
     finally:
         session.close()
-    return {"ok": True, "database": "up", "scorer": "fixture-scorer-v1"}
+    return {"ok": True, "database": "up", "scorer": SCORER_ID}
 
 
 @app.get("/v1/catalog")
 def get_catalog():
-    return {"items": catalog(), "scorer": "fixture-scorer-v1"}
+    return {"items": catalog(), "scorer": SCORER_ID}
 
 
 @app.post("/v1/jobs", status_code=202)

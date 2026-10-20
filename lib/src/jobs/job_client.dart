@@ -116,7 +116,8 @@ abstract class JobClient {
 class HttpJobClient implements JobClient {
   HttpJobClient({http.Client? httpClient, String? baseUrl})
     : _http = httpClient ?? http.Client(),
-      baseUrl = baseUrl ??
+      baseUrl =
+          baseUrl ??
           const String.fromEnvironment(
             'JOBS_API',
             defaultValue: 'http://127.0.0.1:43124',
@@ -213,9 +214,7 @@ class HttpJobClient implements JobClient {
     } on JobClientException {
       rethrow;
     } catch (error) {
-      throw JobClientException(
-        'The job service on $baseUrl is not answering.',
-      );
+      throw JobClientException('The job service on $baseUrl is not answering.');
     }
   }
 

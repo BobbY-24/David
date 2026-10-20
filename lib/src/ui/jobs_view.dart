@@ -19,7 +19,7 @@ class JobsView extends StatelessWidget {
         const SectionLabel('Job plane'),
         const SizedBox(height: 8),
         const Text(
-          'FastAPI accepts the request, PostgreSQL keeps the job, and a Celery worker runs it. Scores on this tab are fixture-scorer-v1.',
+          'FastAPI accepts the request, PostgreSQL keeps the job, and a Celery worker runs it. Scores on this tab are fixture-scorer-v2.',
           style: TextStyle(color: FieldlineColors.muted, height: 1.45),
         ),
         const SizedBox(height: 16),

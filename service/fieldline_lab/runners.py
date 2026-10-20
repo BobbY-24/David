@@ -1,9 +1,13 @@
 """Deterministic fixture scorers.
 
 These are not a live model, a diagnosis, or a trading system. Each result
-carries scorer id `fixture-scorer-v1` so a caller can tell a fixture from a
+carries scorer id `fixture-scorer-v2` so a caller can tell a fixture from a
 provider response.
 """
+
+import json
+import re
+from pathlib import Path
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -11,152 +15,125 @@ from sqlalchemy.orm import Session
 from . import SCORER_ID
 from .errors import PermanentJobError
 
-_NEGATIONS = ("no", "not", "without", "never", "none")
+# Exported from the desk by `dart run tool/export_cases.dart`. The desk case
+# packs are the only place a case is written.
+_EXPORT = json.loads((Path(__file__).with_name("cases.json")).read_text())
+_CASES = {case["id"]: case for case in _EXPORT["cases"]}
+
+_WORD = re.compile(r"[a-z0-9]+")
+_SENTENCE_BREAK = re.compile(r"[.;!?](?=\s|$)|\n")
+_NEGATIONS = frozenset({"no", "not", "without", "never", "none"})
+# Same list as `indexStopwords` in lib/src/retrieval/text_match.dart.
+_STOPWORDS = frozenset(
+    {
+        "a",
+        "an",
+        "the",
+        "of",
+        "and",
+        "to",
+        "for",
+        "in",
+        "on",
+        "with",
+        "from",
+        "by",
+        "is",
+        "are",
+        "was",
+        "were",
+        "this",
+        "that",
+        "as",
+        "at",
+        "or",
+        "be",
+        "it",
+        "its",
+        "into",
+        "over",
+        "than",
+        "then",
+        "during",
+        "while",
+        "across",
+        "under",
+        "after",
+        "before",
+        "between",
+    }
+)
+_NEGATION_WINDOW = int(_EXPORT["negation_window"])
+_RESOLVE_MARGIN = 0.45
 
 
-def _phrase_hits(corpus: str, phrase: str) -> bool:
-    hay = corpus.lower()
-    needle = phrase.lower()
-    start = 0
-    while True:
-        index = hay.find(needle, start)
-        if index < 0:
-            return False
-        window = hay[max(0, index - 24) : index]
-        tokens = window.replace(".", " ").split()
-        if not any(token in _NEGATIONS for token in tokens[-3:]):
+def phrase_tokens(value: str) -> list[str]:
+    return _WORD.findall(value.lower().replace("'", ""))
+
+
+def _negated_before(tokens: list[str], start: int) -> bool:
+    content = 0
+    k = start - 1
+    while k >= 0 and content < _NEGATION_WINDOW:
+        token = tokens[k]
+        if token in _NEGATIONS:
             return True
-        start = index + len(needle)
+        if token not in _STOPWORDS:
+            content += 1
+        k -= 1
+    return False
+
+
+def phrase_matches(corpus: str, phrase: str) -> bool:
+    """Port of `phraseMatches` in lib/src/retrieval/text_match.dart.
+
+    Sentence-scoped, and a negation reaches three content tokens back.
+    `tests/test_jobs.py` checks this against every verdict the desk exported.
+    """
+    need = phrase_tokens(phrase)
+    if not need:
+        return False
+    for sentence in _SENTENCE_BREAK.split(corpus):
+        tokens = phrase_tokens(sentence)
+        for i in range(len(tokens) - len(need) + 1):
+            if tokens[i : i + len(need)] == need and not _negated_before(tokens, i):
+                return True
+    return False
 
 
 def _score_case(case: dict) -> dict:
-    corpus = "\n".join(case["corpus"])
+    usable = [unit["text"] for unit in case["evidence"] if not unit["quarantined"]]
+
+    def fired(signatures: list) -> tuple[float, list[str]]:
+        hits = [(phrase, weight) for phrase, weight in signatures if any(phrase_matches(t, phrase) for t in usable)]
+        return sum(weight for _, weight in hits), [phrase for phrase, _ in hits]
+
     scored = []
     for hypothesis in case["hypotheses"]:
-        fired = []
-        total = 0.0
-        for phrase, weight in hypothesis["support"]:
-            if _phrase_hits(corpus, phrase):
-                fired.append(phrase)
-                total += weight
-        scored.append({**hypothesis, "score": total, "fired": fired})
-    scored.sort(key=lambda item: item["score"], reverse=True)
+        support, support_fired = fired(hypothesis["support"])
+        against, against_fired = fired(hypothesis["contradict"])
+        scored.append(
+            {
+                "id": hypothesis["id"],
+                "title": hypothesis["title"],
+                "net": support - against,
+                "fired": support_fired,
+                "falsified_by": against_fired,
+            }
+        )
+    scored.sort(key=lambda item: (-item["net"], item["id"]))
     lead = scored[0]
     runner = scored[1] if len(scored) > 1 else None
-    margin = lead["score"] - (runner["score"] if runner else 0.0)
-    held = lead["score"] <= 0 or margin < 0.45
+    margin = lead["net"] - (runner["net"] if runner else 0.0)
+    held = lead["net"] <= 0 or margin < _RESOLVE_MARGIN
     return {
         "lead": None if held else lead["id"],
         "title": None if held else lead["title"],
         "margin": margin,
         "fired": [] if held else lead["fired"],
         "held": held,
+        "ranked": [{"id": item["id"], "net": round(item["net"], 3)} for item in scored],
     }
-
-
-def _loop_for(case: dict) -> str:
-    if case["kind"] == "due_diligence":
-        return "panel-vote"
-    question = case["question"].lower()
-    if "disagree" in question or "conflict" in question or case["modalities"] >= 6:
-        return "react"
-    return "plan-execute"
-
-
-_CASES = {
-    "harbor-substation-4": {
-        "title": "Harbor Substation 4",
-        "kind": "physical",
-        "modalities": 7,
-        "question": "The cameras disagree on the bushing. What failed?",
-        "corpus": [
-            "IR camera A reads 112 C and IR camera B reads 71 C. The cameras disagree on the bushing.",
-            "Dissolved gas analysis reports acetylene 42 ppm.",
-            "Pump current steady and below nameplate.",
-            "Vibration peak at 120 hz with acoustic partial discharge.",
-            "Ambient temperature steady.",
-        ],
-        "hypotheses": [
-            {
-                "id": "internal-thermal-fault",
-                "title": "Internal high-energy thermal fault",
-                "support": [("acetylene 42 ppm", 3.0), ("cameras disagree", 2.0)],
-            },
-            {
-                "id": "cooling-failure",
-                "title": "Cooling failure",
-                "support": [("pump current rising", 3.0)],
-            },
-            {
-                "id": "calibration-drift",
-                "title": "Calibration drift",
-                "support": [("single camera drift", 2.0)],
-            },
-            {
-                "id": "sustained-overload",
-                "title": "Sustained overload",
-                "support": [("above nameplate", 2.0)],
-            },
-        ],
-    },
-    "northline-logistics": {
-        "title": "Northline Logistics",
-        "kind": "due_diligence",
-        "modalities": 4,
-        "question": "Is the revenue spike a related-party round trip?",
-        "corpus": [
-            "The top customer shares the same registered agent. The contract is a related party.",
-            "Bill-and-hold terms sit on the quarter-end invoices.",
-            "Telematics shows no integration defect and miles are down.",
-            "Collections lag while occupancy stays flat.",
-        ],
-        "hypotheses": [
-            {
-                "id": "related-party-round-trip",
-                "title": "Related-party round trip",
-                "support": [("related party", 3.0), ("same registered agent", 2.0)],
-            },
-            {
-                "id": "channel-stuffing",
-                "title": "Channel stuffing",
-                "support": [("bill-and-hold", 1.0)],
-            },
-            {
-                "id": "integration-defect",
-                "title": "Integration defect",
-                "support": [("integration defect", 2.0)],
-            },
-        ],
-    },
-    "vault-c12": {
-        "title": "Vault C-12",
-        "kind": "physical",
-        "modalities": 4,
-        "question": "Why did the humidity excursion happen?",
-        "corpus": [
-            "The vault door was ajar during the humidity spike.",
-            "Both loggers rose together. Compressor current normal.",
-            "The excursion was unplanned.",
-        ],
-        "hypotheses": [
-            {
-                "id": "door-ajar",
-                "title": "Door ajar",
-                "support": [("door was ajar", 3.0), ("humidity spike", 2.0)],
-            },
-            {
-                "id": "defrost-cycle",
-                "title": "Defrost cycle",
-                "support": [("scheduled defrost", 3.0)],
-            },
-            {
-                "id": "compressor-fault",
-                "title": "Compressor fault",
-                "support": [("compressor current high", 2.0)],
-            },
-        ],
-    },
-}
 
 
 def investigation(spec: dict, session: Session) -> dict:
@@ -166,7 +143,7 @@ def investigation(spec: dict, session: Session) -> dict:
     if case is None:
         raise PermanentJobError(f"Unknown investigation case '{case_id}'.")
     scored = _score_case(case)
-    loop = _loop_for(case)
+    loop = case["loop"]
     if scored["held"]:
         headline = f"{case['title']} stayed held. Margin {scored['margin']:.2f}."
     else:

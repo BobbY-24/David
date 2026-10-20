@@ -22,10 +22,19 @@ void main() {
 
     expect(northline.control.loop, AgentLoopKind.panelVote);
     expect(northline.control.votes, hasLength(3));
-    expect(northline.control.votes.map((vote) => vote.hypothesisId).toSet(), {
-      'related-party-round-trip',
-    });
+    final seats = {
+      for (final vote in northline.control.votes)
+        vote.seatId: vote.hypothesisId,
+    };
+    expect(seats['operations'], 'related-party-round-trip');
+    expect(seats['adversary'], 'related-party-round-trip');
+    // The lead rests on one payment memo. Without it, channel stuffing leads.
+    expect(seats['measurement'], 'channel-stuffing');
     expect(northline.report.leadHypothesisId, 'related-party-round-trip');
+    expect(
+      northline.report.gaps,
+      contains('Measurement seat dissented: Bill-and-hold channel stuffing.'),
+    );
     expect(northline.control.batched, isTrue);
 
     expect(vault.control.loop, AgentLoopKind.planExecute);
@@ -171,6 +180,143 @@ void main() {
     expect(run.control.loop, AgentLoopKind.panelVote);
     expect(run.report.resolved, isFalse);
   });
+
+  test(
+    'a thin but robust ReAct margin can be released by a unanimous panel',
+    () {
+      EvidenceUnit unit(String id, String text) => record(
+        id: id,
+        caseId: 'robust-thin',
+        title: 'Gauge note $id',
+        text: text,
+        observedAt: utc(2026, 3, 3, 3),
+        site: 'lab',
+        modality: 'flow',
+        source: 'gauge',
+        collector: 'fixture',
+      );
+      final robust = _case(
+        id: 'robust-thin',
+        question:
+            'The two gauges conflict on the line. What explains the drop?',
+        modalities: const ['flow'],
+        hypotheses: const [
+          HypothesisSpec(
+            id: 'valve',
+            title: 'Valve fault',
+            statement: 'The valve is failing.',
+            actionIfLead: 'Hold.',
+            support: [
+              Signature('valve stuck', 0.35),
+              Signature('flow dropped', 0.35),
+              Signature('seat worn', 0.35),
+            ],
+            contradict: [],
+          ),
+          HypothesisSpec(
+            id: 'noise',
+            title: 'Sensor noise',
+            statement: 'One gauge is noisy.',
+            actionIfLead: 'Hold.',
+            support: [Signature('sensor noise', 0.8)],
+            contradict: [],
+          ),
+        ],
+        evidence: [
+          unit('u1', 'Crew logged the valve stuck at half travel.'),
+          unit('u2', 'Downstream flow dropped by a fifth.'),
+          unit('u3', 'Teardown photo shows the seat worn.'),
+          unit('u4', 'Gauge B shows sensor noise at idle.'),
+        ],
+      );
+      final run = agent.investigate(robust);
+      final margin = run.judgments[0].net - run.judgments[1].net;
+      expect(margin, greaterThan(0));
+      expect(margin, lessThan(0.45));
+      expect(run.control.escalated, isTrue);
+      expect(run.control.votes.map((vote) => vote.hypothesisId).toSet(), {
+        'valve',
+      });
+      expect(run.report.resolved, isTrue);
+      expect(run.report.leadHypothesisId, 'valve');
+      expect(run.report.confidence, lessThanOrEqualTo(0.5));
+      expect(run.report.gaps.join(' '), contains('released only because'));
+    },
+  );
+
+  test('a lead that rests on one unit does not survive escalation', () {
+    final fragile = _case(
+      id: 'fragile-thin',
+      question: 'The two gauges conflict on the line. What explains the drop?',
+      modalities: const ['flow'],
+      hypotheses: const [
+        HypothesisSpec(
+          id: 'valve',
+          title: 'Valve fault',
+          statement: 'The valve is failing.',
+          actionIfLead: 'Hold.',
+          support: [Signature('valve stuck', 1.0)],
+          contradict: [],
+        ),
+        HypothesisSpec(
+          id: 'noise',
+          title: 'Sensor noise',
+          statement: 'One gauge is noisy.',
+          actionIfLead: 'Hold.',
+          support: [
+            Signature('sensor noise', 0.4),
+            Signature('idle spikes', 0.4),
+          ],
+          contradict: [],
+        ),
+      ],
+      evidence: [
+        for (final (id, text) in [
+          ('f1', 'One handwritten note says the valve stuck.'),
+          ('f2', 'Gauge B shows sensor noise during the shift.'),
+          ('f3', 'Gauge B also logged idle spikes overnight.'),
+        ])
+          record(
+            id: id,
+            caseId: 'fragile-thin',
+            title: 'Gauge note $id',
+            text: text,
+            observedAt: utc(2026, 3, 3, 3),
+            site: 'lab',
+            modality: 'flow',
+            source: 'gauge',
+            collector: 'fixture',
+          ),
+      ],
+    );
+    final run = agent.investigate(fragile);
+    expect(run.judgments.first.hypothesisId, 'valve');
+    expect(run.control.escalated, isTrue);
+    final measurement = run.control.votes.firstWhere(
+      (vote) => vote.seatId == 'measurement',
+    );
+    expect(measurement.hypothesisId, 'noise');
+    expect(run.report.resolved, isFalse);
+  });
+
+  test(
+    'a released slot goes to the waiter, not to a caller in the same turn',
+    () async {
+      final lane = Lane()..limit = 1;
+      await lane.acquire();
+      final waiter = lane.acquire();
+      lane.release();
+      final lateComer = lane.acquire();
+      await waiter;
+      expect(lane.inFlight, 1);
+      expect(lane.maxSeen, 1);
+      lane.release();
+      await lateComer;
+      expect(lane.inFlight, 1);
+      lane.release();
+      expect(lane.inFlight, 0);
+    },
+  );
 
   test('the lane rejects an oversized batch and caps in-flight work', () async {
     final queue = InvestigationQueue(maxInFlight: 2, maxQueued: 2);

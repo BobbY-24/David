@@ -259,7 +259,7 @@ class AgentRun {
     required this.control,
   });
 
-  static const policyIdValue = 'grounded-control-v2';
+  static const policyIdValue = 'grounded-control-v3';
 
   final String caseId;
   final String policyId;
@@ -272,7 +272,8 @@ class AgentRun {
 
 enum AgentLoopKind { planExecute, react, panelVote }
 
-enum RailVerdict { pass, block }
+/// A flag ran and changed what the run could use, but did not stop it.
+enum RailVerdict { pass, flag, block }
 
 class GuardrailCheck {
   const GuardrailCheck({
@@ -315,6 +316,7 @@ class SeatVote {
     required this.hypothesisId,
     required this.hypothesisTitle,
     required this.net,
+    this.margin = 0,
   });
 
   final String seatId;
@@ -322,6 +324,9 @@ class SeatVote {
   final String? hypothesisId;
   final String hypothesisTitle;
   final double net;
+
+  /// Lead net minus runner-up net in this seat. Zero on a tie.
+  final double margin;
 }
 
 /// What the control plane decided for one run.
