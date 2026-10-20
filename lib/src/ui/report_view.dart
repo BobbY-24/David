@@ -43,7 +43,7 @@ class ReportView extends StatelessWidget {
             child: SelectionArea(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: FieldlineColors.memo,
+                  color: DavidColors.memo,
                   borderRadius: BorderRadius.circular(4),
                   boxShadow: const [
                     BoxShadow(
@@ -61,7 +61,7 @@ class ReportView extends StatelessWidget {
                       const Text(
                         'FIELD MEMO',
                         style: TextStyle(
-                          color: FieldlineColors.memoMuted,
+                          color: DavidColors.memoMuted,
                           letterSpacing: 1.4,
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -71,7 +71,7 @@ class ReportView extends StatelessWidget {
                       Text(
                         caseFile.title,
                         style: const TextStyle(
-                          color: FieldlineColors.memoInk,
+                          color: DavidColors.memoInk,
                           fontSize: 26,
                           fontWeight: FontWeight.w600,
                           height: 1.15,
@@ -81,17 +81,17 @@ class ReportView extends StatelessWidget {
                       Text(
                         caseFile.subject,
                         style: const TextStyle(
-                          color: FieldlineColors.memoMuted,
+                          color: DavidColors.memoMuted,
                           height: 1.4,
                         ),
                       ),
                       const SizedBox(height: 14),
-                      Container(height: 1, color: FieldlineColors.memoRule),
+                      Container(height: 1, color: DavidColors.memoRule),
                       const SizedBox(height: 14),
                       Text(
                         report.headline,
                         style: const TextStyle(
-                          color: FieldlineColors.memoInk,
+                          color: DavidColors.memoInk,
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
                           height: 1.3,
@@ -101,7 +101,7 @@ class ReportView extends StatelessWidget {
                       Text(
                         '${report.resolved ? 'Resolved' : 'Unresolved'} · confidence ${(report.confidence * 100).round()}% · ${run.policyId}',
                         style: const TextStyle(
-                          color: FieldlineColors.memoMuted,
+                          color: DavidColors.memoMuted,
                           fontSize: 13,
                         ),
                       ),
@@ -109,7 +109,7 @@ class ReportView extends StatelessWidget {
                       Text(
                         report.decisionNote,
                         style: const TextStyle(
-                          color: FieldlineColors.memoInk,
+                          color: DavidColors.memoInk,
                           height: 1.5,
                         ),
                       ),
@@ -119,7 +119,7 @@ class ReportView extends StatelessWidget {
                       Text(
                         report.recommendedAction,
                         style: const TextStyle(
-                          color: FieldlineColors.memoInk,
+                          color: DavidColors.memoInk,
                           height: 1.5,
                         ),
                       ),
@@ -132,7 +132,7 @@ class ReportView extends StatelessWidget {
                           child: Text(
                             finding,
                             style: const TextStyle(
-                              color: FieldlineColors.memoInk,
+                              color: DavidColors.memoInk,
                               height: 1.45,
                             ),
                           ),
@@ -146,7 +146,7 @@ class ReportView extends StatelessWidget {
                           child: Text(
                             line,
                             style: const TextStyle(
-                              color: FieldlineColors.memoInk,
+                              color: DavidColors.memoInk,
                               height: 1.45,
                             ),
                           ),
@@ -160,7 +160,7 @@ class ReportView extends StatelessWidget {
                           child: Text(
                             gap,
                             style: const TextStyle(
-                              color: FieldlineColors.memoInk,
+                              color: DavidColors.memoInk,
                               height: 1.4,
                             ),
                           ),
@@ -174,7 +174,7 @@ class ReportView extends StatelessWidget {
                           child: Text(
                             item,
                             style: const TextStyle(
-                              color: FieldlineColors.memoInk,
+                              color: DavidColors.memoInk,
                               height: 1.4,
                             ),
                           ),
@@ -196,7 +196,7 @@ class ReportView extends StatelessWidget {
                       const Text(
                         'Decision support only. This policy ranks sealed fixture evidence. It does not establish legal fault, a transaction price, or a physical root cause, and it did not call a live model.',
                         style: TextStyle(
-                          color: FieldlineColors.memoMuted,
+                          color: DavidColors.memoMuted,
                           fontSize: 12,
                           height: 1.45,
                         ),
@@ -223,7 +223,7 @@ class _MemoLabel extends StatelessWidget {
     return Text(
       text.toUpperCase(),
       style: const TextStyle(
-        color: FieldlineColors.memoMuted,
+        color: DavidColors.memoMuted,
         fontSize: 11,
         letterSpacing: 1.1,
         fontWeight: FontWeight.w700,

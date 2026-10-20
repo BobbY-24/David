@@ -2,13 +2,13 @@ from datetime import timedelta
 
 from fastapi.testclient import TestClient
 
-from fieldline_lab.api import app, service as api_service
-from fieldline_lab.db import session_factory
-from fieldline_lab.errors import IdempotencyConflict, QueueFull
-from fieldline_lab.metrics import percentile
-from fieldline_lab.runners import churn, hypertension, investigation
-from fieldline_lab.schema import Job
-from fieldline_lab.service import JobService, utcnow
+from david_lab.api import app, service as api_service
+from david_lab.db import session_factory
+from david_lab.errors import IdempotencyConflict, QueueFull
+from david_lab.metrics import percentile
+from david_lab.runners import churn, hypertension, investigation
+from david_lab.schema import Job
+from david_lab.service import JobService, utcnow
 
 
 def test_percentile_ends():
@@ -31,7 +31,7 @@ def test_investigation_leads_match_the_desk():
 
 
 def test_phrase_matcher_agrees_with_every_desk_verdict():
-    from fieldline_lab.runners import _EXPORT, phrase_matches
+    from david_lab.runners import _EXPORT, phrase_matches
 
     golden = _EXPORT["phrase_golden"]
     assert len(golden) > 40
@@ -40,7 +40,7 @@ def test_phrase_matcher_agrees_with_every_desk_verdict():
 
 
 def test_service_and_desk_read_the_same_cases():
-    from fieldline_lab.runners import _CASES
+    from david_lab.runners import _CASES
 
     harbor = {h["id"]: h for h in _CASES["harbor-substation-4"]["hypotheses"]}
     # The service used to file "cameras disagree" under the internal fault.
@@ -51,7 +51,7 @@ def test_service_and_desk_read_the_same_cases():
 
 
 def test_unrelated_party_is_not_a_related_party():
-    from fieldline_lab.runners import phrase_matches
+    from david_lab.runners import phrase_matches
 
     assert phrase_matches("The related party paid.", "related party")
     assert not phrase_matches("The unrelated party paid.", "related party")
@@ -237,7 +237,7 @@ def test_api_enqueue_requires_a_key_and_serves_metrics():
         fetched = client.get(f"/v1/jobs/{job_id}")
         assert fetched.json()["status"] == "succeeded"
         metrics = client.get("/metrics")
-        assert "fieldline_jobs_depth" in metrics.text
+        assert "david_jobs_depth" in metrics.text
         catalog = client.get("/v1/catalog")
         titles = [item["title"] for item in catalog.json()["items"]]
         assert "Cedar book" in titles

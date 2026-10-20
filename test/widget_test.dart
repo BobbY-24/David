@@ -1,6 +1,6 @@
-import 'package:fieldline/src/app.dart';
-import 'package:fieldline/src/jobs/job_client.dart';
-import 'package:fieldline/src/ui/widgets.dart';
+import 'package:david/src/app.dart';
+import 'package:david/src/jobs/job_client.dart';
+import 'package:david/src/ui/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

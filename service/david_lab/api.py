@@ -18,7 +18,7 @@ from .service import JobService, init_db
 from .settings import cors_origins, sweep_enabled
 from .worker import dispatch_job, dispatch_job_later
 
-log = logging.getLogger("fieldline")
+log = logging.getLogger("david")
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 service = JobService(dispatch=dispatch_job, dispatch_later=dispatch_job_later)
@@ -49,7 +49,7 @@ async def lifespan(_app: FastAPI):
     stop = threading.Event()
     thread = None
     if sweep_enabled():
-        thread = threading.Thread(target=_sweep, args=(stop,), name="fieldline-sweep", daemon=True)
+        thread = threading.Thread(target=_sweep, args=(stop,), name="david-sweep", daemon=True)
         thread.start()
     _event("api_start", scorer=SCORER_ID)
     yield

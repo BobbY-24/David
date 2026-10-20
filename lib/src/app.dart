@@ -14,7 +14,7 @@ class DavidApp extends StatelessWidget {
     return MaterialApp(
       title: 'David',
       debugShowCheckedModeBanner: false,
-      theme: fieldlineTheme(),
+      theme: davidTheme(),
       home: DeskPage(jobClient: jobClient),
     );
   }

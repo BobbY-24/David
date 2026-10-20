@@ -5,12 +5,12 @@ from celery import Celery
 from .service import JobService
 from .settings import redis_url
 
-celery_app = Celery("fieldline", broker=redis_url(), backend=None)
+celery_app = Celery("david", broker=redis_url(), backend=None)
 celery_app.conf.update(
     task_acks_late=True,
     task_reject_on_worker_lost=True,
     worker_prefetch_multiplier=1,
-    task_default_queue="fieldline",
+    task_default_queue="david",
     broker_connection_retry_on_startup=True,
 )
 
@@ -33,6 +33,6 @@ def dispatch_job_later(job_id: str, delay: float) -> None:
         dispatch_celery_later(job_id, delay)
 
 
-@celery_app.task(name="fieldline.execute")
+@celery_app.task(name="david.execute")
 def execute_job(job_id: str) -> None:
     JobService(dispatch=dispatch_celery, dispatch_later=dispatch_celery_later).execute(job_id)

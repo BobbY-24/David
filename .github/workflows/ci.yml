@@ -24,7 +24,7 @@ jobs:
       - name: Service fixtures match the desk case packs
         run: |
           dart run tool/export_cases.dart
-          git diff --exit-code service/fieldline_lab/cases.json
+          git diff --exit-code service/david_lab/cases.json
 
   service:
     runs-on: ubuntu-latest
@@ -32,12 +32,12 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: fieldline
-          POSTGRES_PASSWORD: fieldline
-          POSTGRES_DB: fieldline_test
+          POSTGRES_USER: david
+          POSTGRES_PASSWORD: david
+          POSTGRES_DB: david_test
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U fieldline"
+          --health-cmd "pg_isready -U david"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10

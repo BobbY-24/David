@@ -1,6 +1,6 @@
 # David
 
-David is built for small businesses and one-person companies, a kind of firm that is becoming more common. It is an investigation desk for due diligence and physical-anomaly cases. It keeps sensor readings and records sealed with provenance, retrieves them as grounded evidence, and runs a multi-stage agent that scores competing explanations before writing a decision memo.
+David is an investigation desk for due diligence and physical-anomaly cases, built for small businesses and one-person companies. It keeps sensor readings and records sealed with provenance, retrieves them as grounded evidence, and runs a multi-stage agent that scores competing explanations before writing a decision memo.
 
 The bundled cases are synthetic fixtures. The desk policy is deterministic and offline (`grounded-control-v3`). The job service uses `fixture-scorer-v2`. Neither calls a live model. A memo, a book weight, a risk band, or a churn score from these fixtures is not a finding about a real site, a real portfolio, a patient, or a customer.
 
@@ -67,7 +67,7 @@ Rails follow the OWASP LLM Top 10 for 2025 and the current agent-SDK split betwe
 - the rails on forged drafts: an unretrieved citation, confidence over the cap, a claim that an action ran, and obfuscated instruction overrides (`test/rails_test.dart`)
 - escalation: a thin margin that holds up is released, and a thin lead that rests on one record is not
 - `test/heldout_test.dart`, a set of cases written to break a phrase scorer: a far negation, a negation across a sentence break, keyword stuffing, a planted zero-width instruction, a tie, and every explanation falsified. Three of them fail on the matcher and rails before this change. This set is a regression check for the scorer, not a measure of model quality. The signatures are still written by hand.
-- that `service/fieldline_lab/cases.json` matches the desk case packs
+- that `service/david_lab/cases.json` matches the desk case packs
 
 ## Job plane
 
@@ -75,7 +75,7 @@ The Jobs tab submits work to a single-host service. FastAPI accepts the request,
 
 The same API runs four fixture scorers:
 
-- **Investigation.** Harbor, Northline, and Vault, read from `fieldline_lab/cases.json`. That file is exported from the desk case packs with `dart run tool/export_cases.dart`, so the desk is the only place a case is written. The service ports the desk phrase matcher, and its tests check it against every match verdict the desk exported. It sums signature weights without BM25, so a margin is on a different scale from the desk. The desk agent is still the citation path.
+- **Investigation.** Harbor, Northline, and Vault, read from `david_lab/cases.json`. That file is exported from the desk case packs with `dart run tool/export_cases.dart`, so the desk is the only place a case is written. The service ports the desk phrase matcher, and its tests check it against every match verdict the desk exported. It sums signature weights without BM25, so a margin is on a different scale from the desk. The desk agent is still the citation path.
 - **Portfolio.** Cedar book in SQL (`positions`, `prices`). Checks a 25% single-name cap. No order is sent.
 - **Hypertension.** Points chart on eight synthetic rows. Notes cannot change a band. Not a diagnosis.
 - **Churn.** Points chart on six synthetic accounts. No message is sent.
@@ -85,10 +85,10 @@ From `service/`, with PostgreSQL and Redis already running:
 ```bash
 python -m venv .venv
 .venv/bin/pip install -r requirements.txt
-export DATABASE_URL=postgresql+psycopg://fieldline:fieldline@127.0.0.1:5432/fieldline
+export DATABASE_URL=postgresql+psycopg://david:david@127.0.0.1:5432/david
 export REDIS_URL=redis://127.0.0.1:6379/0
-.venv/bin/uvicorn fieldline_lab.api:app --host 0.0.0.0 --port 43124
-.venv/bin/celery -A fieldline_lab.worker:celery_app worker --loglevel=INFO --concurrency=2
+.venv/bin/uvicorn david_lab.api:app --host 0.0.0.0 --port 43124
+.venv/bin/celery -A david_lab.worker:celery_app worker --loglevel=INFO --concurrency=2
 ```
 
 The local database password above is a development default.
@@ -105,6 +105,6 @@ That publishes the API on port 43124, Postgres on 54329, and Redis on 63799.
 cd service && .venv/bin/pytest
 ```
 
-The tests use `postgresql+psycopg://fieldline:fieldline@127.0.0.1:5432/fieldline_test` unless `TEST_DATABASE_URL` is set.
+The tests use `postgresql+psycopg://david:david@127.0.0.1:5432/david_test` unless `TEST_DATABASE_URL` is set.
 
 CI (`.github/workflows/ci.yml`) runs format, analyze, and `flutter test`, checks that the exported fixtures are current, and runs pytest against Postgres 16.

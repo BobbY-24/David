@@ -1,4 +1,4 @@
-/// Writes the desk case packs to `service/fieldline_lab/cases.json`.
+/// Writes the desk case packs to `service/david_lab/cases.json`.
 ///
 /// The job service scores the same fixtures the desk does, so the desk is the
 /// only place a case is written. Each row of `phrase_golden` is the desk's
@@ -12,13 +12,13 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:fieldline/src/control/rails.dart';
-import 'package:fieldline/src/control/router.dart';
-import 'package:fieldline/src/data/case_packs.dart';
-import 'package:fieldline/src/domain/models.dart';
-import 'package:fieldline/src/retrieval/text_match.dart';
+import 'package:david/src/control/rails.dart';
+import 'package:david/src/control/router.dart';
+import 'package:david/src/data/case_packs.dart';
+import 'package:david/src/domain/models.dart';
+import 'package:david/src/retrieval/text_match.dart';
 
-const exportPath = 'service/fieldline_lab/cases.json';
+const exportPath = 'service/david_lab/cases.json';
 
 /// Edge cases for the matcher that the fixtures do not happen to contain.
 const _edgePairs = <(String, String)>[

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class FieldlineColors {
+class DavidColors {
   static const bg = Color(0xFF101410);
   static const panel = Color(0xFF18201B);
   static const panelRaised = Color(0xFF212A24);
@@ -19,33 +19,33 @@ class FieldlineColors {
   static const memoRule = Color(0xFFD9D2C3);
 }
 
-ThemeData fieldlineTheme() {
+ThemeData davidTheme() {
   const scheme = ColorScheme.dark(
-    surface: FieldlineColors.panel,
-    primary: FieldlineColors.amber,
-    onPrimary: FieldlineColors.amberInk,
-    secondary: FieldlineColors.sage,
-    onSecondary: FieldlineColors.amberInk,
-    error: FieldlineColors.coral,
-    onSurface: FieldlineColors.ink,
+    surface: DavidColors.panel,
+    primary: DavidColors.amber,
+    onPrimary: DavidColors.amberInk,
+    secondary: DavidColors.sage,
+    onSecondary: DavidColors.amberInk,
+    error: DavidColors.coral,
+    onSurface: DavidColors.ink,
   );
   final base = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: FieldlineColors.bg,
+    scaffoldBackgroundColor: DavidColors.bg,
     colorScheme: scheme,
-    dividerColor: FieldlineColors.line,
+    dividerColor: DavidColors.line,
     splashFactory: InkRipple.splashFactory,
   );
   return base.copyWith(
     textTheme: base.textTheme.apply(
-      bodyColor: FieldlineColors.ink,
-      displayColor: FieldlineColors.ink,
+      bodyColor: DavidColors.ink,
+      displayColor: DavidColors.ink,
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: FieldlineColors.amber,
-        foregroundColor: FieldlineColors.amberInk,
+        backgroundColor: DavidColors.amber,
+        foregroundColor: DavidColors.amberInk,
         textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -53,28 +53,28 @@ ThemeData fieldlineTheme() {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: FieldlineColors.ink,
-        side: const BorderSide(color: FieldlineColors.line),
+        foregroundColor: DavidColors.ink,
+        side: const BorderSide(color: DavidColors.line),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: FieldlineColors.bg,
-      hintStyle: const TextStyle(color: FieldlineColors.faint),
-      labelStyle: const TextStyle(color: FieldlineColors.muted),
+      fillColor: DavidColors.bg,
+      hintStyle: const TextStyle(color: DavidColors.faint),
+      labelStyle: const TextStyle(color: DavidColors.muted),
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: FieldlineColors.line),
+        borderSide: const BorderSide(color: DavidColors.line),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: FieldlineColors.line),
+        borderSide: const BorderSide(color: DavidColors.line),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: FieldlineColors.amber),
+        borderSide: const BorderSide(color: DavidColors.amber),
       ),
     ),
   );

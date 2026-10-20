@@ -70,22 +70,22 @@ def snapshot(session: Session, now: datetime | None = None) -> dict:
 
 def prometheus(body: dict) -> str:
     lines = [
-        "# HELP fieldline_jobs_depth Jobs queued or running.",
-        "# TYPE fieldline_jobs_depth gauge",
-        f"fieldline_jobs_depth {body['depth']}",
-        "# HELP fieldline_jobs_succeeded_total Succeeded jobs.",
-        "# TYPE fieldline_jobs_succeeded_total counter",
-        f"fieldline_jobs_succeeded_total {body['succeeded']}",
-        "# HELP fieldline_jobs_dead_total Dead jobs.",
-        "# TYPE fieldline_jobs_dead_total counter",
-        f"fieldline_jobs_dead_total {body['dead']}",
-        "# HELP fieldline_throughput_per_s Succeeded jobs in the last 60 seconds, per second.",
-        "# TYPE fieldline_throughput_per_s gauge",
-        f"fieldline_throughput_per_s {body['throughput_per_s']}",
+        "# HELP david_jobs_depth Jobs queued or running.",
+        "# TYPE david_jobs_depth gauge",
+        f"david_jobs_depth {body['depth']}",
+        "# HELP david_jobs_succeeded_total Succeeded jobs.",
+        "# TYPE david_jobs_succeeded_total counter",
+        f"david_jobs_succeeded_total {body['succeeded']}",
+        "# HELP david_jobs_dead_total Dead jobs.",
+        "# TYPE david_jobs_dead_total counter",
+        f"david_jobs_dead_total {body['dead']}",
+        "# HELP david_throughput_per_s Succeeded jobs in the last 60 seconds, per second.",
+        "# TYPE david_throughput_per_s gauge",
+        f"david_throughput_per_s {body['throughput_per_s']}",
     ]
     for name, block in (("queue_wait", body["queue_wait_ms"]), ("e2e", body["e2e_ms"])):
         for quantile, value in (("0.5", block["p50"]), ("0.95", block["p95"]), ("0.99", block["p99"])):
             if value is None:
                 continue
-            lines.append(f'fieldline_{name}_ms{{quantile="{quantile}"}} {value}')
+            lines.append(f'david_{name}_ms{{quantile="{quantile}"}} {value}')
     return "\n".join(lines) + "\n"

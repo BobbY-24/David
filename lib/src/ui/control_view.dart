@@ -37,14 +37,14 @@ class ControlView extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           control.standard,
-          style: const TextStyle(color: FieldlineColors.muted, height: 1.45),
+          style: const TextStyle(color: DavidColors.muted, height: 1.45),
         ),
         if (control.escalated) ...[
           const SizedBox(height: 8),
           const Text(
             'Escalated after the first loop.',
             style: TextStyle(
-              color: FieldlineColors.amber,
+              color: DavidColors.amber,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -86,9 +86,9 @@ class ControlView extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: switch (rail.verdict) {
-                        RailVerdict.pass => FieldlineColors.sage,
-                        RailVerdict.flag => FieldlineColors.amber,
-                        RailVerdict.block => FieldlineColors.coral,
+                        RailVerdict.pass => DavidColors.sage,
+                        RailVerdict.flag => DavidColors.amber,
+                        RailVerdict.block => DavidColors.coral,
                       },
                     ),
                   ),
@@ -97,7 +97,7 @@ class ControlView extends StatelessWidget {
                     rail.detail,
                     style: const TextStyle(
                       height: 1.4,
-                      color: FieldlineColors.muted,
+                      color: DavidColors.muted,
                     ),
                   ),
                 ],
@@ -124,7 +124,7 @@ class ControlView extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'Principal ${control.principalId}. ${control.approvalNote}',
-          style: const TextStyle(color: FieldlineColors.muted, height: 1.4),
+          style: const TextStyle(color: DavidColors.muted, height: 1.4),
         ),
         const SizedBox(height: 8),
         if (control.audit.isEmpty)
@@ -157,7 +157,7 @@ class ControlView extends StatelessWidget {
                       event.hash.substring(0, 12),
                       style: const TextStyle(
                         fontFamily: 'monospace',
-                        color: FieldlineColors.faint,
+                        color: DavidColors.faint,
                         fontSize: 12,
                       ),
                     ),
@@ -179,9 +179,9 @@ class _Stat extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: FieldlineColors.panel,
+        color: DavidColors.panel,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: FieldlineColors.line),
+        border: Border.all(color: DavidColors.line),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),

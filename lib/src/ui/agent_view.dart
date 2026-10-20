@@ -17,7 +17,7 @@ class AgentView extends StatelessWidget {
       return const Center(
         child: Text(
           'Running the grounded policy…',
-          style: TextStyle(color: FieldlineColors.amber),
+          style: TextStyle(color: DavidColors.amber),
         ),
       );
     }
@@ -38,7 +38,7 @@ class AgentView extends StatelessWidget {
       children: [
         Text(
           '${run.control.loopLabel} · ${run.steps.length} steps · ${run.retrieved.length} evidence units · ${run.policyId}',
-          style: const TextStyle(color: FieldlineColors.muted),
+          style: const TextStyle(color: DavidColors.muted),
         ),
         const SizedBox(height: 4),
         Text(run.control.reason, style: const TextStyle(height: 1.4)),
@@ -74,11 +74,11 @@ class _StepTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (step.stage) {
-      AgentStage.scope => FieldlineColors.mist,
-      AgentStage.retrieve => FieldlineColors.sage,
-      AgentStage.gap => FieldlineColors.amber,
-      AgentStage.adjudicate => FieldlineColors.coral,
-      AgentStage.report => FieldlineColors.ink,
+      AgentStage.scope => DavidColors.mist,
+      AgentStage.retrieve => DavidColors.sage,
+      AgentStage.gap => DavidColors.amber,
+      AgentStage.adjudicate => DavidColors.coral,
+      AgentStage.report => DavidColors.ink,
     };
     final shown = step.evidenceIds.take(8).toList();
     final extra = step.evidenceIds.length - shown.length;
@@ -87,10 +87,7 @@ class _StepTile extends StatelessWidget {
       padding: const EdgeInsets.only(left: 12),
       decoration: BoxDecoration(
         border: Border(
-          left: BorderSide(
-            color: isLast ? color : FieldlineColors.line,
-            width: 2,
-          ),
+          left: BorderSide(color: isLast ? color : DavidColors.line, width: 2),
         ),
       ),
       child: PanelCard(
@@ -116,7 +113,7 @@ class _StepTile extends StatelessWidget {
               const SizedBox(height: 8),
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: FieldlineColors.bg,
+                  color: DavidColors.bg,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Padding(
@@ -125,7 +122,7 @@ class _StepTile extends StatelessWidget {
                     step.query!,
                     style: const TextStyle(
                       fontFamily: 'monospace',
-                      color: FieldlineColors.sage,
+                      color: DavidColors.sage,
                       fontSize: 12,
                       height: 1.4,
                     ),
@@ -136,7 +133,7 @@ class _StepTile extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               step.detail,
-              style: const TextStyle(height: 1.4, color: FieldlineColors.muted),
+              style: const TextStyle(height: 1.4, color: DavidColors.muted),
             ),
             if (shown.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -154,7 +151,7 @@ class _StepTile extends StatelessWidget {
                       child: Text(
                         '+$extra',
                         style: const TextStyle(
-                          color: FieldlineColors.faint,
+                          color: DavidColors.faint,
                           fontSize: 12,
                         ),
                       ),

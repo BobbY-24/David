@@ -2,13 +2,13 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_USER: fieldline
-      POSTGRES_PASSWORD: fieldline
-      POSTGRES_DB: fieldline
+      POSTGRES_USER: david
+      POSTGRES_PASSWORD: david
+      POSTGRES_DB: david
     ports:
       - "54329:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U fieldline -d fieldline"]
+      test: ["CMD-SHELL", "pg_isready -U david -d david"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -26,7 +26,7 @@ services:
   api:
     build: .
     environment:
-      DATABASE_URL: postgresql+psycopg://fieldline:fieldline@postgres:5432/fieldline
+      DATABASE_URL: postgresql+psycopg://david:david@postgres:5432/david
       REDIS_URL: redis://redis:6379/0
       REDIS_DISPATCH: "1"
       QUEUE_CAP: "32"
@@ -39,12 +39,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    command: ["uvicorn", "fieldline_lab.api:app", "--host", "0.0.0.0", "--port", "43124"]
+    command: ["uvicorn", "david_lab.api:app", "--host", "0.0.0.0", "--port", "43124"]
 
   worker:
     build: .
     environment:
-      DATABASE_URL: postgresql+psycopg://fieldline:fieldline@postgres:5432/fieldline
+      DATABASE_URL: postgresql+psycopg://david:david@postgres:5432/david
       REDIS_URL: redis://redis:6379/0
       REDIS_DISPATCH: "1"
       QUEUE_CAP: "32"
@@ -59,7 +59,7 @@ services:
       [
         "celery",
         "-A",
-        "fieldline_lab.worker:celery_app",
+        "david_lab.worker:celery_app",
         "worker",
         "--loglevel=INFO",
         "--concurrency=2",

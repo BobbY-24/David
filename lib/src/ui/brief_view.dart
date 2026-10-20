@@ -52,11 +52,7 @@ class BriefView extends StatelessWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(top: 7, right: 8),
-                  child: Icon(
-                    Icons.circle,
-                    size: 6,
-                    color: FieldlineColors.amber,
-                  ),
+                  child: Icon(Icons.circle, size: 6, color: DavidColors.amber),
                 ),
                 Expanded(
                   child: Text(criterion, style: const TextStyle(height: 1.4)),
@@ -83,7 +79,7 @@ class BriefView extends StatelessWidget {
                     pass.text,
                     style: const TextStyle(
                       fontFamily: 'monospace',
-                      color: FieldlineColors.sage,
+                      color: DavidColors.sage,
                       fontSize: 13,
                     ),
                   ),
@@ -98,7 +94,7 @@ class BriefView extends StatelessWidget {
                             'source ${formatSourceKind(pass.sourceKind!)}',
                         ].join(' · '),
                         style: const TextStyle(
-                          color: FieldlineColors.muted,
+                          color: DavidColors.muted,
                           fontSize: 12,
                         ),
                       ),
@@ -118,7 +114,7 @@ class BriefView extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'Required modalities: ${caseFile.expectedModalities.map(formatModality).join(', ')}.',
-          style: const TextStyle(color: FieldlineColors.muted, height: 1.4),
+          style: const TextStyle(color: DavidColors.muted, height: 1.4),
         ),
       ],
     );
@@ -134,9 +130,9 @@ class _Stat extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: FieldlineColors.panel,
+        color: DavidColors.panel,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: FieldlineColors.line),
+        border: Border.all(color: DavidColors.line),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),

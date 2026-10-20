@@ -35,7 +35,7 @@ class ObservationsView extends StatelessWidget {
       children: [
         const Text(
           'Sensor readings stay attached to the instrument, the clock, and the ingest seal. Open a point to read provenance.',
-          style: TextStyle(color: FieldlineColors.muted, height: 1.4),
+          style: TextStyle(color: DavidColors.muted, height: 1.4),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -121,11 +121,11 @@ class _FilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? FieldlineColors.amber : FieldlineColors.panel,
+      color: selected ? DavidColors.amber : DavidColors.panel,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(99),
         side: BorderSide(
-          color: selected ? FieldlineColors.amber : FieldlineColors.line,
+          color: selected ? DavidColors.amber : DavidColors.line,
         ),
       ),
       child: InkWell(
@@ -136,7 +136,7 @@ class _FilterChip extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: selected ? FieldlineColors.amberInk : FieldlineColors.ink,
+              color: selected ? DavidColors.amberInk : DavidColors.ink,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -165,9 +165,7 @@ class _SeriesCard extends StatelessWidget {
     final last = latest.numericValue;
     final delta = first == null || last == null ? null : last - first;
     final rising = delta != null && delta.abs() > 0.0001;
-    final color = rising && delta > 0
-        ? FieldlineColors.amber
-        : FieldlineColors.sage;
+    final color = rising && delta > 0 ? DavidColors.amber : DavidColors.sage;
     return PanelCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +177,7 @@ class _SeriesCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             '${latest.source} · ${formatModality(latest.modality)}',
-            style: const TextStyle(color: FieldlineColors.muted, fontSize: 12),
+            style: const TextStyle(color: DavidColors.muted, fontSize: 12),
           ),
           const SizedBox(height: 8),
           Wrap(
@@ -226,8 +224,8 @@ class _SeriesCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           color: selectedId == unit.id
-                              ? FieldlineColors.amber
-                              : FieldlineColors.muted,
+                              ? DavidColors.amber
+                              : DavidColors.muted,
                         ),
                       ),
                     ),
@@ -262,11 +260,11 @@ class _RecordTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? FieldlineColors.panelRaised : FieldlineColors.panel,
+      color: selected ? DavidColors.panelRaised : DavidColors.panel,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: selected ? FieldlineColors.amber : FieldlineColors.line,
+          color: selected ? DavidColors.amber : DavidColors.line,
         ),
       ),
       child: InkWell(
@@ -284,10 +282,7 @@ class _RecordTile extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 '${unit.source} · ${formatStamp(unit.observedAt)}',
-                style: const TextStyle(
-                  color: FieldlineColors.muted,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: DavidColors.muted, fontSize: 12),
               ),
               const SizedBox(height: 6),
               Text(
