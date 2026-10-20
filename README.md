@@ -1,6 +1,6 @@
-# Fieldline
+# David
 
-Fieldline is an investigation desk for business due diligence and physical-anomaly cases. It keeps sensor readings and records sealed with provenance, retrieves them as grounded evidence, and runs a multi-stage agent that scores competing explanations before writing a decision memo.
+David is built for small businesses and one-person companies, a kind of firm that is becoming more common. It is an investigation desk for due diligence and physical-anomaly cases. It keeps sensor readings and records sealed with provenance, retrieves them as grounded evidence, and runs a multi-stage agent that scores competing explanations before writing a decision memo.
 
 The bundled cases are synthetic fixtures. The desk policy is deterministic and offline (`grounded-control-v2`). The job service uses `fixture-scorer-v1`. Neither calls a live model. A memo, a book weight, a risk band, or a churn score from these fixtures is not a finding about a real site, a real portfolio, a patient, or a customer.
 

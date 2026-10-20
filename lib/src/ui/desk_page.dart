@@ -155,7 +155,7 @@ class _TopBar extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 const Text(
-                  'FIELDLINE',
+                  'DAVID',
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.4,

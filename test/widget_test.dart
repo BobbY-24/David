@@ -13,8 +13,8 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(const FieldlineApp());
-    expect(find.text('FIELDLINE'), findsOneWidget);
+    await tester.pumpWidget(const DavidApp());
+    expect(find.text('DAVID'), findsOneWidget);
     expect(find.text('Harbor Substation 4'), findsWidgets);
     expect(find.text('Run investigation'), findsOneWidget);
 
@@ -63,7 +63,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(const FieldlineApp());
+    await tester.pumpWidget(const DavidApp());
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Observations'));
@@ -95,7 +95,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(FieldlineApp(jobClient: _FakeJobs()));
+    await tester.pumpWidget(DavidApp(jobClient: _FakeJobs()));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Jobs'));
     await tester.pumpAndSettle();

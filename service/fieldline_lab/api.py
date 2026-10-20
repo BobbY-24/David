@@ -57,7 +57,7 @@ async def lifespan(_app: FastAPI):
         thread.join(timeout=1)
 
 
-app = FastAPI(title="Fieldline jobs", lifespan=lifespan)
+app = FastAPI(title="David jobs", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

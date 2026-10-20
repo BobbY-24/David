@@ -1,4 +1,4 @@
-/// Domain types for a Fieldline investigation.
+/// Domain types for a David investigation.
 ///
 /// Evidence units are the retrieval atoms. A case carries the brief, the sealed
 /// corpus, the planned retrieval passes, and the competing explanations the
