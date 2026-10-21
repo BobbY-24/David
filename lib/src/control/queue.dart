@@ -47,7 +47,7 @@ class EngagementQueue {
     await _lane.acquire();
     try {
       await Future<void>.delayed(Duration.zero);
-      return _provider.run(engagement);
+      return await _provider.runAsync(engagement);
     } finally {
       _lane.release();
     }

@@ -8,7 +8,7 @@ The Jobs tab submits work to a single-host service.
 - A full lane returns HTTP 429.
 - `GET /v1/metrics` reports queue depth, throughput over the last minute, and p95/p99 queue wait and end-to-end latency.
 - CORS allows only the desk dev server (`http://127.0.0.1:43123` and `http://localhost:43123`) by default. Set `CORS_ORIGINS` to a comma-separated list to change that.
-- The API has no authentication, so keep it on a local host.
+- The job routes have no authentication, so keep the service on a local host. The vault and model routes accept an optional `DAVID_API_TOKEN`.
 
 ## Job kinds
 
@@ -17,6 +17,18 @@ The Jobs tab submits work to a single-host service.
   - The service ports the desk phrase matcher, and its tests check it against every match verdict the desk exported.
   - It sums signature weights without BM25, so a margin is on a different scale from the desk's. The desk agent is still the citation path.
 - **Probe.** A load-test job that does nothing but optionally sleep.
+
+## Key vault and model routes
+
+These let the desk use your own Claude key. See [Your own model key](KEYS.md) for how the key is stored and what the model sees.
+
+| Route | Purpose |
+|---|---|
+| `GET /v1/vault` | Status only: whether a key is saved, its last four characters, today's usage, and the allowed models. |
+| `PUT /v1/vault/anthropic` | Verifies a key with a free call, then stores it encrypted. Admin keys are refused. |
+| `POST /v1/vault/anthropic/verify` | Re-checks the saved key. |
+| `DELETE /v1/vault/anthropic` | Removes it. |
+| `POST /v1/model/judge` | Scores retrieved evidence for an engagement. Reads the sealed text itself and enforces the model allowlist and the daily cap. |
 
 ## Run it locally
 
@@ -27,7 +39,7 @@ python -m venv .venv
 .venv/bin/pip install -r requirements.txt
 export DATABASE_URL=postgresql+psycopg://david:david@127.0.0.1:5432/david
 export REDIS_URL=redis://127.0.0.1:6379/0
-.venv/bin/uvicorn david_lab.api:app --host 0.0.0.0 --port 43124
+.venv/bin/uvicorn david_lab.api:app --host 127.0.0.1 --port 43124
 .venv/bin/celery -A david_lab.worker:celery_app worker --loglevel=INFO --concurrency=2
 ```
 
@@ -41,7 +53,7 @@ Compose runs the same four processes:
 docker compose -f service/docker-compose.yml up --build
 ```
 
-That publishes the API on port 43124, Postgres on 54329, and Redis on 63799.
+That publishes the API on port 43124, Postgres on 54329, and Redis on 63799, all on `127.0.0.1` only. Postgres data and the key vault's master key live in the `pgdata` and `david-data` volumes.
 
 ## Tests
 

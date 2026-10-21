@@ -39,3 +39,18 @@ def cors_origins() -> list[str]:
         "http://127.0.0.1:43123,http://localhost:43123",
     )
     return [origin.strip() for origin in raw.split(",") if origin.strip()]
+
+
+def data_dir() -> str:
+    """Where the master key file lives when DAVID_MASTER_KEY is not set."""
+    return os.environ.get("DAVID_DATA_DIR") or os.path.join(os.path.expanduser("~"), ".david")
+
+
+def api_token() -> str | None:
+    """Optional shared secret for the vault and model routes (X-David-Token)."""
+    return os.environ.get("DAVID_API_TOKEN") or None
+
+
+def model_calls_per_day() -> int:
+    """Hard cap on model calls per UTC day through the user's key."""
+    return int(os.environ.get("DAVID_MAX_MODEL_CALLS_PER_DAY", "100"))

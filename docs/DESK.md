@@ -10,6 +10,7 @@ The desk is the Flutter web app. Each engagement opens on its own brief and has 
 - **Report.** Decision memo. Every citation is an id retrieved in that run.
 - **Control.** The loop the router picked, the rails, the panel seats, and the audit log.
 - **Jobs.** Submits engagements to the job service. See [Job service](JOB_SERVICE.md).
+- **Settings.** Connect your own Claude key, choose the model, and choose between the offline demo and Claude. See [Your own model key](KEYS.md).
 
 ## How negation is handled
 
@@ -21,12 +22,20 @@ A phrase does not count when `no`, `not`, `without`, `never`, or `none` appears 
 
 ## Providers
 
-`EngagementProvider` is where a run's reasoning comes from. P0 ships only `DemoProvider`, which is offline and deterministic: it scores hand-written phrase signatures over BM25 retrieval. A model-backed provider will run in the job service with the customer's own key, and will still have to cite only ids its run retrieved. A provider key never belongs in this client.
+`EngagementProvider` is where a run's reasoning comes from. There are two.
+
+- **`DemoProvider`** is offline and deterministic. It scores hand-written phrase signatures over BM25 retrieval and needs no key.
+- **`ModelProvider`** scores with your own Claude key. It retrieves offline first, asks the job service for per-risk evidence weights, then runs the agent again with those weights, so the router, the panel seats, the memo, and the rails apply unchanged. It can only cite ids the run retrieved. See [Your own model key](KEYS.md).
+
+A provider key never belongs in this client: it lives encrypted in the job service. Both providers sit behind `RiskScorer`, so a run differs only in how a risk is weighed.
 
 ## Code map
 
 - `lib/src/retrieval/evidence_index.dart` searches one engagement's corpus.
 - `lib/src/agent/provider.dart` defines `EngagementProvider` and `DemoProvider`.
+- `lib/src/agent/scorer.dart` defines `RiskScorer`, `PhraseScorer`, and `ModelScorer`.
+- `lib/src/agent/model_provider.dart` runs an engagement on the user's Claude key.
+- `lib/src/jobs/model_service.dart` is the desk's client for the key vault and the model route.
 - `lib/src/agent/engagement_agent.dart` runs the routed engagement.
 - `lib/src/control/` holds the router, rails, tool gateway, and queue.
 - `lib/src/data/` holds Brightline Supply, Corvid Retail, and Northline Logistics.

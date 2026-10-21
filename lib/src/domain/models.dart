@@ -260,9 +260,14 @@ class AgentRun {
     required this.judgments,
     required this.report,
     required this.control,
+    this.providerId = demoProviderId,
+    this.modelId,
+    this.inputTokens = 0,
+    this.outputTokens = 0,
   });
 
   static const policyIdValue = 'grounded-control-v4';
+  static const demoProviderId = 'demo-provider';
 
   final String caseId;
   final String policyId;
@@ -271,6 +276,36 @@ class AgentRun {
   final List<RiskJudgment> judgments;
   final InvestigationReport report;
   final ControlRecord control;
+
+  /// Which provider scored the risks, and the model when one did.
+  final String providerId;
+  final String? modelId;
+  final int inputTokens;
+  final int outputTokens;
+
+  bool get usedModel => modelId != null;
+
+  AgentRun withModel({
+    required String providerId,
+    required String modelId,
+    required int inputTokens,
+    required int outputTokens,
+    List<AgentStep>? steps,
+  }) {
+    return AgentRun(
+      caseId: caseId,
+      policyId: policyId,
+      steps: steps ?? this.steps,
+      retrieved: retrieved,
+      judgments: judgments,
+      report: report,
+      control: control,
+      providerId: providerId,
+      modelId: modelId,
+      inputTokens: inputTokens,
+      outputTokens: outputTokens,
+    );
+  }
 }
 
 enum AgentLoopKind { planExecute, react, panelVote }

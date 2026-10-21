@@ -65,6 +65,7 @@
         {
           "id": "delivery-reliability",
           "title": "Delivery reliability risk",
+          "statement": "The vendor is real and solvent but misses delivery dates in peak season.",
           "support": [
             [
               "late deliveries",
@@ -89,6 +90,7 @@
         {
           "id": "shell-or-fraud",
           "title": "Shell company or fraud",
+          "statement": "The vendor is not a real operating business and the prepayment would be lost.",
           "support": [
             [
               "mail drop address",
@@ -117,6 +119,7 @@
         {
           "id": "financial-distress",
           "title": "Financial distress",
+          "statement": "The vendor is short of cash and may not survive the contract term.",
           "support": [
             [
               "overdrawn",
@@ -141,6 +144,7 @@
         {
           "id": "clean-vendor",
           "title": "No material risk",
+          "statement": "The vendor is established and reliable, so standard prepayment terms are fine.",
           "support": [
             [
               "good standing",
@@ -221,6 +225,7 @@
         {
           "id": "successor-entity",
           "title": "Trading through a successor entity",
+          "statement": "The old company dissolved and the business now trades through a new entity at the same address.",
           "support": [
             [
               "new entity",
@@ -245,6 +250,7 @@
         {
           "id": "phoenix-fraud",
           "title": "Phoenix company",
+          "statement": "The owners dissolved the company to walk away from its debts and restarted under a new name.",
           "support": [
             [
               "dissolved",
@@ -269,6 +275,7 @@
         {
           "id": "slow-payer",
           "title": "Slow payer",
+          "statement": "The customer is real but pays well beyond terms.",
           "support": [
             [
               "beyond terms",
@@ -289,6 +296,7 @@
         {
           "id": "healthy-customer",
           "title": "Healthy customer",
+          "statement": "The customer is established and pays on time, so 60-day terms are fine.",
           "support": [
             [
               "paid within terms",
@@ -424,6 +432,7 @@
         {
           "id": "related-party-round-trip",
           "title": "Related-party round trip",
+          "statement": "The revenue spike is supported by a related-party customer that shares the target registered agent, so the quarter may be circular.",
           "support": [
             [
               "related party",
@@ -448,6 +457,7 @@
         {
           "id": "channel-stuffing",
           "title": "Bill-and-hold channel stuffing",
+          "statement": "The target billed revenue on bill-and-hold terms without a matching rise in throughput or cash.",
           "support": [
             [
               "bill-and-hold",
@@ -476,6 +486,7 @@
         {
           "id": "legitimate-seasonal",
           "title": "Legitimate seasonal demand",
+          "statement": "The quarter is a real seasonal demand peak from a new independent contract.",
           "support": [
             [
               "seasonal peak",
@@ -504,6 +515,7 @@
         {
           "id": "telematics-defect",
           "title": "Telematics integration defect",
+          "statement": "The miles decline is a broken telematics integration, not weaker operating throughput.",
           "support": [
             [
               "integration defect",

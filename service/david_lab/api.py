@@ -1,27 +1,35 @@
+import hmac
 import json
 import logging
+import re
 import threading
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
-from . import SCORER_ID
+from . import SCORER_ID, llm
 from .db import session_factory
 from .errors import IdempotencyConflict, QueueFull
 from .metrics import prometheus
-from .runners import catalog
+from .runners import _CASES, catalog
 from .service import JobService, init_db
-from .settings import cors_origins, sweep_enabled
+from .settings import api_token, cors_origins, sweep_enabled
+from .vault import KeyMissing, KeyUnreadable, Vault, VaultError, VaultUnavailable
 from .worker import dispatch_job, dispatch_job_later
 
 log = logging.getLogger("david")
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 service = JobService(dispatch=dispatch_job, dispatch_later=dispatch_job_later)
+vault = Vault()
+meter = llm.UsageMeter()
+
+_KEY_PATTERN = re.compile(r"sk-ant-[A-Za-z0-9_\-]{16,380}")
 
 
 class JobRequest(BaseModel):
@@ -62,9 +70,60 @@ app = FastAPI(title="David jobs", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins(),
-    allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type", "Idempotency-Key"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Content-Type", "Idempotency-Key", "X-David-Token"],
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def _validation_error(_request, exc: RequestValidationError):
+    # The default body repeats the submitted value, which could be an API key.
+    errors = [{"loc": list(e.get("loc", [])), "msg": e.get("msg"), "type": e.get("type")} for e in exc.errors()]
+    return JSONResponse(status_code=422, content={"detail": errors})
+
+
+def require_token(x_david_token: str | None = Header(default=None, alias="X-David-Token")) -> None:
+    """Optional shared secret. When DAVID_API_TOKEN is set, vault and model routes need it."""
+    expected = api_token()
+    if expected is None:
+        return
+    if x_david_token is None or not hmac.compare_digest(x_david_token.encode(), expected.encode()):
+        raise HTTPException(status_code=401, detail={"code": "token_required", "message": "A valid X-David-Token header is required."})
+
+
+_STATUS = {
+    "key_rejected": 400, "key_format": 400, "admin_key": 400, "bad_request": 400,
+    "model_unreachable": 502, "model_output_invalid": 502, "model_busy": 429,
+    "daily_cap_reached": 429, "model_refused": 422, "key_missing": 409,
+    "key_unreadable": 409, "vault_unavailable": 503,
+}
+
+
+def _fail(code: str, message: str, status: int | None = None, headers: dict | None = None) -> HTTPException:
+    return HTTPException(status_code=status or _STATUS.get(code, 400), detail={"code": code, "message": message}, headers=headers)
+
+
+def _model_http(exc: llm.ModelError) -> HTTPException:
+    headers = {"Retry-After": str(exc.retry_after)} if isinstance(exc, llm.ModelBusy) else None
+    return _fail(exc.code, str(exc), headers=headers)
+
+
+def _vault_http(exc: VaultError) -> HTTPException:
+    if isinstance(exc, KeyMissing):
+        return _fail("key_missing", str(exc))
+    if isinstance(exc, KeyUnreadable):
+        return _fail("key_unreadable", str(exc))
+    return _fail("vault_unavailable", str(exc))
+
+
+def _vault_view() -> dict:
+    return {
+        "vault": vault.readiness(),
+        "anthropic": vault.status(llm.PROVIDER),
+        "usage": meter.snapshot(),
+        "models": list(llm.ALLOWED_MODELS),
+        "default_model": llm.DEFAULT_MODEL,
+    }
 
 
 @app.get("/v1/health")
@@ -120,3 +179,82 @@ def metrics_json():
 @app.get("/metrics")
 def metrics_prom():
     return PlainTextResponse(prometheus(service.metrics()), media_type="text/plain; version=0.0.4")
+
+
+@app.get("/v1/vault")
+def vault_status(_auth: None = Depends(require_token)):
+    return _vault_view()
+
+
+class KeyBody(BaseModel):
+    key: str = Field(min_length=1, max_length=400)
+
+
+@app.put("/v1/vault/anthropic")
+def save_key(body: KeyBody, _auth: None = Depends(require_token)):
+    key = body.key.strip()
+    if key.startswith("sk-ant-admin"):
+        raise _fail("admin_key", "That is an admin key. Use a regular API key that can only call models.")
+    if not _KEY_PATTERN.fullmatch(key):
+        raise _fail("key_format", "This does not look like an Anthropic API key.")
+    ready = vault.readiness()
+    if not ready["ready"]:
+        raise _fail("vault_unavailable", ready["reason"] or "The key vault is not available.")
+    try:
+        llm.verify_key(key)
+    except llm.ModelError as exc:
+        raise _model_http(exc) from None
+    try:
+        vault.put(llm.PROVIDER, key)
+    except VaultError as exc:
+        raise _vault_http(exc) from None
+    vault.mark_verified(llm.PROVIDER)
+    _event("vault_key_saved", provider=llm.PROVIDER)
+    return _vault_view()
+
+
+@app.post("/v1/vault/anthropic/verify")
+def verify_saved_key(_auth: None = Depends(require_token)):
+    try:
+        key = vault.get(llm.PROVIDER)
+        llm.verify_key(key)
+    except VaultError as exc:
+        raise _vault_http(exc) from None
+    except llm.ModelError as exc:
+        raise _model_http(exc) from None
+    vault.mark_verified(llm.PROVIDER)
+    return _vault_view()
+
+
+@app.delete("/v1/vault/anthropic")
+def remove_key(_auth: None = Depends(require_token)):
+    removed = vault.delete(llm.PROVIDER)
+    _event("vault_key_removed", provider=llm.PROVIDER, removed=removed)
+    return _vault_view()
+
+
+class JudgeRequest(BaseModel):
+    engagement_id: str = Field(min_length=1, max_length=80)
+    evidence_ids: list[str] = Field(min_length=1, max_length=200)
+    model: str = llm.DEFAULT_MODEL
+
+
+@app.post("/v1/model/judge")
+def model_judge(body: JudgeRequest, _auth: None = Depends(require_token)):
+    case = _CASES.get(body.engagement_id)
+    if case is None:
+        raise HTTPException(status_code=404, detail={"code": "unknown_engagement", "message": "No engagement with that id."})
+    if body.model not in llm.ALLOWED_MODELS:
+        raise _fail("bad_request", "That model is not allowed.")
+    try:
+        key = vault.get(llm.PROVIDER)
+    except VaultError as exc:
+        raise _vault_http(exc) from None
+    try:
+        result = llm.judge(key, case, body.evidence_ids, body.model, meter)
+    except ValueError as exc:
+        raise _fail("bad_request", str(exc)) from None
+    except llm.ModelError as exc:
+        raise _model_http(exc) from None
+    _event("model_judged", engagement=body.engagement_id, model=result["model"], **result["usage"])
+    return result

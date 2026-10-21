@@ -2,21 +2,53 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../agent/model_provider.dart';
 import '../agent/provider.dart';
 import '../data/engagement_packs.dart';
 import '../domain/models.dart';
 import '../jobs/job_client.dart';
+import '../jobs/model_service.dart';
 import '../retrieval/evidence_index.dart';
 
-enum DeskTab { brief, evidence, retrieve, agent, risks, report, control, jobs }
+enum DeskTab {
+  brief,
+  evidence,
+  retrieve,
+  agent,
+  risks,
+  report,
+  control,
+  jobs,
+  settings,
+}
 
 class DeskController extends ChangeNotifier {
-  DeskController({EngagementProvider? provider, JobClient? jobClient})
-    : provider = provider ?? const DemoProvider(),
-      _jobs = jobClient ?? HttpJobClient();
+  DeskController({
+    EngagementProvider? provider,
+    JobClient? jobClient,
+    ModelService? modelService,
+  }) : demoProvider = provider ?? const DemoProvider(),
+       _jobs = jobClient ?? HttpJobClient(),
+       _models = modelService ?? HttpModelService();
 
-  final EngagementProvider provider;
+  /// The offline provider. Always available, needs no key.
+  final EngagementProvider demoProvider;
   final JobClient _jobs;
+  final ModelService _models;
+
+  /// What the service says about the saved key. Never the key itself.
+  VaultStatus? vault;
+  bool vaultBusy = false;
+  String? vaultError;
+
+  /// Run with the user's Claude key instead of the offline demo.
+  bool useModel = false;
+  String model = ModelProvider.defaultModel;
+
+  bool get modelActive => useModel && (vault?.usable ?? false);
+
+  EngagementProvider get provider =>
+      modelActive ? ModelProvider(judge: _models, model: model) : demoProvider;
   Timer? _poll;
   ServiceBoard? board;
   ServiceJob? serviceJob;
@@ -84,6 +116,99 @@ class DeskController extends ChangeNotifier {
     notifyListeners();
     if (next == DeskTab.jobs) {
       refreshBoard();
+    }
+    if (next == DeskTab.settings) {
+      refreshVault();
+    }
+  }
+
+  Future<void> refreshVault() async {
+    vaultBusy = true;
+    notifyListeners();
+    try {
+      _adopt(await _models.status());
+    } on ModelServiceException catch (caught) {
+      vault = null;
+      vaultError = caught.message;
+      useModel = false;
+    } finally {
+      vaultBusy = false;
+      notifyListeners();
+    }
+  }
+
+  /// Sends the key to the service. The key is not stored here.
+  Future<bool> saveKey(String key) async {
+    vaultBusy = true;
+    vaultError = null;
+    notifyListeners();
+    try {
+      _adopt(await _models.saveKey(key));
+      useModel = vault?.usable ?? false;
+      return true;
+    } on ModelServiceException catch (caught) {
+      vaultError = caught.message;
+      return false;
+    } finally {
+      vaultBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> verifyKey() async {
+    vaultBusy = true;
+    vaultError = null;
+    notifyListeners();
+    try {
+      _adopt(await _models.verifyKey());
+    } on ModelServiceException catch (caught) {
+      vaultError = caught.message;
+    } finally {
+      vaultBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> removeKey() async {
+    vaultBusy = true;
+    vaultError = null;
+    notifyListeners();
+    try {
+      _adopt(await _models.removeKey());
+      useModel = false;
+    } on ModelServiceException catch (caught) {
+      vaultError = caught.message;
+    } finally {
+      vaultBusy = false;
+      notifyListeners();
+    }
+  }
+
+  void setUseModel(bool value) {
+    useModel = value && (vault?.usable ?? false);
+    notifyListeners();
+  }
+
+  void setModel(String value) {
+    model = value;
+    notifyListeners();
+  }
+
+  Future<void> setServiceToken(String token) async {
+    _models.setToken(token);
+    await refreshVault();
+  }
+
+  void _adopt(VaultStatus status) {
+    vault = status;
+    vaultError = null;
+    if (!status.usable) {
+      useModel = false;
+    }
+    if (status.models.isNotEmpty && !status.models.contains(model)) {
+      model = status.defaultModel.isNotEmpty
+          ? status.defaultModel
+          : status.models.first;
     }
   }
 
@@ -211,14 +336,24 @@ class DeskController extends ChangeNotifier {
       notifyListeners();
       return;
     }
+    final usedModel = modelActive;
     try {
-      run = provider.run(current);
+      final result = await provider.runAsync(current);
+      if (caseId != current.id) {
+        return;
+      }
+      run = result;
       tab = DeskTab.agent;
+    } on ModelServiceException catch (caught) {
+      error = caught.message;
     } catch (caught) {
       error = 'The investigation policy stopped: $caught';
     } finally {
       running = false;
       notifyListeners();
+    }
+    if (usedModel) {
+      unawaited(refreshVault());
     }
   }
 }

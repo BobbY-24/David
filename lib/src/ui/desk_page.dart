@@ -4,6 +4,7 @@ import '../domain/format.dart';
 import '../domain/models.dart';
 import '../state/desk_controller.dart';
 import '../jobs/job_client.dart';
+import '../jobs/model_service.dart';
 import 'agent_view.dart';
 import 'brief_view.dart';
 import 'control_view.dart';
@@ -12,13 +13,15 @@ import 'jobs_view.dart';
 import 'evidence_view.dart';
 import 'report_view.dart';
 import 'retrieval_view.dart';
+import 'settings_view.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
 class DeskPage extends StatefulWidget {
-  const DeskPage({super.key, this.jobClient});
+  const DeskPage({super.key, this.jobClient, this.modelService});
 
   final JobClient? jobClient;
+  final ModelService? modelService;
 
   @override
   State<DeskPage> createState() => _DeskPageState();
@@ -30,7 +33,10 @@ class _DeskPageState extends State<DeskPage> {
   @override
   void initState() {
     super.initState();
-    desk = DeskController(jobClient: widget.jobClient);
+    desk = DeskController(
+      jobClient: widget.jobClient,
+      modelService: widget.modelService,
+    );
   }
 
   @override
@@ -122,6 +128,7 @@ class _DeskPageState extends State<DeskPage> {
       DeskTab.report => ReportView(desk: desk),
       DeskTab.control => ControlView(desk: desk),
       DeskTab.jobs => JobsView(desk: desk),
+      DeskTab.settings => SettingsView(desk: desk),
     };
   }
 }
@@ -356,7 +363,13 @@ class _CaseHeader extends StatelessWidget {
           final button = FilledButton(
             key: runDiligenceKey,
             onPressed: desk.running ? null : desk.runDiligence,
-            child: Text(desk.running ? 'Running…' : 'Run diligence'),
+            child: Text(
+              desk.running
+                  ? 'Running…'
+                  : desk.modelActive
+                  ? 'Run with Claude'
+                  : 'Run diligence',
+            ),
           );
           if (stacked) {
             return Column(
@@ -394,6 +407,7 @@ class _TabStrip extends StatelessWidget {
       (DeskTab.report, 'Report'),
       (DeskTab.control, 'Control'),
       (DeskTab.jobs, 'Jobs'),
+      (DeskTab.settings, 'Settings'),
     ];
     return DecoratedBox(
       decoration: const BoxDecoration(

@@ -193,9 +193,11 @@ class ReportView extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Decision support only, not legal, credit, or investment advice. The demo provider ranks sealed fixture evidence and did not call a live model.',
-                        style: TextStyle(
+                      Text(
+                        run.usedModel
+                            ? 'Decision support only, not legal, credit, or investment advice. ${run.modelId} weighed the evidence on your key (${run.inputTokens} tokens in, ${run.outputTokens} out). Every citation was checked against what this run retrieved, and David computed the decision from the weights.'
+                            : 'Decision support only, not legal, credit, or investment advice. The demo provider ranks sealed fixture evidence and did not call a live model.',
+                        style: const TextStyle(
                           color: DavidColors.memoMuted,
                           fontSize: 12,
                           height: 1.45,
