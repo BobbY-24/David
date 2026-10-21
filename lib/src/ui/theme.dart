@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 
 class DavidColors {
-  static const bg = Color(0xFF101410);
-  static const panel = Color(0xFF18201B);
-  static const panelRaised = Color(0xFF212A24);
-  static const line = Color(0xFF314038);
-  static const ink = Color(0xFFEBE6DA);
-  static const muted = Color(0xFFA8B1A4);
-  static const faint = Color(0xFF6E786F);
-  static const amber = Color(0xFFE0A045);
-  static const amberInk = Color(0xFF1C1408);
-  static const sage = Color(0xFF8FBF9F);
-  static const coral = Color(0xFFE07A5F);
-  static const mist = Color(0xFF8EB4C8);
-  static const memo = Color(0xFFF4F0E6);
-  static const memoInk = Color(0xFF1C2118);
-  static const memoMuted = Color(0xFF5C6558);
-  static const memoRule = Color(0xFFD9D2C3);
+  static const bg = Color(0xFF0A1424);
+  static const panel = Color(0xFF102038);
+  static const panelRaised = Color(0xFF16294A);
+  static const line = Color(0xFF24395C);
+  static const ink = Color(0xFFE8ECF2);
+  static const muted = Color(0xFF9AA8BC);
+  static const faint = Color(0xFF66758C);
+  static const brass = Color(0xFFC9A45C);
+  static const brassInk = Color(0xFF14100A);
+  static const positive = Color(0xFF3FA57A);
+  static const negative = Color(0xFFD25B5B);
+  static const steel = Color(0xFF7FA6D6);
+  static const memo = Color(0xFFFAFAF7);
+  static const memoInk = Color(0xFF0B1424);
+  static const memoMuted = Color(0xFF55627A);
+  static const memoRule = Color(0xFFD8DCE3);
 }
 
 ThemeData davidTheme() {
   const scheme = ColorScheme.dark(
     surface: DavidColors.panel,
-    primary: DavidColors.amber,
-    onPrimary: DavidColors.amberInk,
-    secondary: DavidColors.sage,
-    onSecondary: DavidColors.amberInk,
-    error: DavidColors.coral,
+    primary: DavidColors.brass,
+    onPrimary: DavidColors.brassInk,
+    secondary: DavidColors.positive,
+    onSecondary: DavidColors.brassInk,
+    error: DavidColors.negative,
     onSurface: DavidColors.ink,
   );
   final base = ThemeData(
@@ -44,8 +44,8 @@ ThemeData davidTheme() {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: DavidColors.amber,
-        foregroundColor: DavidColors.amberInk,
+        backgroundColor: DavidColors.brass,
+        foregroundColor: DavidColors.brassInk,
         textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -74,7 +74,7 @@ ThemeData davidTheme() {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: DavidColors.amber),
+        borderSide: const BorderSide(color: DavidColors.brass),
       ),
     ),
   );

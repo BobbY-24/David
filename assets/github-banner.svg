@@ -1,18 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title description">
   <title id="title">David — due diligence for one-person companies</title>
-  <desc id="description">David's amber checklist mark and wordmark on a light card. Your deal. Your evidence. A memo you approve.</desc>
-  <rect x="1" y="1" width="1198" height="318" rx="20" fill="#f4f0e6" stroke="#d9d2c3"/>
-  <g transform="translate(70 105)" aria-hidden="true">
-    <rect x="0" y="0" width="120" height="110" rx="22" fill="#e0a045"/>
-    <path d="M14 26l7 7 13-15" fill="none" stroke="#1c1408" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="48" y="19" width="50" height="10" rx="5" fill="#1c1408"/>
-    <path d="M14 55l7 7 13-15" fill="none" stroke="#1c1408" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="48" y="48" width="38" height="10" rx="5" fill="#1c1408"/>
-    <path d="M14 84l7 7 13-15" fill="none" stroke="#1c1408" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="48" y="77" width="44" height="10" rx="5" fill="#1c1408"/>
+  <desc id="description">David's brass tile with a black line-art portrait of a finance associate: slicked-back hair, glasses, collar and tie. Your deal. Your evidence. A memo you approve.</desc>
+  <rect x="1" y="1" width="1198" height="318" rx="20" fill="#0A1424" stroke="#24395C"/>
+  <svg x="60" y="40" width="240" height="240" viewBox="0 0 512 512" aria-hidden="true">
+  
+  <rect width="512" height="512" rx="112" fill="#c9a45c"/>
+  <g fill="none" stroke="#0e0e0e" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <!-- shoulders and collar -->
+    <path d="M120 470C136 420 186 396 256 396C326 396 376 420 392 470"/>
+    <path d="M200 372L256 404L312 372"/>
+    <!-- tie -->
+    <path d="M248 404H264L268 418H244Z"/>
+    <path d="M244 418H268L274 470L256 486L238 470Z"/>
+    <!-- head -->
+    <path d="M256 130C330 130 352 186 352 250V290C352 340 310 372 256 372C202 372 160 340 160 290V250C160 186 182 130 256 130Z"/>
+    <!-- ears -->
+    <path d="M160 236C140 236 132 256 136 276C140 294 152 300 160 298"/>
+    <path d="M352 236C372 236 380 256 376 276C372 294 360 300 352 298"/>
+    <!-- slicked-back hair with comb lines -->
+    <path d="M158 214C146 150 186 98 262 96C338 94 372 146 356 214C340 176 316 160 282 152C250 166 206 170 158 214Z"/>
+    <path d="M184 196C212 160 262 146 326 158"/>
+    <!-- glasses -->
+    <rect x="176" y="232" width="70" height="46" rx="12"/>
+    <rect x="266" y="232" width="70" height="46" rx="12"/>
+    <path d="M246 246Q256 240 266 246"/>
+    <path d="M176 246L160 240"/>
+    <path d="M336 246L352 240"/>
+    <!-- nose and smirk -->
+    <path d="M256 282C252 296 250 304 258 306"/>
+    <path d="M226 330C244 344 272 344 290 330"/>
   </g>
+</svg>
   <g font-family="Arial, Helvetica, sans-serif">
-    <text x="214" y="170" font-size="120" font-weight="700" letter-spacing="-3" fill="#1c2118">David</text>
-    <text x="218" y="232" font-size="38" fill="#5c6558">Your deal. Your evidence. A memo you approve.</text>
+    <text x="336" y="176" font-size="120" font-weight="700" letter-spacing="-3" fill="#E8ECF2">David</text>
+    <text x="340" y="236" font-size="38" fill="#9AA8BC">Your deal. Your evidence. A memo you approve.</text>
   </g>
 </svg>

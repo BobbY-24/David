@@ -52,7 +52,7 @@ class BriefView extends StatelessWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(top: 7, right: 8),
-                  child: Icon(Icons.circle, size: 6, color: DavidColors.amber),
+                  child: Icon(Icons.circle, size: 6, color: DavidColors.brass),
                 ),
                 Expanded(
                   child: Text(criterion, style: const TextStyle(height: 1.4)),
@@ -79,7 +79,7 @@ class BriefView extends StatelessWidget {
                     pass.text,
                     style: const TextStyle(
                       fontFamily: 'monospace',
-                      color: DavidColors.sage,
+                      color: DavidColors.positive,
                       fontSize: 13,
                     ),
                   ),

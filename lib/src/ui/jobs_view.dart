@@ -51,7 +51,7 @@ class JobsView extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             desk.serviceError!,
-            style: const TextStyle(color: DavidColors.coral, height: 1.4),
+            style: const TextStyle(color: DavidColors.negative, height: 1.4),
           ),
         ],
       ],
@@ -132,7 +132,7 @@ class _CatalogCard extends StatelessWidget {
           Text(
             item.kind.toUpperCase(),
             style: const TextStyle(
-              color: DavidColors.amber,
+              color: DavidColors.brass,
               fontSize: 10,
               letterSpacing: 0.8,
               fontWeight: FontWeight.w700,
@@ -204,7 +204,7 @@ class _Latest extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               job!.error!,
-              style: const TextStyle(color: DavidColors.coral, height: 1.4),
+              style: const TextStyle(color: DavidColors.negative, height: 1.4),
             ),
           ],
         ],

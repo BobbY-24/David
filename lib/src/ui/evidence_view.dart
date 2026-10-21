@@ -122,11 +122,11 @@ class _FilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? DavidColors.amber : DavidColors.panel,
+      color: selected ? DavidColors.brass : DavidColors.panel,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(99),
         side: BorderSide(
-          color: selected ? DavidColors.amber : DavidColors.line,
+          color: selected ? DavidColors.brass : DavidColors.line,
         ),
       ),
       child: InkWell(
@@ -137,7 +137,7 @@ class _FilterChip extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: selected ? DavidColors.amberInk : DavidColors.ink,
+              color: selected ? DavidColors.brassInk : DavidColors.ink,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -166,7 +166,9 @@ class _SeriesCard extends StatelessWidget {
     final last = latest.numericValue;
     final delta = first == null || last == null ? null : last - first;
     final rising = delta != null && delta.abs() > 0.0001;
-    final color = rising && delta > 0 ? DavidColors.amber : DavidColors.sage;
+    final color = rising && delta > 0
+        ? DavidColors.brass
+        : DavidColors.positive;
     return PanelCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,7 +227,7 @@ class _SeriesCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           color: selectedId == unit.id
-                              ? DavidColors.amber
+                              ? DavidColors.brass
                               : DavidColors.muted,
                         ),
                       ),
@@ -265,7 +267,7 @@ class _RecordTile extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: selected ? DavidColors.amber : DavidColors.line,
+          color: selected ? DavidColors.brass : DavidColors.line,
         ),
       ),
       child: InkWell(
