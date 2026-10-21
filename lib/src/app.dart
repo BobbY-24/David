@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'jobs/engagement_service.dart';
 import 'jobs/job_client.dart';
 import 'jobs/model_service.dart';
 import 'jobs/spec_service.dart';
@@ -12,11 +13,13 @@ class DavidApp extends StatelessWidget {
     this.jobClient,
     this.modelService,
     this.specService,
+    this.engagementService,
   });
 
   final JobClient? jobClient;
   final ModelService? modelService;
   final SpecService? specService;
+  final EngagementService? engagementService;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +31,7 @@ class DavidApp extends StatelessWidget {
         jobClient: jobClient,
         modelService: modelService,
         specService: specService,
+        engagementService: engagementService,
       ),
     );
   }

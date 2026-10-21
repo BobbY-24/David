@@ -147,6 +147,10 @@ class Vault:
     def _session(self) -> Session:
         return self._factory()
 
+    def master_key(self, create: bool) -> bytes | None:
+        """The master key, for other sealed stores in this service."""
+        return self._master_key(create)
+
     def readiness(self) -> dict:
         """Whether a key could be saved right now, without creating anything."""
         try:
