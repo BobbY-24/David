@@ -7,6 +7,22 @@ import '../domain/models.dart';
 import '../retrieval/evidence_index.dart';
 import 'scorer.dart';
 
+/// A deal-breaker counts once its net reaches this and it has support.
+const _dealBreakerNet = 1.0;
+
+/// The phrases a risk is probed with. A user risk has none, so it is probed
+/// with its title and statement instead.
+String _probeQuery(RiskQuestion risk) {
+  final phrases = [
+    ...risk.support.map((signature) => signature.phrase),
+    ...risk.contradict.map((signature) => signature.phrase),
+  ];
+  if (phrases.isNotEmpty) {
+    return phrases.join(' ');
+  }
+  return '${risk.title} ${risk.statement}';
+}
+
 class _Execution {
   const _Execution({
     required this.steps,
@@ -332,10 +348,7 @@ class EngagementAgent {
       }
       probed.add(next);
       final risk = engagement.riskQuestions[next];
-      final query = [
-        ...risk.support.map((signature) => signature.phrase),
-        ...risk.contradict.map((signature) => signature.phrase),
-      ].join(' ');
+      final query = _probeQuery(risk);
       if (!seen.add('probe:$query')) {
         break;
       }
@@ -632,10 +645,7 @@ class EngagementAgent {
   ) {
     for (var i = 0; i < engagement.riskQuestions.length; i++) {
       final risk = engagement.riskQuestions[i];
-      final query = [
-        ...risk.support.map((signature) => signature.phrase),
-        ...risk.contradict.map((signature) => signature.phrase),
-      ].join(' ');
+      final query = _probeQuery(risk);
       final hits = _search(
         gate,
         index,
@@ -940,10 +950,34 @@ class EngagementAgent {
       }
     }
 
+    final breakers = {
+      for (final risk in engagement.riskQuestions)
+        if (risk.dealBreaker) risk.id,
+    };
+    final triggered = [
+      for (final judgment in judgments)
+        if (breakers.contains(judgment.riskId) &&
+            judgment.net >= _dealBreakerNet &&
+            judgment.supporting.isNotEmpty)
+          judgment.riskId,
+    ];
+    final leadOutcome = resolved
+        ? engagement.riskQuestions
+              .firstWhere((risk) => risk.id == lead.riskId)
+              .outcome
+        : Decision.hold;
+    final decision = triggered.isNotEmpty ? Decision.walkAway : leadOutcome;
+    final conditions = decision == Decision.proceedWithConditions
+        ? [lead.actionIfLead]
+        : const <String>[];
+
     return InvestigationReport(
       headline: headline,
       resolved: resolved,
       leadRiskId: resolved ? lead.riskId : null,
+      decision: decision,
+      triggeredDealBreakers: triggered,
+      conditions: conditions,
       confidence: confidence,
       decisionNote: decisionNote,
       recommendedAction: recommendedAction,

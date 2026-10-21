@@ -77,22 +77,45 @@ class Signature {
   final double weight;
 }
 
+/// What the desk recommends for a counterparty decision.
+enum Decision {
+  proceed('Proceed'),
+  proceedWithConditions('Proceed with conditions'),
+  hold('Hold'),
+  walkAway('Walk away');
+
+  const Decision(this.label);
+
+  final String label;
+}
+
 class RiskQuestion {
   const RiskQuestion({
     required this.id,
     required this.title,
     required this.statement,
     required this.actionIfLead,
-    required this.support,
-    required this.contradict,
+    this.support = const [],
+    this.contradict = const [],
+    this.outcome = Decision.hold,
+    this.dealBreaker = false,
   });
 
   final String id;
   final String title;
   final String statement;
   final String actionIfLead;
+
+  /// Phrases for the offline demo. A risk written by a user has none and is
+  /// scored by the model instead.
   final List<Signature> support;
   final List<Signature> contradict;
+
+  /// The decision this risk recommends when it leads an unresolved-free memo.
+  final Decision outcome;
+
+  /// A triggered deal-breaker forces walk-away, even when it is not the lead.
+  final bool dealBreaker;
 }
 
 class PlannedQuery {
@@ -236,6 +259,9 @@ class InvestigationReport {
     required this.gaps,
     required this.nextCollections,
     required this.citedEvidenceIds,
+    this.decision = Decision.hold,
+    this.triggeredDealBreakers = const [],
+    this.conditions = const [],
   });
 
   final String headline;
@@ -249,6 +275,14 @@ class InvestigationReport {
   final List<String> gaps;
   final List<String> nextCollections;
   final List<String> citedEvidenceIds;
+
+  final Decision decision;
+
+  /// Deal-breakers with enough support to force walk-away, in risk order.
+  final List<String> triggeredDealBreakers;
+
+  /// What must be true before proceeding, when the decision is conditional.
+  final List<String> conditions;
 }
 
 class AgentRun {
