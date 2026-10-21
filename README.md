@@ -26,6 +26,17 @@ flutter test, then serve the desk on 127.0.0.1:43123 and open it.
 
 Flutter 3.47 or newer · runs offline, no keys needed.
 
+**Or run the full stack with Docker.** This adds the job service, Postgres, and Redis, so the Jobs tab works. Docker Desktop or Docker Engine with Compose is required.
+
+```sh
+gh repo clone BobbY-24/David
+cd David
+docker compose -f service/docker-compose.yml up --build -d
+flutter run -d web-server --web-hostname 127.0.0.1 --web-port 43123
+```
+
+Open http://127.0.0.1:43123. The job API runs on http://127.0.0.1:43124. Stop the services with `docker compose -f service/docker-compose.yml down`.
+
 <details>
 <summary>Prefer manual setup? Copy these commands.</summary>
 
