@@ -5,8 +5,8 @@ import '../state/desk_controller.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
-class ExplanationsView extends StatelessWidget {
-  const ExplanationsView({super.key, required this.desk});
+class RisksView extends StatelessWidget {
+  const RisksView({super.key, required this.desk});
 
   final DeskController desk;
 
@@ -18,8 +18,8 @@ class ExplanationsView extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
         children: const [
           EmptyNote(
-            title: 'Explanations are not scored yet',
-            body: 'The case already lists the competing explanations. Run the investigation to score each one against retrieved evidence only. A negated mention does not count as support.',
+            title: 'Risks are not scored yet',
+            body: 'The engagement already lists its risk questions. Run diligence to score each one against retrieved evidence only. A negated mention does not count as support.',
           ),
         ],
       );
@@ -47,7 +47,7 @@ class ExplanationsView extends StatelessWidget {
               maxAbs: maxAbs,
               lead:
                   run.report.resolved &&
-                  run.report.leadHypothesisId == run.judgments[i].hypothesisId,
+                  run.report.leadRiskId == run.judgments[i].riskId,
               selectedId: desk.selectedEvidenceId,
               onSelect: desk.selectEvidence,
             ),
@@ -68,7 +68,7 @@ class _JudgmentCard extends StatelessWidget {
   });
 
   final int rank;
-  final HypothesisJudgment judgment;
+  final RiskJudgment judgment;
   final double maxAbs;
   final bool lead;
   final String? selectedId;

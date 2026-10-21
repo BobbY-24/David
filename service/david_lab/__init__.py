@@ -1,3 +1,3 @@
-"""Single-host job plane for David investigations and fixture scorers."""
+"""Single-host job plane for David engagements and the demo scorer."""
 
-SCORER_ID = "fixture-scorer-v2"
+SCORER_ID = "demo-scorer-v3"

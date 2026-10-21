@@ -6,7 +6,7 @@ from david_lab.api import app, service as api_service
 from david_lab.db import session_factory
 from david_lab.errors import IdempotencyConflict, QueueFull
 from david_lab.metrics import percentile
-from david_lab.runners import churn, hypertension, investigation
+from david_lab.runners import catalog, engagement
 from david_lab.schema import Job
 from david_lab.service import JobService, utcnow
 
@@ -17,24 +17,37 @@ def test_percentile_ends():
     assert percentile([1, 2, 3, 4], 0.5) == 2.5
 
 
-def test_investigation_leads_match_the_desk():
-    harbor = investigation({"case_id": "harbor-substation-4"}, None)
-    north = investigation({"case_id": "northline-logistics"}, None)
-    vault = investigation({"case_id": "vault-c12"}, None)
-    assert harbor["lead"] == "internal-thermal-fault"
-    assert harbor["loop"] == "react"
+def test_engagement_leads_match_the_desk():
+    brightline = engagement({"case_id": "brightline-supply"}, None)
+    corvid = engagement({"case_id": "corvid-retail"}, None)
+    north = engagement({"case_id": "northline-logistics"}, None)
+    assert brightline["lead"] == "delivery-reliability"
+    assert brightline["loop"] == "plan-execute"
+    assert brightline["deal_type"] == "vendor"
+    # "no tax lien" must not fire the distress signature.
+    assert "tax lien" not in brightline["fired"]
+    assert corvid["lead"] == "successor-entity"
+    assert corvid["loop"] == "react"
     assert north["lead"] == "related-party-round-trip"
     assert north["loop"] == "panel-vote"
     assert "integration defect" not in north["fired"]
-    assert vault["lead"] == "door-ajar"
-    assert vault["loop"] == "plan-execute"
+
+
+def test_catalog_lists_every_desk_engagement_and_nothing_else():
+    items = catalog()
+    assert {item["spec"]["case_id"] for item in items} == {
+        "brightline-supply",
+        "corvid-retail",
+        "northline-logistics",
+    }
+    assert {item["kind"] for item in items} == {"engagement"}
 
 
 def test_phrase_matcher_agrees_with_every_desk_verdict():
     from david_lab.runners import _EXPORT, phrase_matches
 
     golden = _EXPORT["phrase_golden"]
-    assert len(golden) > 40
+    assert len(golden) > 30
     wrong = [(text, phrase, want) for text, phrase, want in golden if phrase_matches(text, phrase) != want]
     assert wrong == []
 
@@ -42,12 +55,10 @@ def test_phrase_matcher_agrees_with_every_desk_verdict():
 def test_service_and_desk_read_the_same_cases():
     from david_lab.runners import _CASES
 
-    harbor = {h["id"]: h for h in _CASES["harbor-substation-4"]["hypotheses"]}
-    # The service used to file "cameras disagree" under the internal fault.
-    # On the desk it is calibration-drift support.
-    assert ["cameras disagree", 1.6] in harbor["calibration-drift"]["support"]
-    assert all(phrase != "cameras disagree" for phrase, _ in harbor["internal-thermal-fault"]["support"])
-    assert harbor["cooling-failure"]["contradict"]
+    corvid = {r["id"]: r for r in _CASES["corvid-retail"]["risk_questions"]}
+    assert ["new entity", 1.2] in corvid["successor-entity"]["support"]
+    assert ["paid within terms", 1.4] in corvid["phoenix-fraud"]["contradict"]
+    assert _CASES["northline-logistics"]["deal_type"] == "acquisition"
 
 
 def test_unrelated_party_is_not_a_related_party():
@@ -55,41 +66,8 @@ def test_unrelated_party_is_not_a_related_party():
 
     assert phrase_matches("The related party paid.", "related party")
     assert not phrase_matches("The unrelated party paid.", "related party")
-    assert not phrase_matches("Night crew found no sign of a door ajar.", "door ajar")
-    assert phrase_matches("No alarm sounded. Door ajar for eleven minutes.", "door ajar")
-
-
-def test_hypertension_ignores_instruction_notes():
-    result = hypertension({"cohort": "ward"}, None)
-    by_id = {row["id"]: row for row in result["rows"]}
-    assert by_id["w2"]["band"] == "low"
-    assert result["counts"]["higher"] == 3
-    assert result["clinical_use"] is False
-    assert result["fixture"] is True
-
-
-def test_churn_does_not_send():
-    result = churn({"book": "northwind"}, None)
-    assert result["counts"]["likely-leave"] == 2
-    assert result["message_sent"] is False
-    leaving = [row for row in result["rows"] if row["band"] == "likely-leave"]
-    assert {row["id"] for row in leaving} == {"c1", "c3"}
-
-
-def test_portfolio_reads_sql_and_does_not_trade():
-    woke = []
-    jobs = JobService(dispatch=woke.append)
-    view, created = jobs.enqueue("portfolio", {"account": "cedar"}, "book-1")
-    assert created is True
-    jobs.execute(view["id"])
-    done = jobs.get(view["id"])
-    assert done["status"] == "succeeded"
-    assert done["lead"] == "concentration-breach"
-    assert done["result"]["largest_symbol"] == "NVDA"
-    assert done["result"]["largest_weight"] > 0.5
-    assert done["result"]["order_placed"] is False
-    assert done["queue_wait_ms"] is not None
-    assert done["e2e_ms"] is not None
+    assert not phrase_matches("Our visit found no sign of a mail drop address.", "mail drop address")
+    assert phrase_matches("No dispute. Mail drop address on every invoice.", "mail drop address")
 
 
 def test_retry_backoff_is_scheduled_not_slept(monkeypatch):
@@ -194,7 +172,7 @@ def test_expired_lease_is_requeued_once():
 
 def test_unknown_case_is_dead_without_retry():
     jobs = JobService(dispatch=lambda _job_id: None)
-    view, _ = jobs.enqueue("investigation", {"case_id": "missing"}, "missing")
+    view, _ = jobs.enqueue("engagement", {"case_id": "missing"}, "missing")
     jobs.execute(view["id"])
     done = jobs.get(view["id"])
     assert done["status"] == "dead"
@@ -225,7 +203,7 @@ def test_api_enqueue_requires_a_key_and_serves_metrics():
         assert missing.status_code == 400
         health = client.get("/v1/health")
         assert health.status_code == 200
-        assert health.json()["scorer"] == "fixture-scorer-v2"
+        assert health.json()["scorer"] == "demo-scorer-v3"
         created = client.post(
             "/v1/jobs",
             headers={"Idempotency-Key": "api-probe"},
@@ -240,6 +218,4 @@ def test_api_enqueue_requires_a_key_and_serves_metrics():
         assert "david_jobs_depth" in metrics.text
         catalog = client.get("/v1/catalog")
         titles = [item["title"] for item in catalog.json()["items"]]
-        assert "Cedar book" in titles
-        assert "Ward cohort" in titles
-        assert "Northwind accounts" in titles
+        assert titles == ["Brightline Supply", "Corvid Retail", "Northline Logistics"]

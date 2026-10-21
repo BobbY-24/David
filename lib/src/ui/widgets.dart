@@ -4,7 +4,7 @@ import '../domain/format.dart';
 import '../domain/models.dart';
 import 'theme.dart';
 
-const runInvestigationKey = ValueKey<String>('run-investigation');
+const runDiligenceKey = ValueKey<String>('run-diligence');
 const retrievalQueryKey = ValueKey<String>('retrieval-query');
 const retrievalSearchKey = ValueKey<String>('retrieval-search');
 const tabStripKey = ValueKey<String>('tab-strip');

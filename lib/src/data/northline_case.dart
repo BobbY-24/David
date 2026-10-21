@@ -4,9 +4,9 @@ import 'builders.dart';
 const _caseId = 'northline-logistics';
 const _site = 'Project Northline data room';
 
-InvestigationCase northlineCase() {
+Engagement northlineCase() {
   final evidence = <EvidenceUnit>[
-    ...readingSeries(
+    ...metricSeries(
       caseId: _caseId,
       idPrefix: 'n-rev',
       seriesId: 'revenue',
@@ -17,17 +17,17 @@ InvestigationCase northlineCase() {
       unit: 'index',
       collector: 'Sell-side finance',
       readings: [
-        Reading(utc(2025, 11, 30, 18), 100),
-        Reading(utc(2025, 12, 31, 18), 104),
-        Reading(utc(2026, 1, 31, 18), 108),
-        Reading(
+        MetricPoint(utc(2025, 11, 30, 18), 100),
+        MetricPoint(utc(2025, 12, 31, 18), 104),
+        MetricPoint(utc(2026, 1, 31, 18), 108),
+        MetricPoint(
           utc(2026, 2, 28, 18),
           138,
           claim: 'Reported revenue rose 38 percent in the latest quarter.',
         ),
       ],
     ),
-    ...readingSeries(
+    ...metricSeries(
       caseId: _caseId,
       idPrefix: 'n-cash',
       seriesId: 'collections',
@@ -38,17 +38,17 @@ InvestigationCase northlineCase() {
       unit: 'index',
       collector: 'Buy-side accountant',
       readings: [
-        Reading(utc(2025, 11, 30, 18), 100),
-        Reading(utc(2025, 12, 31, 18), 102),
-        Reading(utc(2026, 1, 31, 18), 103),
-        Reading(
+        MetricPoint(utc(2025, 11, 30, 18), 100),
+        MetricPoint(utc(2025, 12, 31, 18), 102),
+        MetricPoint(utc(2026, 1, 31, 18), 103),
+        MetricPoint(
           utc(2026, 2, 28, 18),
           104,
           claim: 'Collections lag the revenue spike. Cash collected is not moving with billed revenue. The quarter is not a seasonal peak.',
         ),
       ],
     ),
-    ...readingSeries(
+    ...metricSeries(
       caseId: _caseId,
       idPrefix: 'n-miles',
       seriesId: 'miles',
@@ -59,31 +59,31 @@ InvestigationCase northlineCase() {
       unit: 'index',
       collector: 'Telematics vendor',
       readings: [
-        Reading(utc(2025, 11, 30, 18), 100),
-        Reading(utc(2025, 12, 31, 18), 98),
-        Reading(utc(2026, 1, 31, 18), 94),
-        Reading(
+        MetricPoint(utc(2025, 11, 30, 18), 100),
+        MetricPoint(utc(2025, 12, 31, 18), 98),
+        MetricPoint(utc(2026, 1, 31, 18), 94),
+        MetricPoint(
           utc(2026, 2, 28, 18),
           88,
-          claim: 'Telematics miles down 12 percent versus the prior quarter while billed orders rose. The vendor reports no integration defect and no sensor dropout.',
+          claim: 'Telematics miles down 12 percent versus the prior quarter while billed orders rose. The vendor reports no integration defect and no device dropout.',
         ),
       ],
     ),
-    ...readingSeries(
+    ...metricSeries(
       caseId: _caseId,
       idPrefix: 'n-occ',
       seriesId: 'occupancy',
       title: 'Warehouse aisle occupancy',
       modality: 'occupancy',
-      source: 'Aisle sensors 4-7',
+      source: 'Warehouse management system',
       site: 'Northline warehouse B',
       unit: '% occupied',
       collector: 'Warehouse gateway',
       readings: [
-        Reading(utc(2025, 11, 30, 18), 62),
-        Reading(utc(2025, 12, 31, 18), 63),
-        Reading(utc(2026, 1, 31, 18), 61),
-        Reading(
+        MetricPoint(utc(2025, 11, 30, 18), 62),
+        MetricPoint(utc(2025, 12, 31, 18), 63),
+        MetricPoint(utc(2026, 1, 31, 18), 61),
+        MetricPoint(
           utc(2026, 2, 28, 18),
           62,
           claim: 'Aisle 4 through 7 occupancy flat at 61 to 63 percent. Warehouse occupancy agrees with the telematics feed.',
@@ -136,9 +136,9 @@ InvestigationCase northlineCase() {
     ),
   ];
 
-  return InvestigationCase(
+  return Engagement(
     id: _caseId,
-    kind: CaseKind.dueDiligence,
+    dealType: DealType.acquisition,
     title: 'Northline Logistics',
     subject: 'Share purchase diligence on the latest revenue quarter',
     question: 'What best explains the latest quarter revenue spike at Northline Logistics, and which findings should change price, escrow, or a walk-away?',
@@ -146,7 +146,7 @@ InvestigationCase northlineCase() {
     site: _site,
     openedAt: utc(2026, 3, 8, 9),
     decisionCriteria: const [
-      'Explain the revenue spike with cash, physical throughput, and counterparty identity.',
+      'Explain the revenue spike with cash, operating throughput, and counterparty identity.',
       'Keep a legitimate demand story only if an independent customer shows up in the evidence.',
       'Say what should move price or escrow if the lead explanation holds.',
     ],
@@ -164,7 +164,7 @@ InvestigationCase northlineCase() {
         text: 'revenue collections lag spike',
       ),
       PlannedQuery(
-        purpose: 'Physical throughput from fleet and warehouse',
+        purpose: 'Operating throughput from fleet and warehouse',
         text: 'telematics miles occupancy warehouse',
       ),
       PlannedQuery(
@@ -180,8 +180,8 @@ InvestigationCase northlineCase() {
       'occupancy flat',
     ],
     evidence: evidence,
-    hypotheses: const [
-      HypothesisSpec(
+    riskQuestions: const [
+      RiskQuestion(
         id: 'related-party-round-trip',
         title: 'Related-party round trip',
         statement: 'The revenue spike is supported by a related-party customer that shares the target registered agent, so the quarter may be circular.',
@@ -193,7 +193,7 @@ InvestigationCase northlineCase() {
         ],
         contradict: [Signature("arm's length", 1.6)],
       ),
-      HypothesisSpec(
+      RiskQuestion(
         id: 'channel-stuffing',
         title: 'Bill-and-hold channel stuffing',
         statement: 'The target billed revenue on bill-and-hold terms without a matching rise in throughput or cash.',
@@ -206,11 +206,11 @@ InvestigationCase northlineCase() {
         ],
         contradict: [Signature('cash collected in line', 1.5)],
       ),
-      HypothesisSpec(
+      RiskQuestion(
         id: 'legitimate-seasonal',
         title: 'Legitimate seasonal demand',
         statement: 'The quarter is a real seasonal demand peak from a new independent contract.',
-        actionIfLead: 'Accept the quarter only if an independent customer, cash, and physical throughput all confirm it.',
+        actionIfLead: 'Accept the quarter only if an independent customer, cash, and operating throughput all confirm it.',
         support: [
           Signature('seasonal peak', 0.8),
           Signature('new contract', 0.8),
@@ -221,14 +221,14 @@ InvestigationCase northlineCase() {
           Signature('collections lag', 1.2),
         ],
       ),
-      HypothesisSpec(
+      RiskQuestion(
         id: 'telematics-defect',
         title: 'Telematics integration defect',
-        statement: 'The miles decline is a broken telematics integration, not weaker physical throughput.',
+        statement: 'The miles decline is a broken telematics integration, not weaker operating throughput.',
         actionIfLead: 'Use a telematics defect explanation only if the vendor shows dropped devices and the warehouse record disagrees.',
         support: [
           Signature('integration defect', 1.5),
-          Signature('sensor dropout', 1.2),
+          Signature('device dropout', 1.2),
         ],
         contradict: [Signature('warehouse occupancy agrees', 1.5)],
       ),

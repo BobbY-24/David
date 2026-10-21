@@ -3,7 +3,7 @@ import '../domain/models.dart';
 /// Instruction-override patterns checked on questions and on retrieved text.
 ///
 /// OWASP LLM01:2025. A match on a question blocks the run. A match inside
-/// evidence quarantines that unit so it cannot support a hypothesis.
+/// evidence quarantines that unit so it cannot support a risk.
 ///
 /// Patterns run on [normalizeForScreen] output, so case, zero-width
 /// characters, and punctuation between words do not slip past them. This is
@@ -35,7 +35,6 @@ String normalizeForScreen(String text) {
   return ' ${visible.replaceAll(_nonWord, ' ').trim()} ';
 }
 
-final _badge = RegExp(r'\bB-\d{3,}\b');
 final _email = RegExp(r'[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}');
 final _secret = RegExp(r'\b(?:sk|api)[_-][A-Za-z0-9]{8,}\b');
 
@@ -57,15 +56,15 @@ bool claimsExecutedAction(String text) {
 String redactForLog(String text) {
   final clipped = text.length <= 180 ? text : text.substring(0, 180);
   return clipped
-      .replaceAll(_badge, '[redacted:badge]')
       .replaceAll(_email, '[redacted:email]')
       .replaceAll(_secret, '[redacted:secret]');
 }
 
+/// Units that name people or carry contact details stay in the engagement
+/// store and are never echoed into the audit log.
 bool isRestricted(EvidenceUnit unit) {
-  return unit.modality == 'access' ||
-      unit.modality == 'counterparty' ||
-      _badge.hasMatch(unit.text) ||
+  return unit.modality == 'counterparty' ||
+      unit.modality == 'ownership' ||
       _email.hasMatch(unit.text);
 }
 
@@ -161,7 +160,7 @@ class OutputScreen {
         report: InvestigationReport(
           headline: 'Output rail held the memo',
           resolved: false,
-          leadHypothesisId: null,
+          leadRiskId: null,
           confidence: 0,
           decisionNote: 'The draft memo failed the output rail. No recommendation is released.',
           recommendedAction:
@@ -195,10 +194,9 @@ class OutputScreen {
 }
 
 final _executedAction = RegExp(
-  r'\b(?:re ?energi[sz]ed'
-  r'|(?:has|have|was|were) been (?:energi[sz]ed|released|wired|transferred|executed)'
-  r'|lots? (?:(?:was|were|have been|has been) )?released'
-  r'|(?:payment|wire|funds?) (?:(?:was|were|has been|have been) )?(?:sent|wired|transferred|released)'
-  r'|breaker (?:[a-z0-9]+ )?(?:(?:was|has been) )?closed'
-  r'|order (?:(?:was|has been) )?(?:placed|executed|filled))\b',
+  r'\b(?:(?:has|have|was|were) been (?:paid|wired|transferred|released|signed|executed|sent)'
+  r'|(?:payment|wire|funds?|deposit|invoice|prepayment) (?:(?:was|were|has been|have been) )?(?:sent|wired|transferred|released|paid)'
+  r'|(?:contract|agreement|loi|nda) (?:(?:was|has been) )?(?:signed|executed|countersigned)'
+  r'|(?:purchase )?order (?:(?:was|has been) )?(?:placed|executed|filled)'
+  r'|(?:email|message|offer) (?:(?:was|has been) )?sent to the (?:counterparty|seller|buyer|vendor|customer))\b',
 );

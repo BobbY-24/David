@@ -14,7 +14,7 @@ import 'dart:io';
 
 import 'package:david/src/control/rails.dart';
 import 'package:david/src/control/router.dart';
-import 'package:david/src/data/case_packs.dart';
+import 'package:david/src/data/engagement_packs.dart';
 import 'package:david/src/domain/models.dart';
 import 'package:david/src/retrieval/text_match.dart';
 
@@ -22,65 +22,72 @@ const exportPath = 'service/david_lab/cases.json';
 
 /// Edge cases for the matcher that the fixtures do not happen to contain.
 const _edgePairs = <(String, String)>[
-  ('Night crew found no sign of a door ajar at any point.', 'door ajar'),
-  ('No alarm sounded. Door ajar for eleven minutes.', 'door ajar'),
+  (
+    'Our visit found no sign of a mail drop address at any point.',
+    'mail drop address',
+  ),
+  (
+    'No dispute. Mail drop address on every invoice footer.',
+    'mail drop address',
+  ),
   (
     'Telematics shows no integration defect and miles are down.',
     'integration defect',
   ),
   ('The unrelated party paid on time.', 'related party'),
-  ('Acetylene 42.5 ppm. Not a cooling issue.', 'acetylene 42 5 ppm'),
-  ('Never once was the door ajar.', 'door ajar'),
-  ('The door was ajar; no compressor fault.', 'door was ajar'),
-  ('The door was ajar; no compressor fault.', 'compressor fault'),
+  (
+    'Revenue rose 38.5 percent. Not a seasonal peak.',
+    'revenue rose 38 5 percent',
+  ),
+  ('Never once was the deposit late.', 'deposit late'),
+  ('The invoice was paid; no tax lien on file.', 'invoice was paid'),
+  ('The invoice was paid; no tax lien on file.', 'tax lien'),
   ("It wasn't without a related party.", 'related party'),
 ];
 
 Map<String, Object?> exportCases() {
   final cases = [
-    for (final caseFile in CasePacks.all)
+    for (final engagement in EngagementPacks.all)
       {
-        'id': caseFile.id,
-        'title': caseFile.title,
-        'kind': caseFile.kind == CaseKind.dueDiligence
-            ? 'due_diligence'
-            : 'physical',
-        'question': caseFile.question,
-        'loop': switch (LoopRouter.decide(caseFile).kind) {
+        'id': engagement.id,
+        'title': engagement.title,
+        'deal_type': engagement.dealType.name,
+        'question': engagement.question,
+        'loop': switch (LoopRouter.decide(engagement).kind) {
           AgentLoopKind.planExecute => 'plan-execute',
           AgentLoopKind.react => 'react',
           AgentLoopKind.panelVote => 'panel-vote',
         },
         'evidence': [
-          for (final unit in caseFile.evidence)
+          for (final unit in engagement.evidence)
             {
               'id': unit.id,
               'text': unit.searchableText,
               'quarantined': containsInstructionOverride(unit.searchableText),
             },
         ],
-        'hypotheses': [
-          for (final hypothesis in caseFile.hypotheses)
+        'risk_questions': [
+          for (final risk in engagement.riskQuestions)
             {
-              'id': hypothesis.id,
-              'title': hypothesis.title,
+              'id': risk.id,
+              'title': risk.title,
               'support': [
-                for (final s in hypothesis.support) [s.phrase, s.weight],
+                for (final s in risk.support) [s.phrase, s.weight],
               ],
               'contradict': [
-                for (final s in hypothesis.contradict) [s.phrase, s.weight],
+                for (final s in risk.contradict) [s.phrase, s.weight],
               ],
             },
         ],
       },
   ];
   final golden = <List<Object>>[
-    for (final caseFile in CasePacks.all)
-      for (final unit in caseFile.evidence)
+    for (final engagement in EngagementPacks.all)
+      for (final unit in engagement.evidence)
         for (final phrase in {
-          for (final hypothesis in caseFile.hypotheses) ...[
-            for (final s in hypothesis.support) s.phrase,
-            for (final s in hypothesis.contradict) s.phrase,
+          for (final risk in engagement.riskQuestions) ...[
+            for (final s in risk.support) s.phrase,
+            for (final s in risk.contradict) s.phrase,
           ],
         })
           if (_candidate(unit.searchableText, phrase))

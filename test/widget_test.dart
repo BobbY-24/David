@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('desk opens on Harbor and a run produces the memo', (
+  testWidgets('desk opens on Brightline and a run produces the memo', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(1440, 1000);
@@ -15,17 +15,17 @@ void main() {
 
     await tester.pumpWidget(const DavidApp());
     expect(find.text('DAVID'), findsOneWidget);
-    expect(find.text('Harbor Substation 4'), findsWidgets);
-    expect(find.text('Run investigation'), findsOneWidget);
+    expect(find.text('Brightline Supply'), findsWidgets);
+    expect(find.text('Run diligence'), findsOneWidget);
 
-    await tester.tap(find.byKey(runInvestigationKey));
+    await tester.tap(find.byKey(runDiligenceKey));
     await tester.pump();
     expect(find.text('Running…'), findsOneWidget);
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pumpAndSettle();
 
     expect(find.text('Scope the question'), findsOneWidget);
-    expect(find.textContaining('ReAct'), findsWidgets);
+    expect(find.textContaining('Plan and execute'), findsWidgets);
 
     await tester.ensureVisible(find.text('Control'));
     await tester.pumpAndSettle();
@@ -33,21 +33,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('Allowlist and budget'), findsOneWidget);
 
-    await tester.tap(find.text('Explanations'));
+    await tester.tap(find.text('Risks'));
     await tester.pumpAndSettle();
-    expect(find.text('Internal high-energy thermal fault'), findsOneWidget);
+    expect(find.text('Delivery reliability risk'), findsWidgets);
 
     await tester.tap(find.text('Report'));
     await tester.pumpAndSettle();
-    expect(find.text('FIELD MEMO'), findsOneWidget);
-    expect(find.textContaining('Restrict T-2 load'), findsOneWidget);
+    expect(find.text('DECISION MEMO'), findsOneWidget);
+    expect(find.textContaining('milestones'), findsWidgets);
 
     await tester.tap(find.text('Retrieve'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byKey(retrievalQueryKey), 'acetylene');
+    await tester.enterText(find.byKey(retrievalQueryKey), 'sanctions');
     await tester.tap(find.byKey(retrievalSearchKey));
     await tester.pumpAndSettle();
-    expect(find.textContaining('42 ppm'), findsWidgets);
+    expect(find.textContaining('OFAC'), findsWidgets);
 
     await tester.tap(find.text('Northline Logistics').first);
     await tester.pumpAndSettle();
@@ -55,7 +55,7 @@ void main() {
     expect(find.text('Scope the question'), findsNothing);
   });
 
-  testWidgets('phone width can open observations and run a case', (
+  testWidgets('phone width can open evidence and run an engagement', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -66,11 +66,11 @@ void main() {
     await tester.pumpWidget(const DavidApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Observations'));
+    await tester.tap(find.text('Evidence'));
     await tester.pumpAndSettle();
-    expect(find.text('IR camera A bushing temperature'), findsOneWidget);
+    expect(find.text('On-time delivery rate'), findsWidgets);
 
-    await tester.tap(find.text('Run investigation'));
+    await tester.tap(find.text('Run diligence'));
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pumpAndSettle();
     expect(find.text('Scope the question'), findsOneWidget);
@@ -79,7 +79,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Report'));
     await tester.pumpAndSettle();
-    expect(find.text('FIELD MEMO'), findsOneWidget);
+    expect(find.text('DECISION MEMO'), findsOneWidget);
 
     await tester.ensureVisible(find.text('Jobs'));
     await tester.pumpAndSettle();
@@ -89,7 +89,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('jobs tab enqueues a book against a fake service', (
+  testWidgets('jobs tab enqueues an engagement against a fake service', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(1440, 1000);
@@ -101,12 +101,15 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Jobs'));
     await tester.pumpAndSettle();
-    expect(find.text('Cedar book'), findsOneWidget);
+    expect(find.text('Brightline Supply'), findsWidgets);
     expect(find.text('40 ms'), findsWidgets);
 
-    await tester.tap(find.byKey(const ValueKey('enqueue-Cedar book')));
+    await tester.tap(find.byKey(const ValueKey('enqueue-Brightline Supply')));
     await tester.pumpAndSettle();
-    expect(find.textContaining('No order was sent'), findsOneWidget);
+    expect(
+      find.textContaining('Delivery reliability risk leads'),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 }
@@ -120,10 +123,10 @@ class _FakeJobs implements JobClient {
       ok: true,
       items: [
         CatalogItem(
-          kind: 'portfolio',
-          title: 'Cedar book',
-          blurb: 'SQL positions and prices. No order is placed.',
-          spec: {'account': 'cedar'},
+          kind: 'engagement',
+          title: 'Brightline Supply',
+          blurb: 'Vendor check scored by the demo scorer.',
+          spec: {'case_id': 'brightline-supply'},
         ),
       ],
       depth: 0,
@@ -147,8 +150,8 @@ class _FakeJobs implements JobClient {
       status: 'succeeded',
       kind: kind,
       attempts: 1,
-      headline: 'NVDA is 53% of Cedar, over the 25% cap. No order was sent.',
-      detail: 'Weights come from the positions and prices tables.',
+      headline: 'Delivery reliability risk leads Brightline Supply.',
+      detail: 'Demo scorer. The desk agent remains the citation path.',
       queueWaitMs: 12,
       e2eMs: 40,
     );

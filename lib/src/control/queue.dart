@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import '../agent/investigation_agent.dart';
+import '../agent/provider.dart';
 import '../domain/models.dart';
 
 class QueueRejection implements Exception {
@@ -18,21 +18,21 @@ class QueueRejection implements Exception {
 /// The desk runs one case at a time. This lane is the throughput control for
 /// a batch: a fixed number in flight, a queue cap, and no extra concurrency
 /// when the cap is hit.
-class InvestigationQueue {
-  InvestigationQueue({
+class EngagementQueue {
+  EngagementQueue({
     this.maxInFlight = 2,
     this.maxQueued = 8,
-    InvestigationAgent? agent,
-  }) : _agent = agent ?? const InvestigationAgent();
+    EngagementProvider? provider,
+  }) : _provider = provider ?? const DemoProvider();
 
   final int maxInFlight;
   final int maxQueued;
-  final InvestigationAgent _agent;
+  final EngagementProvider _provider;
   final Lane _lane = Lane();
 
   int get maxSeen => _lane.maxSeen;
 
-  Future<List<AgentRun>> submit(List<InvestigationCase> cases) {
+  Future<List<AgentRun>> submit(List<Engagement> cases) {
     final cap = maxInFlight + maxQueued;
     if (cases.length > cap) {
       throw QueueRejection(
@@ -43,11 +43,11 @@ class InvestigationQueue {
     return Future.wait(cases.map(_one));
   }
 
-  Future<AgentRun> _one(InvestigationCase caseFile) async {
+  Future<AgentRun> _one(Engagement engagement) async {
     await _lane.acquire();
     try {
       await Future<void>.delayed(Duration.zero);
-      return _agent.investigate(caseFile);
+      return _provider.run(engagement);
     } finally {
       _lane.release();
     }

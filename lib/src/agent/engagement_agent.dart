@@ -21,7 +21,7 @@ class _Execution {
 
   final List<AgentStep> steps;
   final List<RetrievalHit> retrieved;
-  final List<HypothesisJudgment> judgments;
+  final List<RiskJudgment> judgments;
   final InvestigationReport report;
   final List<String> missing;
   final List<SeatVote> votes;
@@ -31,13 +31,13 @@ class _Execution {
 
 /// How a seat reads the shared retrieved set.
 ///
-/// No lens names a hypothesis. Each one is a different test of the same
+/// No lens names a risk. Each one is a different test of the same
 /// evidence, so seats can disagree without a per-case thumb on the scale.
 enum _Lens {
   /// The unweighted score.
   plain,
 
-  /// Each explanation loses its single strongest supporting unit. A lead that
+  /// Each risk loses its single strongest supporting unit. A lead that
   /// rests on one planted or mis-sealed record does not survive.
   leaveOneOut,
 
@@ -54,9 +54,9 @@ class _Seat {
 }
 
 const _seats = <_Seat>[
-  _Seat('operations', 'Operations', _Lens.plain),
-  _Seat('measurement', 'Measurement', _Lens.leaveOneOut),
-  _Seat('adversary', 'Adversary', _Lens.falsifierWeighted),
+  _Seat('analyst', 'Analyst', _Lens.plain),
+  _Seat('robustness', 'Robustness', _Lens.leaveOneOut),
+  _Seat('skeptic', 'Skeptic', _Lens.falsifierWeighted),
 ];
 
 const _resolveMargin = 0.45;
@@ -64,32 +64,32 @@ const _resolveMargin = 0.45;
 /// Confidence ceiling for a memo the panel released after a thin ReAct margin.
 const _panelReleaseCap = 0.5;
 
-/// Investigation entrypoint.
+/// Engagement entrypoint.
 ///
 /// The router picks plan-and-execute, ReAct, or a panel vote. Every search
 /// goes through [ToolGateway]. Rails run before the first search and after
 /// the memo. The scorer still cites only retrieved ids.
-class InvestigationAgent {
-  const InvestigationAgent();
+class EngagementAgent {
+  const EngagementAgent();
 
-  AgentRun investigate(InvestigationCase caseFile, {Principal? principal}) {
-    final who = principal ?? Principal.deskOperator(caseFile.id);
+  AgentRun run(Engagement engagement, {Principal? principal}) {
+    final who = principal ?? Principal.deskOperator(engagement.id);
     final gate = ToolGateway(principal: who);
     final quarantined = [
-      for (final unit in caseFile.evidence)
+      for (final unit in engagement.evidence)
         if (containsInstructionOverride(unit.searchableText)) unit.id,
     ];
     final restricted = [
-      for (final unit in caseFile.evidence)
+      for (final unit in engagement.evidence)
         if (isRestricted(unit)) unit.id,
     ]..sort();
     final input = InputScreen.screen(
-      question: caseFile.question,
-      granted: who.grants(caseFile.id),
+      question: engagement.question,
+      granted: who.grants(engagement.id),
     );
     if (!input.allowed) {
       return _blocked(
-        caseFile: caseFile,
+        engagement: engagement,
         principal: who,
         gate: gate,
         input: input.check,
@@ -98,13 +98,13 @@ class InvestigationAgent {
       );
     }
 
-    final decision = LoopRouter.decide(caseFile);
-    final index = EvidenceIndex(caseFile.evidence);
+    final decision = LoopRouter.decide(engagement);
+    final index = EvidenceIndex(engagement.evidence);
     final skip = quarantined.toSet();
     var execution = switch (decision.kind) {
-      AgentLoopKind.planExecute => _runPlan(caseFile, index, gate, skip),
-      AgentLoopKind.react => _runReact(caseFile, index, gate, skip),
-      AgentLoopKind.panelVote => _runVote(caseFile, index, gate, skip),
+      AgentLoopKind.planExecute => _runPlan(engagement, index, gate, skip),
+      AgentLoopKind.react => _runReact(engagement, index, gate, skip),
+      AgentLoopKind.panelVote => _runVote(engagement, index, gate, skip),
     };
 
     var loop = decision.kind;
@@ -117,7 +117,7 @@ class InvestigationAgent {
       loop = AgentLoopKind.panelVote;
       reason = 'ReAct left a margin under 0.45, so the same evidence was sent to the panel.';
       standard = 'Escalation. A thin ReAct margin is not a place to invent another search. The panel votes on the evidence already retrieved. Only a unanimous panel with a strict lead in every seat can release the memo, and its confidence is capped at 50%.';
-      execution = _applyVote(caseFile, execution, escalated: true);
+      execution = _applyVote(engagement, execution, escalated: true);
     }
 
     final output = OutputScreen.screen(
@@ -147,12 +147,12 @@ class InvestigationAgent {
         rail: 'action',
         name: 'No operational tool',
         verdict: RailVerdict.pass,
-        detail: 'Nothing in the allowlist can re-energize equipment, release lots, or move money. A person approves those actions.',
+        detail: 'Nothing in the allowlist can pay, sign, place an order, or contact the counterparty. A person approves those actions.',
       ),
     ];
 
     return AgentRun(
-      caseId: caseFile.id,
+      caseId: engagement.id,
       policyId: AgentRun.policyIdValue,
       steps: execution.steps,
       retrieved: execution.retrieved,
@@ -179,7 +179,7 @@ class InvestigationAgent {
   }
 
   AgentRun _blocked({
-    required InvestigationCase caseFile,
+    required Engagement engagement,
     required Principal principal,
     required ToolGateway gate,
     required GuardrailCheck input,
@@ -189,10 +189,10 @@ class InvestigationAgent {
     const report = InvestigationReport(
       headline: 'Input rail blocked the run',
       resolved: false,
-      leadHypothesisId: null,
+      leadRiskId: null,
       confidence: 0,
       decisionNote: 'No search ran. The question did not clear the input rail.',
-      recommendedAction: 'Rewrite the question as an investigation ask, without an instruction override.',
+      recommendedAction: 'Rewrite the question as an diligence question, without an instruction override.',
       findings: [],
       competitors: [],
       gaps: ['The run stopped at the input rail.'],
@@ -200,7 +200,7 @@ class InvestigationAgent {
       citedEvidenceIds: [],
     );
     return AgentRun(
-      caseId: caseFile.id,
+      caseId: engagement.id,
       policyId: AgentRun.policyIdValue,
       steps: [
         AgentStep(
@@ -234,20 +234,20 @@ class InvestigationAgent {
   }
 
   _Execution _runPlan(
-    InvestigationCase caseFile,
+    Engagement engagement,
     EvidenceIndex index,
     ToolGateway gate,
     Set<String> skip,
   ) {
     final steps = <AgentStep>[];
     final byId = <String, RetrievalHit>{};
-    steps.add(_scopeStep(caseFile, 'Plan and execute'));
-    for (var i = 0; i < caseFile.plan.length; i++) {
-      final planned = caseFile.plan[i];
+    steps.add(_scopeStep(engagement, 'Plan and execute'));
+    for (var i = 0; i < engagement.plan.length; i++) {
+      final planned = engagement.plan[i];
       final hits = _search(
         gate,
         index,
-        caseFile.id,
+        engagement.id,
         RetrievalQuery(
           text: planned.text,
           modality: planned.modality,
@@ -268,13 +268,20 @@ class InvestigationAgent {
         ),
       );
     }
-    _fillGaps(caseFile, index, gate, byId, steps);
-    _probeAll(caseFile, index, gate, byId, steps);
-    return _close(caseFile, byId, steps, skip, batched: true, votes: const []);
+    _fillGaps(engagement, index, gate, byId, steps);
+    _probeAll(engagement, index, gate, byId, steps);
+    return _close(
+      engagement,
+      byId,
+      steps,
+      skip,
+      batched: true,
+      votes: const [],
+    );
   }
 
   _Execution _runReact(
-    InvestigationCase caseFile,
+    Engagement engagement,
     EvidenceIndex index,
     ToolGateway gate,
     Set<String> skip,
@@ -282,12 +289,12 @@ class InvestigationAgent {
     final steps = <AgentStep>[];
     final byId = <String, RetrievalHit>{};
     final seen = <String>{};
-    steps.add(_scopeStep(caseFile, 'ReAct'));
+    steps.add(_scopeStep(engagement, 'ReAct'));
     final probed = <int>{};
     var guard = 0;
     while (guard < 16) {
       guard += 1;
-      final missing = _missingModalities(caseFile, byId.values);
+      final missing = _missingModalities(engagement, byId.values);
       if (missing.isNotEmpty) {
         final modality = missing.first;
         final text = modality.replaceAll('-', ' ');
@@ -297,7 +304,7 @@ class InvestigationAgent {
         final hits = _search(
           gate,
           index,
-          caseFile.id,
+          engagement.id,
           RetrievalQuery(text: text, modality: modality, limit: 8),
         );
         _absorb(byId, hits);
@@ -316,15 +323,15 @@ class InvestigationAgent {
         );
         continue;
       }
-      final next = _nextProbe(caseFile, probed);
+      final next = _nextProbe(engagement, probed);
       if (next == null) {
         break;
       }
       probed.add(next);
-      final hypothesis = caseFile.hypotheses[next];
+      final risk = engagement.riskQuestions[next];
       final query = [
-        ...hypothesis.support.map((signature) => signature.phrase),
-        ...hypothesis.contradict.map((signature) => signature.phrase),
+        ...risk.support.map((signature) => signature.phrase),
+        ...risk.contradict.map((signature) => signature.phrase),
       ].join(' ');
       if (!seen.add('probe:$query')) {
         break;
@@ -332,7 +339,7 @@ class InvestigationAgent {
       final hits = _search(
         gate,
         index,
-        caseFile.id,
+        engagement.id,
         RetrievalQuery(text: query, limit: 8),
       );
       _absorb(byId, hits);
@@ -340,69 +347,76 @@ class InvestigationAgent {
         AgentStep(
           id: 'react-probe-$next',
           stage: AgentStage.retrieve,
-          title: 'Thought: test ${hypothesis.title}',
+          title: 'Thought: test ${risk.title}',
           detail:
               'Action: search support and falsifiers together. Observation: ${hits.length} hits.',
           tool: 'search',
           query: query,
           evidenceIds: hits.map((hit) => hit.unit.id).toList(),
-          hypothesisProbe: true,
+          riskProbe: true,
         ),
       );
     }
-    final missing = _missingModalities(caseFile, byId.values);
+    final missing = _missingModalities(engagement, byId.values);
     steps.add(
       AgentStep(
         id: 'react-stop',
         stage: AgentStage.gap,
         title: 'Stop the loop',
         detail: missing.isEmpty
-            ? 'Coverage is complete and every explanation has been probed. A repeated query would not be issued.'
+            ? 'Coverage is complete and every risk question has been probed. A repeated query would not be issued.'
             : 'Stopped with modalities still open: ${missing.join(', ')}.',
       ),
     );
-    return _close(caseFile, byId, steps, skip, batched: false, votes: const []);
+    return _close(
+      engagement,
+      byId,
+      steps,
+      skip,
+      batched: false,
+      votes: const [],
+    );
   }
 
   _Execution _runVote(
-    InvestigationCase caseFile,
+    Engagement engagement,
     EvidenceIndex index,
     ToolGateway gate,
     Set<String> skip,
   ) {
-    final planned = _runPlan(caseFile, index, gate, skip);
-    return _applyVote(caseFile, planned, escalated: false);
+    final planned = _runPlan(engagement, index, gate, skip);
+    return _applyVote(engagement, planned, escalated: false);
   }
 
   _Execution _applyVote(
-    InvestigationCase caseFile,
+    Engagement engagement,
     _Execution execution, {
     required bool escalated,
   }) {
     final votes = [
       for (final seat in _seats)
-        _vote(seat, caseFile, execution.retrieved, execution.skip),
+        _vote(seat, engagement, execution.retrieved, execution.skip),
     ];
     final majority = _majority(votes);
-    final lead = execution.report.leadHypothesisId;
+    final lead = execution.report.leadRiskId;
     final top = execution.judgments.isEmpty ? null : execution.judgments.first;
     final unanimous =
         top != null &&
         top.net > 0 &&
-        votes.every((vote) => vote.hypothesisId == top.hypothesisId);
+        votes.every((vote) => vote.riskId == top.riskId);
     final InvestigationReport report;
     if (!escalated && majority != null && majority == lead) {
       final dissent = [
         for (final vote in votes)
-          if (vote.hypothesisId != majority)
-            '${vote.seatTitle} seat dissented: ${vote.hypothesisTitle}.',
+          if (vote.riskId != majority)
+            '${vote.seatTitle} seat dissented: ${vote.riskTitle}.',
       ];
       report = dissent.isEmpty
           ? execution.report
           : _withGaps(execution.report, dissent);
     } else if (escalated && unanimous) {
       report = _report(
-        caseFile: caseFile,
+        engagement: engagement,
         judgments: execution.judgments,
         missingModalities: execution.missing,
         panelCleared: true,
@@ -425,7 +439,7 @@ class InvestigationAgent {
         title: 'Panel vote',
         detail: [
           for (final vote in votes)
-            '${vote.seatTitle}: ${vote.hypothesisTitle} '
+            '${vote.seatTitle}: ${vote.riskTitle} '
                 '(net ${vote.net.toStringAsFixed(2)}, margin ${vote.margin.toStringAsFixed(2)})',
           report.resolved ? 'Outcome: released.' : 'Outcome: held.',
         ].join('\n'),
@@ -445,27 +459,27 @@ class InvestigationAgent {
 
   SeatVote _vote(
     _Seat seat,
-    InvestigationCase caseFile,
+    Engagement engagement,
     List<RetrievalHit> retrieved,
     Set<String> skip,
   ) {
     final ranked = switch (seat.lens) {
-      _Lens.plain => _rank(caseFile, retrieved, skip),
+      _Lens.plain => _rank(engagement, retrieved, skip),
       _Lens.falsifierWeighted => _rank(
-        caseFile,
+        engagement,
         retrieved,
         skip,
         contradictScale: 2,
       ),
-      _Lens.leaveOneOut => _rankLeaveOneOut(caseFile, retrieved, skip),
+      _Lens.leaveOneOut => _rankLeaveOneOut(engagement, retrieved, skip),
     };
     final margin = _margin(ranked);
     if (ranked.isEmpty || ranked.first.net <= 0) {
       return SeatVote(
         seatId: seat.id,
         seatTitle: seat.title,
-        hypothesisId: null,
-        hypothesisTitle: 'No positive explanation',
+        riskId: null,
+        riskTitle: 'No positive risk',
         net: ranked.isEmpty ? 0 : ranked.first.net,
         margin: margin,
       );
@@ -475,8 +489,8 @@ class InvestigationAgent {
       return SeatVote(
         seatId: seat.id,
         seatTitle: seat.title,
-        hypothesisId: null,
-        hypothesisTitle: 'Tie between ${lead.title} and ${ranked[1].title}',
+        riskId: null,
+        riskTitle: 'Tie between ${lead.title} and ${ranked[1].title}',
         net: lead.net,
         margin: 0,
       );
@@ -484,35 +498,35 @@ class InvestigationAgent {
     return SeatVote(
       seatId: seat.id,
       seatTitle: seat.title,
-      hypothesisId: lead.hypothesisId,
-      hypothesisTitle: lead.title,
+      riskId: lead.riskId,
+      riskTitle: lead.title,
       net: lead.net,
       margin: margin,
     );
   }
 
-  List<HypothesisJudgment> _rankLeaveOneOut(
-    InvestigationCase caseFile,
+  List<RiskJudgment> _rankLeaveOneOut(
+    Engagement engagement,
     List<RetrievalHit> retrieved,
     Set<String> skip,
   ) {
     final ranked = [
-      for (final hypothesis in caseFile.hypotheses)
-        _weakest(hypothesis, retrieved, skip),
+      for (final risk in engagement.riskQuestions)
+        _weakest(risk, retrieved, skip),
     ]..sort(_byNet);
     return ranked;
   }
 
-  /// The judgment for [hypothesis] with whichever single supporting unit
+  /// The judgment for [risk] with whichever single supporting unit
   /// hurts it most when removed.
-  HypothesisJudgment _weakest(
-    HypothesisSpec hypothesis,
+  RiskJudgment _weakest(
+    RiskQuestion risk,
     List<RetrievalHit> retrieved,
     Set<String> skip,
   ) {
-    var worst = _judge(hypothesis, retrieved, skip, 1);
+    var worst = _judge(risk, retrieved, skip, 1);
     for (final hit in [...worst.supporting]) {
-      final without = _judge(hypothesis, retrieved, {...skip, hit.unit.id}, 1);
+      final without = _judge(risk, retrieved, {...skip, hit.unit.id}, 1);
       if (without.net < worst.net) {
         worst = without;
       }
@@ -523,7 +537,7 @@ class InvestigationAgent {
   String? _majority(List<SeatVote> votes) {
     final counts = <String, int>{};
     for (final vote in votes) {
-      final id = vote.hypothesisId;
+      final id = vote.riskId;
       if (id == null) {
         continue;
       }
@@ -540,7 +554,7 @@ class InvestigationAgent {
     return InvestigationReport(
       headline: 'Panel did not clear the memo',
       resolved: false,
-      leadHypothesisId: null,
+      leadRiskId: null,
       confidence: report.confidence.clamp(0.0, 0.4).toDouble(),
       decisionNote: note,
       recommendedAction:
@@ -560,7 +574,7 @@ class InvestigationAgent {
     return InvestigationReport(
       headline: report.headline,
       resolved: report.resolved,
-      leadHypothesisId: report.leadHypothesisId,
+      leadRiskId: report.leadRiskId,
       confidence: report.confidence,
       decisionNote: report.decisionNote,
       recommendedAction: report.recommendedAction,
@@ -573,20 +587,20 @@ class InvestigationAgent {
   }
 
   void _fillGaps(
-    InvestigationCase caseFile,
+    Engagement engagement,
     EvidenceIndex index,
     ToolGateway gate,
     Map<String, RetrievalHit> byId,
     List<AgentStep> steps,
   ) {
-    final missing = _missingModalities(caseFile, byId.values);
+    final missing = _missingModalities(engagement, byId.values);
     for (var i = 0; i < missing.length; i++) {
       final modality = missing[i];
       final text = modality.replaceAll('-', ' ');
       final hits = _search(
         gate,
         index,
-        caseFile.id,
+        engagement.id,
         RetrievalQuery(text: text, modality: modality, limit: 8),
       );
       _absorb(byId, hits);
@@ -607,22 +621,22 @@ class InvestigationAgent {
   }
 
   void _probeAll(
-    InvestigationCase caseFile,
+    Engagement engagement,
     EvidenceIndex index,
     ToolGateway gate,
     Map<String, RetrievalHit> byId,
     List<AgentStep> steps,
   ) {
-    for (var i = 0; i < caseFile.hypotheses.length; i++) {
-      final hypothesis = caseFile.hypotheses[i];
+    for (var i = 0; i < engagement.riskQuestions.length; i++) {
+      final risk = engagement.riskQuestions[i];
       final query = [
-        ...hypothesis.support.map((signature) => signature.phrase),
-        ...hypothesis.contradict.map((signature) => signature.phrase),
+        ...risk.support.map((signature) => signature.phrase),
+        ...risk.contradict.map((signature) => signature.phrase),
       ].join(' ');
       final hits = _search(
         gate,
         index,
-        caseFile.id,
+        engagement.id,
         RetrievalQuery(text: query, limit: 8),
       );
       _absorb(byId, hits);
@@ -630,19 +644,19 @@ class InvestigationAgent {
         AgentStep(
           id: 'probe-$i',
           stage: AgentStage.retrieve,
-          title: 'Probe: ${hypothesis.title}',
+          title: 'Probe: ${risk.title}',
           detail: 'Look for support and falsifiers together, then score only what comes back.',
           tool: 'search',
           query: query,
           evidenceIds: hits.map((hit) => hit.unit.id).toList(),
-          hypothesisProbe: true,
+          riskProbe: true,
         ),
       );
     }
   }
 
-  int? _nextProbe(InvestigationCase caseFile, Set<int> probed) {
-    for (var i = 0; i < caseFile.hypotheses.length; i++) {
+  int? _nextProbe(Engagement engagement, Set<int> probed) {
+    for (var i = 0; i < engagement.riskQuestions.length; i++) {
       if (!probed.contains(i)) {
         return i;
       }
@@ -675,7 +689,7 @@ class InvestigationAgent {
   }
 
   _Execution _close(
-    InvestigationCase caseFile,
+    Engagement engagement,
     Map<String, RetrievalHit> byId,
     List<AgentStep> steps,
     Set<String> skip, {
@@ -690,13 +704,13 @@ class InvestigationAgent {
         }
         return a.unit.id.compareTo(b.unit.id);
       });
-    final missing = _missingModalities(caseFile, retrieved);
-    final judgments = _rank(caseFile, retrieved, skip);
+    final missing = _missingModalities(engagement, retrieved);
+    final judgments = _rank(engagement, retrieved, skip);
     steps.add(
       AgentStep(
         id: 'adjudicate',
         stage: AgentStage.adjudicate,
-        title: 'Score competing explanations',
+        title: 'Score the risk questions',
         detail: judgments
             .map(
               (judgment) =>
@@ -714,7 +728,7 @@ class InvestigationAgent {
       ),
     );
     final report = _report(
-      caseFile: caseFile,
+      engagement: engagement,
       judgments: judgments,
       missingModalities: missing,
     );
@@ -739,7 +753,7 @@ class InvestigationAgent {
     );
   }
 
-  double _margin(List<HypothesisJudgment> judgments) {
+  double _margin(List<RiskJudgment> judgments) {
     if (judgments.isEmpty) {
       return 0;
     }
@@ -749,8 +763,8 @@ class InvestigationAgent {
     return judgments.first.net - judgments[1].net;
   }
 
-  AgentStep _scopeStep(InvestigationCase caseFile, String loop) {
-    final criteria = caseFile.decisionCriteria
+  AgentStep _scopeStep(Engagement engagement, String loop) {
+    final criteria = engagement.decisionCriteria
         .map((item) => '• $item')
         .join('\n');
     return AgentStep(
@@ -758,7 +772,7 @@ class InvestigationAgent {
       stage: AgentStage.scope,
       title: 'Scope the question',
       detail:
-          '${caseFile.question}\n\nLoop: $loop.\n\nDecision criteria:\n$criteria',
+          '${engagement.question}\n\nLoop: $loop.\n\nDecision criteria:\n$criteria',
     );
   }
 
@@ -775,39 +789,39 @@ class InvestigationAgent {
   }
 
   List<String> _missingModalities(
-    InvestigationCase caseFile,
+    Engagement engagement,
     Iterable<RetrievalHit> hits,
   ) {
     final present = hits.map((hit) => hit.unit.modality).toSet();
     return [
-      for (final modality in caseFile.expectedModalities)
+      for (final modality in engagement.expectedModalities)
         if (!present.contains(modality)) modality,
     ];
   }
 
-  List<HypothesisJudgment> _rank(
-    InvestigationCase caseFile,
+  List<RiskJudgment> _rank(
+    Engagement engagement,
     List<RetrievalHit> retrieved,
     Set<String> skip, {
     double contradictScale = 1,
   }) {
     final ranked = [
-      for (final hypothesis in caseFile.hypotheses)
-        _judge(hypothesis, retrieved, skip, contradictScale),
+      for (final risk in engagement.riskQuestions)
+        _judge(risk, retrieved, skip, contradictScale),
     ]..sort(_byNet);
     return ranked;
   }
 
-  int _byNet(HypothesisJudgment a, HypothesisJudgment b) {
+  int _byNet(RiskJudgment a, RiskJudgment b) {
     final byNet = b.net.compareTo(a.net);
     if (byNet != 0) {
       return byNet;
     }
-    return a.hypothesisId.compareTo(b.hypothesisId);
+    return a.riskId.compareTo(b.riskId);
   }
 
-  HypothesisJudgment _judge(
-    HypothesisSpec hypothesis,
+  RiskJudgment _judge(
+    RiskQuestion risk,
     List<RetrievalHit> retrieved,
     Set<String> skip,
     double contradictScale,
@@ -821,7 +835,7 @@ class InvestigationAgent {
         .where((hit) => !skip.contains(hit.unit.id))
         .toList();
     final supportScore = _scoreSignatures(
-      signatures: hypothesis.support,
+      signatures: risk.support,
       retrieved: usable,
       into: supporting,
       matched: matchedSupport,
@@ -829,18 +843,18 @@ class InvestigationAgent {
     );
     final contradictScore =
         _scoreSignatures(
-          signatures: hypothesis.contradict,
+          signatures: risk.contradict,
           retrieved: usable,
           into: contradicting,
           matched: matchedContradict,
           missing: null,
         ) *
         contradictScale;
-    return HypothesisJudgment(
-      hypothesisId: hypothesis.id,
-      title: hypothesis.title,
-      statement: hypothesis.statement,
-      actionIfLead: hypothesis.actionIfLead,
+    return RiskJudgment(
+      riskId: risk.id,
+      title: risk.title,
+      statement: risk.statement,
+      actionIfLead: risk.actionIfLead,
       supportScore: supportScore,
       contradictScore: contradictScore,
       net: supportScore - contradictScore,
@@ -886,23 +900,22 @@ class InvestigationAgent {
   }
 
   InvestigationReport _report({
-    required InvestigationCase caseFile,
-    required List<HypothesisJudgment> judgments,
+    required Engagement engagement,
+    required List<RiskJudgment> judgments,
     required List<String> missingModalities,
     bool panelCleared = false,
   }) {
     if (judgments.isEmpty) {
       return const InvestigationReport(
-        headline: 'No explanations were registered',
+        headline: 'No risk questions were registered',
         resolved: false,
-        leadHypothesisId: null,
+        leadRiskId: null,
         confidence: 0,
-        decisionNote:
-            'The brief did not register competing explanations to score.',
-        recommendedAction: 'Register at least two explanations before treating this as a decision.',
+        decisionNote: 'The brief did not register risk questions to score.',
+        recommendedAction: 'Register at least two risk questions before treating this as a decision.',
         findings: [],
         competitors: [],
-        gaps: ['No hypothesis catalog.'],
+        gaps: ['No risk catalog.'],
         nextCollections: [],
         citedEvidenceIds: [],
       );
@@ -914,10 +927,10 @@ class InvestigationAgent {
     final clearsBar = lead.net > 0 && margin >= _resolveMargin;
     final released = !clearsBar && panelCleared && lead.net > 0 && margin > 0;
     final resolved = clearsBar || released;
-    final coverage = caseFile.expectedModalities.isEmpty
+    final coverage = engagement.expectedModalities.isEmpty
         ? 1.0
-        : (caseFile.expectedModalities.length - missingModalities.length) /
-              caseFile.expectedModalities.length;
+        : (engagement.expectedModalities.length - missingModalities.length) /
+              engagement.expectedModalities.length;
     final marginScore = margin <= 0 ? 0.0 : margin / (margin + 1.5);
     // No ceiling here on purpose. The output rail owns the 95% cap.
     final raw = resolved
@@ -933,7 +946,7 @@ class InvestigationAgent {
     }
     if (findings.isEmpty) {
       findings.add(
-        'No retrieved evidence carried a support phrase for the top explanation.',
+        'No retrieved evidence carried a support phrase for the top risk.',
       );
     }
 
@@ -949,11 +962,11 @@ class InvestigationAgent {
       if (released)
         'Margin ${margin.toStringAsFixed(2)} is under the 0.45 bar. The memo was released only because all three seats agreed on a strict lead, and confidence is capped at 50%.',
       if (lead.missingSupport.isNotEmpty)
-        'Lead explanation still lacks: ${lead.missingSupport.join('; ')}.',
+        'Lead risk still lacks: ${lead.missingSupport.join('; ')}.',
     ];
     if (gaps.isEmpty) {
       gaps.add(
-        'No modality gap is open. Residual risk is the runner-up, not a missing sensor class.',
+        'No evidence gap is open. Residual risk is the runner-up, not a missing kind of record.',
       );
     }
 
@@ -981,7 +994,7 @@ class InvestigationAgent {
 
     final headline = resolved
         ? lead.title
-        : 'No explanation clears the evidence margin';
+        : 'No risk clears the evidence margin';
     final decisionNote = released
         ? '${lead.title} leads with net ${lead.net.toStringAsFixed(2)} on a thin margin of ${margin.toStringAsFixed(2)}. '
               'The panel released it unanimously after escalation, so confidence is capped at ${(confidence * 100).round()}%. '
@@ -991,11 +1004,11 @@ class InvestigationAgent {
               '${runnerUp == null ? '' : ' against ${runnerUp.title} at ${runnerUp.net.toStringAsFixed(2)}'}. '
               'Confidence ${(confidence * 100).round()}% reflects that margin and modality coverage. '
               'The memo cites only ids retrieved in this run.'
-        : 'The top explanation, ${lead.title}, does not clear a positive net and a 0.45 margin. '
+        : 'The top risk, ${lead.title}, does not clear a positive net and a 0.45 margin. '
               'Hold the decision and collect the gaps below.';
     final recommendedAction = resolved
         ? lead.actionIfLead
-        : 'Hold the decision. The evidence margin is too small to prefer one explanation.';
+        : 'Hold the decision. The evidence margin is too small to prefer one risk.';
 
     for (final judgment in judgments.take(2)) {
       for (final hit in [...judgment.supporting, ...judgment.contradicting]) {
@@ -1006,7 +1019,7 @@ class InvestigationAgent {
     return InvestigationReport(
       headline: headline,
       resolved: resolved,
-      leadHypothesisId: resolved ? lead.hypothesisId : null,
+      leadRiskId: resolved ? lead.riskId : null,
       confidence: confidence,
       decisionNote: decisionNote,
       recommendedAction: recommendedAction,
@@ -1018,7 +1031,7 @@ class InvestigationAgent {
     );
   }
 
-  String _competitorLine(HypothesisJudgment judgment) {
+  String _competitorLine(RiskJudgment judgment) {
     final support = judgment.matchedSupport.isEmpty
         ? 'no support phrase hit'
         : 'support: ${judgment.matchedSupport.join(', ')}';

@@ -46,9 +46,10 @@ class _RetrievalViewState extends State<RetrievalView> {
   @override
   Widget build(BuildContext context) {
     final desk = widget.desk;
-    final caseFile = desk.current;
+    final engagement = desk.current;
     final modalities =
-        caseFile.evidence.map((unit) => unit.modality).toSet().toList()..sort();
+        engagement.evidence.map((unit) => unit.modality).toSet().toList()
+          ..sort();
     final maxScore = desk.manualHits.fold<double>(
       0,
       (max, hit) => hit.score > max ? hit.score : max,
@@ -66,7 +67,7 @@ class _RetrievalViewState extends State<RetrievalView> {
           spacing: 6,
           runSpacing: 6,
           children: [
-            for (final example in caseFile.exampleQueries)
+            for (final example in engagement.exampleQueries)
               ActionChip(
                 label: Text(example),
                 backgroundColor: DavidColors.panel,
@@ -87,7 +88,7 @@ class _RetrievalViewState extends State<RetrievalView> {
           onSubmitted: (_) => desk.searchManual(),
           style: const TextStyle(color: DavidColors.ink),
           decoration: const InputDecoration(
-            hintText: 'Search observations, records, sensors, sites',
+            hintText: 'Search records, metrics, sources',
           ),
         ),
         const SizedBox(height: 10),
@@ -121,8 +122,8 @@ class _RetrievalViewState extends State<RetrievalView> {
                   child: Text('Any source'),
                 ),
                 DropdownMenuItem(
-                  value: SourceKind.sensorObservation,
-                  child: Text('Sensor'),
+                  value: SourceKind.metric,
+                  child: Text('Metric'),
                 ),
                 DropdownMenuItem(
                   value: SourceKind.record,

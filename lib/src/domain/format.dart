@@ -22,16 +22,20 @@ String formatStamp(DateTime value) {
   return '${_months[date.month - 1]} ${date.day}, ${date.year} $hour:$minute UTC';
 }
 
-String formatKind(CaseKind kind) {
-  return switch (kind) {
-    CaseKind.dueDiligence => 'Due diligence',
-    CaseKind.physicalAnomaly => 'Physical anomaly',
+String formatDealType(DealType type) {
+  return switch (type) {
+    DealType.customer => 'New customer',
+    DealType.vendor => 'Vendor',
+    DealType.partner => 'Partner',
+    DealType.contractor => 'Contractor',
+    DealType.acquisition => 'Acquisition',
+    DealType.lease => 'Lease',
   };
 }
 
 String formatSourceKind(SourceKind kind) {
   return switch (kind) {
-    SourceKind.sensorObservation => 'Sensor',
+    SourceKind.metric => 'Metric',
     SourceKind.record => 'Record',
   };
 }

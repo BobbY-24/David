@@ -4,8 +4,8 @@ DateTime utc(int year, int month, int day, int hour, [int minute = 0]) {
   return DateTime.utc(year, month, day, hour, minute);
 }
 
-class Reading {
-  const Reading(this.at, this.value, {this.claim});
+class MetricPoint {
+  const MetricPoint(this.at, this.value, {this.claim});
 
   final DateTime at;
   final double value;
@@ -29,12 +29,12 @@ List<ProvenanceStep> seal({
       actor: 'david-ingest',
       action: 'seal',
       at: at.add(const Duration(minutes: 6)),
-      note: 'Synthetic fixture seal $id. Not a field hash of a live site.',
+      note: 'Synthetic fixture seal $id. Not a hash of a real record.',
     ),
   ];
 }
 
-List<EvidenceUnit> readingSeries({
+List<EvidenceUnit> metricSeries({
   required String caseId,
   required String idPrefix,
   required String seriesId,
@@ -44,16 +44,16 @@ List<EvidenceUnit> readingSeries({
   required String site,
   required String unit,
   required String collector,
-  required List<Reading> readings,
+  required List<MetricPoint> readings,
 }) {
   return [
     for (var i = 0; i < readings.length; i++)
       EvidenceUnit(
         id: '$idPrefix-$i',
         caseId: caseId,
-        sourceKind: SourceKind.sensorObservation,
+        sourceKind: SourceKind.metric,
         title: title,
-        text: _readingText(readings[i], unit),
+        text: _metricText(readings[i], unit),
         observedAt: readings[i].at,
         site: site,
         modality: modality,
@@ -75,7 +75,7 @@ List<EvidenceUnit> readingSeries({
   ];
 }
 
-String _readingText(Reading reading, String unit) {
+String _metricText(MetricPoint reading, String unit) {
   final base = 'Recorded ${reading.value} $unit.';
   final claim = reading.claim;
   if (claim == null || claim.isEmpty) {

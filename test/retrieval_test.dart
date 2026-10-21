@@ -1,4 +1,4 @@
-import 'package:david/src/data/case_packs.dart';
+import 'package:david/src/data/engagement_packs.dart';
 import 'package:david/src/domain/models.dart';
 import 'package:david/src/retrieval/evidence_index.dart';
 import 'package:david/src/retrieval/text_match.dart';
@@ -8,7 +8,7 @@ void main() {
   test('negation blocks a phrase that only appears under no or not', () {
     expect(
       phraseMatches(
-        'The vendor reports no integration defect and no sensor dropout.',
+        'The vendor reports no integration defect and no device dropout.',
         'integration defect',
       ),
       isFalse,
@@ -29,28 +29,28 @@ void main() {
     );
   });
 
-  test(
-    'acetylene search returns the harbor gas reading and respects modality',
-    () {
-      final harbor = CasePacks.byId('harbor-substation-4');
-      final index = EvidenceIndex(harbor.evidence);
+  test('sanctions search returns the screen and respects modality', () {
+    final brightline = EngagementPacks.byId('brightline-supply');
+    final index = EvidenceIndex(brightline.evidence);
 
-      final hits = index.search(
-        const RetrievalQuery(text: 'acetylene', limit: 5),
-      );
-      expect(hits, isNotEmpty);
-      expect(hits.first.unit.text, contains('42 ppm'));
-      expect(hits.every((hit) => hit.unit.modality == 'dissolved-gas'), isTrue);
+    final hits = index.search(
+      const RetrievalQuery(text: 'OFAC sanctions', limit: 5),
+    );
+    expect(hits, isNotEmpty);
+    expect(hits.first.unit.id, 'b-sanctions');
 
-      final thermal = index.search(
-        const RetrievalQuery(text: 'acetylene', modality: 'thermal', limit: 5),
-      );
-      expect(thermal, isEmpty);
-    },
-  );
+    final reviews = index.search(
+      const RetrievalQuery(
+        text: 'OFAC sanctions',
+        modality: 'reviews',
+        limit: 5,
+      ),
+    );
+    expect(reviews, isEmpty);
+  });
 
   test('related party search hits the northline payment memo', () {
-    final northline = CasePacks.byId('northline-logistics');
+    final northline = EngagementPacks.byId('northline-logistics');
     final index = EvidenceIndex(northline.evidence);
     final hits = index.search(
       const RetrievalQuery(
@@ -63,8 +63,8 @@ void main() {
   });
 
   test('blank query browses newest evidence with a zero score', () {
-    final vault = CasePacks.byId('vault-c12');
-    final index = EvidenceIndex(vault.evidence);
+    final corvid = EngagementPacks.byId('corvid-retail');
+    final index = EvidenceIndex(corvid.evidence);
     final hits = index.search(const RetrievalQuery(text: '   ', limit: 3));
     expect(hits, hasLength(3));
     expect(hits.every((hit) => hit.score == 0), isTrue);
