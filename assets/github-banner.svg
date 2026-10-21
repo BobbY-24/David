@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title description">
+  <title id="title">David — due diligence for one-person companies</title>
+  <desc id="description">David's amber checklist mark and wordmark on a light card. Your deal. Your evidence. A memo you approve.</desc>
+  <rect x="1" y="1" width="1198" height="318" rx="20" fill="#f4f0e6" stroke="#d9d2c3"/>
+  <g transform="translate(70 105)" aria-hidden="true">
+    <rect x="0" y="0" width="120" height="110" rx="22" fill="#e0a045"/>
+    <path d="M14 26l7 7 13-15" fill="none" stroke="#1c1408" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="48" y="19" width="50" height="10" rx="5" fill="#1c1408"/>
+    <path d="M14 55l7 7 13-15" fill="none" stroke="#1c1408" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="48" y="48" width="38" height="10" rx="5" fill="#1c1408"/>
+    <path d="M14 84l7 7 13-15" fill="none" stroke="#1c1408" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="48" y="77" width="44" height="10" rx="5" fill="#1c1408"/>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="214" y="170" font-size="120" font-weight="700" letter-spacing="-3" fill="#1c2118">David</text>
+    <text x="218" y="232" font-size="38" fill="#5c6558">Your deal. Your evidence. A memo you approve.</text>
+  </g>
+</svg>
