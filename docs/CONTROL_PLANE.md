@@ -33,3 +33,13 @@ The rails follow the OWASP LLM Top 10 for 2025.
 - **Approval:** a person approves anything that would pay, sign, order, or contact the counterparty. No such tool exists on the allowlist.
 
 `EngagementQueue` is the batch lane: a fixed number of runs in flight and a hard cap on the batch. A larger submit is rejected.
+
+## Decision
+
+Every memo ends in one of four decisions: proceed, proceed with conditions, hold, or walk away.
+
+- **Walk away** when a deal-breaker risk is triggered. It is triggered when its net score is at least 1.0 and it has at least one supporting unit. It applies even when another risk leads.
+- **The lead's outcome** when the memo is resolved. Each risk carries the outcome it recommends.
+- **Hold** when the memo is not resolved.
+
+A conditional decision lists the lead's action as its condition. The memo shows the decision, any triggered deal-breakers, and the conditions. The decision is untuned: the threshold and the outcomes on the demo risks are judgment calls, not measured values.

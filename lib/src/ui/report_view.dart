@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../domain/models.dart';
 import '../state/desk_controller.dart';
 import 'theme.dart';
 import 'widgets.dart';
@@ -88,6 +89,25 @@ class ReportView extends StatelessWidget {
                       const SizedBox(height: 14),
                       Container(height: 1, color: DavidColors.memoRule),
                       const SizedBox(height: 14),
+                      _DecisionChip(decision: report.decision),
+                      const SizedBox(height: 10),
+                      if (report.triggeredDealBreakers.isNotEmpty) ...[
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF6E3E3),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Deal-breaker triggered: ${report.triggeredDealBreakers.join(', ')}. The memo recommends walking away whatever the lead says.',
+                            style: const TextStyle(
+                              color: DavidColors.memoInk,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
                       Text(
                         report.headline,
                         style: const TextStyle(
@@ -211,6 +231,43 @@ class ReportView extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _DecisionChip extends StatelessWidget {
+  const _DecisionChip({required this.decision});
+
+  final Decision decision;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = switch (decision) {
+      Decision.proceed => DavidColors.positive,
+      Decision.proceedWithConditions => DavidColors.brass,
+      Decision.hold => DavidColors.memoMuted,
+      Decision.walkAway => DavidColors.negative,
+    };
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: color),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Text(
+            'Decision: ${decision.label}',
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w700,
+              fontSize: 13,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

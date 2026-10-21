@@ -147,6 +147,7 @@ Engagement brightlineCase() {
     riskQuestions: const [
       RiskQuestion(
         id: 'delivery-reliability',
+        outcome: Decision.proceedWithConditions,
         title: 'Delivery reliability risk',
         statement: 'The vendor is real and solvent but misses delivery dates in peak season.',
         actionIfLead: 'Pay in milestones on delivery instead of 50 percent up front, and add a late-delivery credit to the contract.',
@@ -159,6 +160,8 @@ Engagement brightlineCase() {
       ),
       RiskQuestion(
         id: 'shell-or-fraud',
+        outcome: Decision.walkAway,
+        dealBreaker: true,
         title: 'Shell company or fraud',
         statement: 'The vendor is not a real operating business and the prepayment would be lost.',
         actionIfLead: 'Do not prepay. Ask for a site visit and a bank-verified account before any payment.',
@@ -174,6 +177,7 @@ Engagement brightlineCase() {
       ),
       RiskQuestion(
         id: 'financial-distress',
+        outcome: Decision.hold,
         title: 'Financial distress',
         statement: 'The vendor is short of cash and may not survive the contract term.',
         actionIfLead: 'Cap the prepayment at one month of orders and ask for a parent or personal guarantee.',
@@ -186,6 +190,7 @@ Engagement brightlineCase() {
       ),
       RiskQuestion(
         id: 'clean-vendor',
+        outcome: Decision.proceed,
         title: 'No material risk',
         statement: 'The vendor is established and reliable, so standard prepayment terms are fine.',
         actionIfLead: 'Proceed on the requested terms.',

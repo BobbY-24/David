@@ -183,6 +183,7 @@ Engagement northlineCase() {
     riskQuestions: const [
       RiskQuestion(
         id: 'related-party-round-trip',
+        outcome: Decision.proceedWithConditions,
         title: 'Related-party round trip',
         statement: 'The revenue spike is supported by a related-party customer that shares the target registered agent, so the quarter may be circular.',
         actionIfLead: 'Escrow or re-trade revenue tied to Northline Freight Services until cash collection and an independent customer are shown.',
@@ -195,6 +196,7 @@ Engagement northlineCase() {
       ),
       RiskQuestion(
         id: 'channel-stuffing',
+        outcome: Decision.hold,
         title: 'Bill-and-hold channel stuffing',
         statement: 'The target billed revenue on bill-and-hold terms without a matching rise in throughput or cash.',
         actionIfLead: 'Sample the bill-and-hold contracts and match them to warehouse scans and cash receipts before accepting the quarter.',
@@ -208,6 +210,7 @@ Engagement northlineCase() {
       ),
       RiskQuestion(
         id: 'legitimate-seasonal',
+        outcome: Decision.proceedWithConditions,
         title: 'Legitimate seasonal demand',
         statement: 'The quarter is a real seasonal demand peak from a new independent contract.',
         actionIfLead: 'Accept the quarter only if an independent customer, cash, and operating throughput all confirm it.',
@@ -223,6 +226,7 @@ Engagement northlineCase() {
       ),
       RiskQuestion(
         id: 'telematics-defect',
+        outcome: Decision.hold,
         title: 'Telematics integration defect',
         statement: 'The miles decline is a broken telematics integration, not weaker operating throughput.',
         actionIfLead: 'Use a telematics defect explanation only if the vendor shows dropped devices and the warehouse record disagrees.',

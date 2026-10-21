@@ -128,6 +128,7 @@ Engagement corvidCase() {
     riskQuestions: const [
       RiskQuestion(
         id: 'successor-entity',
+        outcome: Decision.proceedWithConditions,
         title: 'Trading through a successor entity',
         statement: 'The old company dissolved and the business now trades through a new entity at the same address.',
         actionIfLead: 'Contract with Corvid Retail Holdings LLC by its exact legal name, take a personal guarantee from the manager, and start on 30-day terms with a credit limit.',
@@ -140,6 +141,8 @@ Engagement corvidCase() {
       ),
       RiskQuestion(
         id: 'phoenix-fraud',
+        outcome: Decision.walkAway,
+        dealBreaker: true,
         title: 'Phoenix company',
         statement: 'The owners dissolved the company to walk away from its debts and restarted under a new name.',
         actionIfLead:
@@ -153,6 +156,7 @@ Engagement corvidCase() {
       ),
       RiskQuestion(
         id: 'slow-payer',
+        outcome: Decision.proceedWithConditions,
         title: 'Slow payer',
         statement: 'The customer is real but pays well beyond terms.',
         actionIfLead: 'Offer 30-day terms with a late fee, or a deposit on the first order.',
@@ -164,6 +168,7 @@ Engagement corvidCase() {
       ),
       RiskQuestion(
         id: 'healthy-customer',
+        outcome: Decision.proceed,
         title: 'Healthy customer',
         statement: 'The customer is established and pays on time, so 60-day terms are fine.',
         actionIfLead: 'Ship on the requested terms.',
