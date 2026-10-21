@@ -74,6 +74,6 @@ Pick one and press **Run diligence**. The Control tab shows which loop ran and w
 
 ## Documentation
 
-[Desk guide](docs/DESK.md) · [Your own model key](docs/KEYS.md) · [Control plane](docs/CONTROL_PLANE.md) · [Job service](docs/JOB_SERVICE.md) · [Testing](docs/TESTING.md)
+[Desk guide](docs/DESK.md) · [Agent specs](docs/SPECS.md) · [Your own model key](docs/KEYS.md) · [Control plane](docs/CONTROL_PLANE.md) · [Job service](docs/JOB_SERVICE.md) · [Testing](docs/TESTING.md)
 
 David P0 · `grounded-control-v4` · [MIT license](LICENSE).

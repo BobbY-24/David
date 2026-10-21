@@ -10,6 +10,7 @@ The desk is the Flutter web app. Each engagement opens on its own brief and has 
 - **Report.** Decision memo. Every citation is an id retrieved in that run.
 - **Control.** The loop the router picked, the rails, the panel seats, and the audit log.
 - **Jobs.** Submits engagements to the job service. See [Job service](JOB_SERVICE.md).
+- **Library.** Your company profile and the agent specs you run, saved as numbered versions. See [Agent specs](SPECS.md).
 - **Settings.** Connect your own Claude key, choose the model, and choose between the offline demo and Claude. See [Your own model key](KEYS.md).
 
 ## How negation is handled

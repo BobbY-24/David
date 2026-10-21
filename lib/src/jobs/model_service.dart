@@ -1,22 +1,9 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 
 import '../agent/scorer.dart';
+import 'service_transport.dart';
 
-/// A failure from the key vault or the model route. [message] is safe to show:
-/// it never contains the key.
-class ModelServiceException implements Exception {
-  const ModelServiceException(this.code, this.message, {this.status});
-
-  final String code;
-  final String message;
-  final int? status;
-
-  @override
-  String toString() => message;
-}
+export 'service_transport.dart' show ModelServiceException;
 
 /// What the desk may know about the saved key. The key itself is never sent
 /// back by the service, only its last four characters.
@@ -121,25 +108,30 @@ abstract interface class ModelService implements ModelJudge {
 
 class HttpModelService implements ModelService {
   HttpModelService({http.Client? httpClient, String? baseUrl})
-    : _http = httpClient ?? http.Client(),
-      baseUrl =
-          baseUrl ??
-          const String.fromEnvironment(
-            'JOBS_API',
-            defaultValue: 'http://127.0.0.1:43124',
-          );
+    : _transport = ServiceTransport(
+        httpClient: httpClient,
+        baseUrl:
+            baseUrl ??
+            const String.fromEnvironment(
+              'JOBS_API',
+              defaultValue: 'http://127.0.0.1:43124',
+            ),
+      );
 
   static const _shortTimeout = Duration(seconds: 20);
   static const _modelTimeout = Duration(seconds: 180);
 
-  final http.Client _http;
-  final String baseUrl;
-  String? _token;
+  final ServiceTransport _transport;
 
   @override
-  void setToken(String? token) {
-    _token = (token == null || token.trim().isEmpty) ? null : token.trim();
-  }
+  void setToken(String? token) => _transport.setToken(token);
+
+  Future<Map<String, Object?>> _send(
+    String method,
+    String path, {
+    Object? body,
+    Duration timeout = _shortTimeout,
+  }) => _transport.send(method, path, body: body, timeout: timeout);
 
   @override
   Future<VaultStatus> status() async {
@@ -210,72 +202,6 @@ class HttpModelService implements ModelService {
       support: entries(json['support']),
       contradict: entries(json['contradict']),
     );
-  }
-
-  Future<Map<String, Object?>> _send(
-    String method,
-    String path, {
-    Object? body,
-    Duration timeout = _shortTimeout,
-  }) async {
-    final request = http.Request(method, Uri.parse('$baseUrl$path'))
-      ..headers['Content-Type'] = 'application/json';
-    final token = _token;
-    if (token != null) {
-      request.headers['X-David-Token'] = token;
-    }
-    if (body != null) {
-      request.body = jsonEncode(body);
-    }
-    final http.Response response;
-    try {
-      response = await http.Response.fromStream(
-        await _http.send(request).timeout(timeout),
-      );
-    } on TimeoutException {
-      throw const ModelServiceException(
-        'timeout',
-        'The job service took too long to answer.',
-      );
-    } on Exception {
-      throw ModelServiceException(
-        'service_unreachable',
-        'The job service is not reachable at $baseUrl. Start it to use your own key.',
-      );
-    }
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw _error(response);
-    }
-    try {
-      return _map(jsonDecode(response.body));
-    } on FormatException {
-      throw ModelServiceException(
-        'bad_response',
-        'The job service sent an answer David could not read.',
-        status: response.statusCode,
-      );
-    }
-  }
-
-  ModelServiceException _error(http.Response response) {
-    var code = 'error';
-    var message =
-        'The job service answered with status ${response.statusCode}.';
-    try {
-      final detail = _map(jsonDecode(response.body))['detail'];
-      if (detail is Map<String, Object?>) {
-        code = detail['code'] as String? ?? code;
-        message = detail['message'] as String? ?? message;
-      } else if (detail is String) {
-        message = detail;
-      } else if (detail is List<Object?>) {
-        code = 'invalid_request';
-        message = 'The service could not accept that request.';
-      }
-    } on FormatException {
-      // Keep the generic message.
-    }
-    return ModelServiceException(code, message, status: response.statusCode);
   }
 }
 

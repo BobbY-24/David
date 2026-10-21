@@ -2,14 +2,21 @@ import 'package:flutter/material.dart';
 
 import 'jobs/job_client.dart';
 import 'jobs/model_service.dart';
+import 'jobs/spec_service.dart';
 import 'ui/desk_page.dart';
 import 'ui/theme.dart';
 
 class DavidApp extends StatelessWidget {
-  const DavidApp({super.key, this.jobClient, this.modelService});
+  const DavidApp({
+    super.key,
+    this.jobClient,
+    this.modelService,
+    this.specService,
+  });
 
   final JobClient? jobClient;
   final ModelService? modelService;
+  final SpecService? specService;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +24,11 @@ class DavidApp extends StatelessWidget {
       title: 'David',
       debugShowCheckedModeBanner: false,
       theme: davidTheme(),
-      home: DeskPage(jobClient: jobClient, modelService: modelService),
+      home: DeskPage(
+        jobClient: jobClient,
+        modelService: modelService,
+        specService: specService,
+      ),
     );
   }
 }

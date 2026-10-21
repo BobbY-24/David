@@ -25,6 +25,8 @@ def clean_jobs():
     init_db()
     session = session_factory()
     session.execute(text("DELETE FROM jobs"))
+    session.execute(text("DELETE FROM agent_spec_versions"))
+    session.execute(text("DELETE FROM company_profiles"))
     session.execute(text("DELETE FROM api_keys"))
     session.execute(text("DELETE FROM model_usage"))
     session.commit()
