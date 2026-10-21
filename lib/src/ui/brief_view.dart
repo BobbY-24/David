@@ -52,11 +52,7 @@ class BriefView extends StatelessWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(top: 7, right: 8),
-                  child: Icon(
-                    Icons.circle,
-                    size: 6,
-                    color: DavidColors.amber,
-                  ),
+                  child: Icon(Icons.circle, size: 6, color: DavidColors.amber),
                 ),
                 Expanded(
                   child: Text(criterion, style: const TextStyle(height: 1.4)),

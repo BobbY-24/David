@@ -89,7 +89,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('jobs tab enqueues a book against a fake service', (tester) async {
+  testWidgets('jobs tab enqueues a book against a fake service', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1440, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);

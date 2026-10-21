@@ -137,9 +137,7 @@ class EvidenceChip extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: selected
-                    ? DavidColors.amberInk
-                    : DavidColors.ink,
+                color: selected ? DavidColors.amberInk : DavidColors.ink,
                 fontSize: 12,
                 fontFamily: 'monospace',
               ),
@@ -248,10 +246,7 @@ class EvidencePanel extends StatelessWidget {
             ),
             Text(
               formatStamp(step.at),
-              style: const TextStyle(
-                color: DavidColors.faint,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: DavidColors.faint, fontSize: 12),
             ),
             Text(
               step.note,

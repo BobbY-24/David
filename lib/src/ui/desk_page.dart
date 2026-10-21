@@ -63,9 +63,7 @@ class _DeskPageState extends State<DeskPage> {
                             child: DecoratedBox(
                               decoration: const BoxDecoration(
                                 border: Border(
-                                  right: BorderSide(
-                                    color: DavidColors.line,
-                                  ),
+                                  right: BorderSide(color: DavidColors.line),
                                 ),
                               ),
                               child: CaseRail(desk: desk),
@@ -169,19 +167,13 @@ class _TopBar extends StatelessWidget {
                       'Due diligence and physical anomaly investigations',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: DavidColors.muted,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(color: DavidColors.muted, fontSize: 13),
                     ),
                   ),
                   const SizedBox(width: 8),
                   const Text(
                     'Synthetic fixtures',
-                    style: TextStyle(
-                      color: DavidColors.faint,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: DavidColors.faint, fontSize: 12),
                   ),
                 ] else
                   const Spacer(),
@@ -205,10 +197,7 @@ class _ErrorBanner extends StatelessWidget {
       color: const Color(0xFF3A221C),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Text(
-          message,
-          style: const TextStyle(color: DavidColors.coral),
-        ),
+        child: Text(message, style: const TextStyle(color: DavidColors.coral)),
       ),
     );
   }
@@ -344,10 +333,7 @@ class _CaseHeader extends StatelessWidget {
             children: [
               Text(
                 '${formatKind(caseFile.kind)} · opened ${formatStamp(caseFile.openedAt)}',
-                style: const TextStyle(
-                  color: DavidColors.muted,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: DavidColors.muted, fontSize: 12),
               ),
               const SizedBox(height: 4),
               Text(

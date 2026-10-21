@@ -285,10 +285,7 @@ class _HitCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   'Matched ${hit.matchedTerms.join(', ')}',
-                  style: const TextStyle(
-                    color: DavidColors.sage,
-                    fontSize: 12,
-                  ),
+                  style: const TextStyle(color: DavidColors.sage, fontSize: 12),
                 ),
               ],
             ],

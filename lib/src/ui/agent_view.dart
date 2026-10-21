@@ -87,10 +87,7 @@ class _StepTile extends StatelessWidget {
       padding: const EdgeInsets.only(left: 12),
       decoration: BoxDecoration(
         border: Border(
-          left: BorderSide(
-            color: isLast ? color : DavidColors.line,
-            width: 2,
-          ),
+          left: BorderSide(color: isLast ? color : DavidColors.line, width: 2),
         ),
       ),
       child: PanelCard(

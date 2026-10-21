@@ -78,12 +78,18 @@ class ControlView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${rail.verdict == RailVerdict.pass ? 'Pass' : 'Block'} · ${rail.rail} · ${rail.name}',
+                    '${switch (rail.verdict) {
+                      RailVerdict.pass => 'Pass',
+                      RailVerdict.flag => 'Flag',
+                      RailVerdict.block => 'Block',
+                    }} · ${rail.rail} · ${rail.name}',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: rail.verdict == RailVerdict.pass
-                          ? DavidColors.sage
-                          : DavidColors.coral,
+                      color: switch (rail.verdict) {
+                        RailVerdict.pass => DavidColors.sage,
+                        RailVerdict.flag => DavidColors.amber,
+                        RailVerdict.block => DavidColors.coral,
+                      },
                     ),
                   ),
                   const SizedBox(height: 4),

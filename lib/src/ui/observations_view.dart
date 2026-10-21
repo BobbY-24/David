@@ -165,9 +165,7 @@ class _SeriesCard extends StatelessWidget {
     final last = latest.numericValue;
     final delta = first == null || last == null ? null : last - first;
     final rising = delta != null && delta.abs() > 0.0001;
-    final color = rising && delta > 0
-        ? DavidColors.amber
-        : DavidColors.sage;
+    final color = rising && delta > 0 ? DavidColors.amber : DavidColors.sage;
     return PanelCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,10 +282,7 @@ class _RecordTile extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 '${unit.source} · ${formatStamp(unit.observedAt)}',
-                style: const TextStyle(
-                  color: DavidColors.muted,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: DavidColors.muted, fontSize: 12),
               ),
               const SizedBox(height: 6),
               Text(

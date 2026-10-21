@@ -30,6 +30,35 @@ def test_investigation_leads_match_the_desk():
     assert vault["loop"] == "plan-execute"
 
 
+def test_phrase_matcher_agrees_with_every_desk_verdict():
+    from david_lab.runners import _EXPORT, phrase_matches
+
+    golden = _EXPORT["phrase_golden"]
+    assert len(golden) > 40
+    wrong = [(text, phrase, want) for text, phrase, want in golden if phrase_matches(text, phrase) != want]
+    assert wrong == []
+
+
+def test_service_and_desk_read_the_same_cases():
+    from david_lab.runners import _CASES
+
+    harbor = {h["id"]: h for h in _CASES["harbor-substation-4"]["hypotheses"]}
+    # The service used to file "cameras disagree" under the internal fault.
+    # On the desk it is calibration-drift support.
+    assert ["cameras disagree", 1.6] in harbor["calibration-drift"]["support"]
+    assert all(phrase != "cameras disagree" for phrase, _ in harbor["internal-thermal-fault"]["support"])
+    assert harbor["cooling-failure"]["contradict"]
+
+
+def test_unrelated_party_is_not_a_related_party():
+    from david_lab.runners import phrase_matches
+
+    assert phrase_matches("The related party paid.", "related party")
+    assert not phrase_matches("The unrelated party paid.", "related party")
+    assert not phrase_matches("Night crew found no sign of a door ajar.", "door ajar")
+    assert phrase_matches("No alarm sounded. Door ajar for eleven minutes.", "door ajar")
+
+
 def test_hypertension_ignores_instruction_notes():
     result = hypertension({"cohort": "ward"}, None)
     by_id = {row["id"]: row for row in result["rows"]}
@@ -61,6 +90,34 @@ def test_portfolio_reads_sql_and_does_not_trade():
     assert done["result"]["order_placed"] is False
     assert done["queue_wait_ms"] is not None
     assert done["e2e_ms"] is not None
+
+
+def test_retry_backoff_is_scheduled_not_slept(monkeypatch):
+    import time
+
+    monkeypatch.setenv("RETRY_BACKOFF_SECONDS", "1.5")
+    now, later = [], []
+    jobs = JobService(dispatch=now.append, dispatch_later=lambda job_id, delay: later.append((job_id, delay)))
+    view, _ = jobs.enqueue("probe", {"fail_times": 1}, "backoff-1")
+    started = time.monotonic()
+    jobs.execute(view["id"])
+    assert time.monotonic() - started < 1.0
+    assert later == [(view["id"], 1.5)]
+    assert jobs.get(view["id"])["status"] == "queued"
+
+
+def test_cors_allows_the_desk_and_not_any_origin():
+    client = TestClient(app)
+    desk = client.options(
+        "/v1/jobs",
+        headers={"Origin": "http://127.0.0.1:43123", "Access-Control-Request-Method": "POST"},
+    )
+    assert desk.headers.get("access-control-allow-origin") == "http://127.0.0.1:43123"
+    stranger = client.options(
+        "/v1/jobs",
+        headers={"Origin": "https://evil.example", "Access-Control-Request-Method": "POST"},
+    )
+    assert "access-control-allow-origin" not in stranger.headers
 
 
 def test_idempotency_replays_and_rejects_a_different_body():
@@ -168,7 +225,7 @@ def test_api_enqueue_requires_a_key_and_serves_metrics():
         assert missing.status_code == 400
         health = client.get("/v1/health")
         assert health.status_code == 200
-        assert health.json()["scorer"] == "fixture-scorer-v1"
+        assert health.json()["scorer"] == "fixture-scorer-v2"
         created = client.post(
             "/v1/jobs",
             headers={"Idempotency-Key": "api-probe"},

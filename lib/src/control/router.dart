@@ -26,7 +26,7 @@ class LoopRouter {
       return const LoopDecision(
         kind: AgentLoopKind.panelVote,
         reason: 'The question moves price, escrow, or a walk-away, so one scorer is not enough.',
-        standard: 'Panel vote. Operations, measurement, and adversary seats score the same retrieved set and a majority is required. Anthropic parallelization and voting; multi-agent voting when roles disagree.',
+        standard: 'Panel vote. Operations scores plainly, measurement drops the strongest unit behind each explanation, and adversary doubles falsifiers. A majority is required and a tied seat abstains. Anthropic parallelization and voting; multi-agent voting when roles disagree.',
       );
     }
     final conflict = _sensorConflict(caseFile);

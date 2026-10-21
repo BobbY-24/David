@@ -1,6 +1,9 @@
 import os
 
-os.environ["DATABASE_URL"] = "postgresql+psycopg://david:david@127.0.0.1:5432/david_test"
+os.environ["DATABASE_URL"] = os.environ.get(
+    "TEST_DATABASE_URL",
+    "postgresql+psycopg://david:david@127.0.0.1:5432/david_test",
+)
 os.environ["REDIS_DISPATCH"] = "0"
 os.environ["SWEEP"] = "0"
 os.environ["RETRY_BACKOFF_SECONDS"] = "0"
