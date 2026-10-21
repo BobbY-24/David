@@ -17,7 +17,7 @@ class AgentView extends StatelessWidget {
       return const Center(
         child: Text(
           'Running the grounded policy…',
-          style: TextStyle(color: DavidColors.amber),
+          style: TextStyle(color: DavidColors.brass),
         ),
       );
     }
@@ -74,10 +74,10 @@ class _StepTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (step.stage) {
-      AgentStage.scope => DavidColors.mist,
-      AgentStage.retrieve => DavidColors.sage,
-      AgentStage.gap => DavidColors.amber,
-      AgentStage.adjudicate => DavidColors.coral,
+      AgentStage.scope => DavidColors.steel,
+      AgentStage.retrieve => DavidColors.positive,
+      AgentStage.gap => DavidColors.brass,
+      AgentStage.adjudicate => DavidColors.negative,
       AgentStage.report => DavidColors.ink,
     };
     final shown = step.evidenceIds.take(8).toList();
@@ -122,7 +122,7 @@ class _StepTile extends StatelessWidget {
                     step.query!,
                     style: const TextStyle(
                       fontFamily: 'monospace',
-                      color: DavidColors.sage,
+                      color: DavidColors.positive,
                       fontSize: 12,
                       height: 1.4,
                     ),

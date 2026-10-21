@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">David</title>
+  <rect width="512" height="512" rx="112" fill="#c9a45c"/>
+  <g fill="none" stroke="#0e0e0e" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
+    <!-- collar and tie -->
+    <path d="M200 372L256 404L312 372"/>
+    <path d="M256 404V480"/>
+    <!-- head -->
+    <path d="M256 130C330 130 352 186 352 250V290C352 340 310 372 256 372C202 372 160 340 160 290V250C160 186 182 130 256 130Z"/>
+    <!-- slicked-back hair -->
+    <path d="M158 214C146 150 186 98 262 96C338 94 372 146 356 214C340 176 316 160 282 152C250 166 206 170 158 214Z"/>
+    <!-- glasses -->
+    <rect x="176" y="232" width="70" height="46" rx="12"/>
+    <rect x="266" y="232" width="70" height="46" rx="12"/>
+    <path d="M246 246H266"/>
+  </g>
+</svg>

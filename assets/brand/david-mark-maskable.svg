@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">David</title>
+  <rect width="512" height="512" fill="#c9a45c"/>
+  <!-- art scaled to sit inside the 80% maskable safe zone -->
+  <g transform="translate(256 256) scale(0.78) translate(-256 -256)" fill="none" stroke="#0e0e0e" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M120 470C136 420 186 396 256 396C326 396 376 420 392 470"/>
+    <path d="M200 372L256 404L312 372"/>
+    <path d="M248 404H264L268 418H244Z"/>
+    <path d="M244 418H268L274 470L256 486L238 470Z"/>
+    <path d="M256 130C330 130 352 186 352 250V290C352 340 310 372 256 372C202 372 160 340 160 290V250C160 186 182 130 256 130Z"/>
+    <path d="M160 236C140 236 132 256 136 276C140 294 152 300 160 298"/>
+    <path d="M352 236C372 236 380 256 376 276C372 294 360 300 352 298"/>
+    <path d="M158 214C146 150 186 98 262 96C338 94 372 146 356 214C340 176 316 160 282 152C250 166 206 170 158 214Z"/>
+    <path d="M196 158C226 136 268 130 318 138"/>
+    <path d="M214 180C246 160 284 156 330 168"/>
+    <rect x="176" y="232" width="70" height="46" rx="12"/>
+    <rect x="266" y="232" width="70" height="46" rx="12"/>
+    <path d="M246 246Q256 240 266 246"/>
+    <path d="M176 246L160 240"/>
+    <path d="M336 246L352 240"/>
+    <path d="M256 282C252 296 250 304 258 306"/>
+    <path d="M226 330C244 344 272 344 290 330"/>
+  </g>
+</svg>

@@ -44,7 +44,7 @@ class ControlView extends StatelessWidget {
           const Text(
             'Escalated after the first loop.',
             style: TextStyle(
-              color: DavidColors.amber,
+              color: DavidColors.brass,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -86,9 +86,9 @@ class ControlView extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: switch (rail.verdict) {
-                        RailVerdict.pass => DavidColors.sage,
-                        RailVerdict.flag => DavidColors.amber,
-                        RailVerdict.block => DavidColors.coral,
+                        RailVerdict.pass => DavidColors.positive,
+                        RailVerdict.flag => DavidColors.brass,
+                        RailVerdict.block => DavidColors.negative,
                       },
                     ),
                   ),

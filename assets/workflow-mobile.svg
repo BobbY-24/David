@@ -1,42 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="1370" viewBox="0 0 720 1370" role="img" aria-labelledby="title description">
   <title id="title">David workflow — narrow-screen view</title>
   <desc id="description">The same five numbered steps stacked vertically: describe the deal, pick the loop, gather evidence, score risks, hold or release. The decision memo goes to the person for approval. Held-out cases and the offline demo provider measure the scorer, not model quality.</desc>
-  <defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="m0 0 8 4-8 4" fill="#8f7a6b"/></marker></defs>
-  <rect x="1" y="1" width="718" height="1368" rx="20" fill="#fffcf7" stroke="#e8e0d2"/>
+  <defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="m0 0 8 4-8 4" fill="#55627A"/></marker></defs>
+  <rect x="1" y="1" width="718" height="1368" rx="20" fill="#FAFAF7" stroke="#D8DCE3"/>
   <g font-family="Arial, Helvetica, sans-serif">
-    <text x="36" y="51" font-size="34" font-weight="700" fill="#1c2118">From deal question to memo</text>
-    <text x="36" y="85" font-size="28" fill="#5c6558">Describe. Gather. Score. Decide.</text>
-    <g fill="none" stroke="#8f7a6b" stroke-width="3" marker-end="url(#arrow)">
+    <text x="36" y="51" font-size="34" font-weight="700" fill="#0B1424">From deal question to memo</text>
+    <text x="36" y="85" font-size="28" fill="#55627A">Describe. Gather. Score. Decide.</text>
+    <g fill="none" stroke="#55627A" stroke-width="3" marker-end="url(#arrow)">
       <path d="M360 272V294"/>
       <path d="M360 464V486"/>
       <path d="M360 656V678"/>
       <path d="M360 848V870"/>
     </g>
-    <rect x="36" y="110" width="648" height="162" rx="14" fill="#e3eee6" stroke="#8fbf9f"/>
-    <rect x="36" y="302" width="648" height="162" rx="14" fill="#f8e9cf" stroke="#e0a045"/>
-    <rect x="36" y="494" width="648" height="162" rx="14" fill="#dfeaf0" stroke="#8ebcc8"/>
-    <rect x="36" y="686" width="648" height="162" rx="14" fill="#e3eee6" stroke="#8fbf9f"/>
-    <rect x="36" y="878" width="648" height="162" rx="14" fill="#f8e9cf" stroke="#e0a045"/>
-    <g font-size="26" font-weight="700" fill="#9a6416">
+    <rect x="36" y="110" width="648" height="162" rx="14" fill="#E6EDF7" stroke="#7FA6D6"/>
+    <rect x="36" y="302" width="648" height="162" rx="14" fill="#F5ECD9" stroke="#C9A45C"/>
+    <rect x="36" y="494" width="648" height="162" rx="14" fill="#EEF0F4" stroke="#9AA8BC"/>
+    <rect x="36" y="686" width="648" height="162" rx="14" fill="#E6EDF7" stroke="#7FA6D6"/>
+    <rect x="36" y="878" width="648" height="162" rx="14" fill="#F5ECD9" stroke="#C9A45C"/>
+    <g font-size="26" font-weight="700" fill="#8A6A2B">
       <text x="60" y="145">01 · YOU</text><text x="60" y="337">02 · ROUTER</text><text x="60" y="529">03 · GATEWAY</text><text x="60" y="721">04 · AGENT</text><text x="60" y="913">05 · RAILS</text>
     </g>
-    <g font-size="32" font-weight="700" fill="#1c2118">
+    <g font-size="32" font-weight="700" fill="#0B1424">
       <text x="60" y="186">Describe the deal</text><text x="60" y="378">Pick the loop</text><text x="60" y="570">Gather evidence</text><text x="60" y="762">Score the risks</text><text x="60" y="954">Hold or release</text>
     </g>
-    <g font-size="26" fill="#5c6558">
+    <g font-size="26" fill="#55627A">
       <text x="60" y="222">Counterparty, deal type,</text><text x="60" y="251">and the question to answer.</text>
       <text x="60" y="414">Plan and execute, ReAct,</text><text x="60" y="443">or a panel vote.</text>
       <text x="60" y="606">Allowlisted search, a call</text><text x="60" y="635">budget, hash-chained audit.</text>
       <text x="60" y="798">Support minus falsifiers,</text><text x="60" y="827">negation-aware, cited only.</text>
       <text x="60" y="990">Every citation retrieved,</text><text x="60" y="1019">95% cap, no action claims.</text>
     </g>
-    <rect x="36" y="1070" width="648" height="136" rx="12" fill="#18201b"/>
-    <text x="60" y="1106" font-size="26" font-weight="700" fill="#f4f0e6">Decision memo → Conditions</text>
-    <text x="60" y="1140" font-size="26" font-weight="700" fill="#f4f0e6">Questions for the counterparty</text>
-    <text x="60" y="1174" font-size="26" font-weight="700" fill="#f4f0e6">→ You approve</text>
-    <rect x="36" y="1230" width="648" height="118" rx="12" fill="#fffcf7" stroke="#d9d2c3" stroke-dasharray="5 4"/>
-    <text x="60" y="1264" font-size="28" font-weight="700" fill="#1c2118">Held-out adversarial cases</text>
-    <text x="60" y="1297" font-size="26" fill="#5c6558">Demo provider, not model quality.</text>
-    <text x="60" y="1327" font-size="26" fill="#5c6558">Not legal, credit, or investment advice.</text>
+    <rect x="36" y="1070" width="648" height="136" rx="12" fill="#0A1424"/>
+    <text x="60" y="1106" font-size="26" font-weight="700" fill="#FAFAF7">Decision memo → Conditions</text>
+    <text x="60" y="1140" font-size="26" font-weight="700" fill="#FAFAF7">Questions for the counterparty</text>
+    <text x="60" y="1174" font-size="26" font-weight="700" fill="#FAFAF7">→ You approve</text>
+    <rect x="36" y="1230" width="648" height="118" rx="12" fill="#FAFAF7" stroke="#D8DCE3" stroke-dasharray="5 4"/>
+    <text x="60" y="1264" font-size="28" font-weight="700" fill="#0B1424">Held-out adversarial cases</text>
+    <text x="60" y="1297" font-size="26" fill="#55627A">Demo provider, not model quality.</text>
+    <text x="60" y="1327" font-size="26" fill="#55627A">Not legal, credit, or investment advice.</text>
   </g>
 </svg>

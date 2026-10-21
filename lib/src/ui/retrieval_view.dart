@@ -233,7 +233,7 @@ class _HitCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: selected ? DavidColors.amber : DavidColors.line,
+          color: selected ? DavidColors.brass : DavidColors.line,
         ),
       ),
       child: InkWell(
@@ -256,7 +256,7 @@ class _HitCard extends StatelessWidget {
                     hit.score.toStringAsFixed(2),
                     style: const TextStyle(
                       fontFamily: 'monospace',
-                      color: DavidColors.amber,
+                      color: DavidColors.brass,
                     ),
                   ),
                 ],
@@ -277,7 +277,7 @@ class _HitCard extends StatelessWidget {
                   minHeight: 4,
                   value: fraction.toDouble(),
                   backgroundColor: DavidColors.line,
-                  color: DavidColors.sage,
+                  color: DavidColors.positive,
                 ),
               ),
               const SizedBox(height: 8),
@@ -286,7 +286,10 @@ class _HitCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   'Matched ${hit.matchedTerms.join(', ')}',
-                  style: const TextStyle(color: DavidColors.sage, fontSize: 12),
+                  style: const TextStyle(
+                    color: DavidColors.positive,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ],

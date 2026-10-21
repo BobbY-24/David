@@ -122,11 +122,11 @@ class EvidenceChip extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 6, bottom: 6),
       child: Material(
-        color: selected ? DavidColors.amber : DavidColors.panelRaised,
+        color: selected ? DavidColors.brass : DavidColors.panelRaised,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(99),
           side: BorderSide(
-            color: selected ? DavidColors.amber : DavidColors.line,
+            color: selected ? DavidColors.brass : DavidColors.line,
           ),
         ),
         child: InkWell(
@@ -137,7 +137,7 @@ class EvidenceChip extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: selected ? DavidColors.amberInk : DavidColors.ink,
+                color: selected ? DavidColors.brassInk : DavidColors.ink,
                 fontSize: 12,
                 fontFamily: 'monospace',
               ),
@@ -213,7 +213,7 @@ class EvidencePanel extends StatelessWidget {
             unit.id,
             style: const TextStyle(
               fontFamily: 'monospace',
-              color: DavidColors.amber,
+              color: DavidColors.brass,
               fontSize: 12,
             ),
           ),

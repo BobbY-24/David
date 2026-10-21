@@ -130,7 +130,7 @@ class _JudgmentCard extends StatelessWidget {
                 hits: judgment.supporting,
                 selectedId: selectedId,
                 onSelect: onSelect,
-                color: DavidColors.sage,
+                color: DavidColors.positive,
               );
               final against = _PhraseColumn(
                 title: 'Challenged by',
@@ -139,7 +139,7 @@ class _JudgmentCard extends StatelessWidget {
                 hits: judgment.contradicting,
                 selectedId: selectedId,
                 onSelect: onSelect,
-                color: DavidColors.coral,
+                color: DavidColors.negative,
               );
               if (stacked) {
                 return Column(
@@ -181,7 +181,7 @@ class _LeadMark extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: DavidColors.amber,
+        color: DavidColors.brass,
         borderRadius: BorderRadius.circular(99),
       ),
       child: const Padding(
@@ -189,7 +189,7 @@ class _LeadMark extends StatelessWidget {
         child: Text(
           'Lead',
           style: TextStyle(
-            color: DavidColors.amberInk,
+            color: DavidColors.brassInk,
             fontSize: 11,
             fontWeight: FontWeight.w700,
           ),
@@ -226,7 +226,7 @@ class _NetPainter extends CustomPainter {
       track,
     );
     final mid = size.width / 2;
-    final color = fraction >= 0 ? DavidColors.sage : DavidColors.coral;
+    final color = fraction >= 0 ? DavidColors.positive : DavidColors.negative;
     final width = (size.width / 2) * fraction.abs();
     final rect = fraction >= 0
         ? Rect.fromLTWH(mid, 0, width, size.height)

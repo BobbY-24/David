@@ -143,12 +143,14 @@ class _TopBar extends StatelessWidget {
             final showTagline = constraints.maxWidth >= 760;
             return Row(
               children: [
-                Container(
-                  width: 14,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    color: DavidColors.amber,
-                    borderRadius: BorderRadius.circular(3),
+                Semantics(
+                  label: 'David',
+                  image: true,
+                  child: Image.asset(
+                    'assets/brand/david-mark.png',
+                    width: 28,
+                    height: 28,
+                    filterQuality: FilterQuality.medium,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -194,10 +196,13 @@ class _ErrorBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: const Color(0xFF3A221C),
+      color: const Color(0xFF3B1F27),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Text(message, style: const TextStyle(color: DavidColors.coral)),
+        child: Text(
+          message,
+          style: const TextStyle(color: DavidColors.negative),
+        ),
       ),
     );
   }
@@ -264,8 +269,8 @@ class _CaseTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final kindColor = engagement.dealType == DealType.acquisition
-        ? DavidColors.mist
-        : DavidColors.amber;
+        ? DavidColors.steel
+        : DavidColors.brass;
     return Material(
       color: selected ? DavidColors.panelRaised : DavidColors.panel,
       shape: RoundedRectangleBorder(
@@ -433,7 +438,7 @@ class _TabButton extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: selected ? DavidColors.amber : Colors.transparent,
+              color: selected ? DavidColors.brass : Colors.transparent,
               width: 2,
             ),
           ),
