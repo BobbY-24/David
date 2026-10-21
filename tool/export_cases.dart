@@ -71,6 +71,7 @@ Map<String, Object?> exportCases() {
             {
               'id': risk.id,
               'title': risk.title,
+              'statement': risk.statement,
               'support': [
                 for (final s in risk.support) [s.phrase, s.weight],
               ],

@@ -14,7 +14,7 @@ abstract interface class EngagementProvider {
   /// True when the provider never leaves this process.
   bool get offline;
 
-  AgentRun run(Engagement engagement, {Principal? principal});
+  Future<AgentRun> runAsync(Engagement engagement, {Principal? principal});
 }
 
 /// Offline, deterministic provider. It scores hand-written phrase signatures
@@ -23,7 +23,7 @@ abstract interface class EngagementProvider {
 class DemoProvider implements EngagementProvider {
   const DemoProvider({this.agent = const EngagementAgent()});
 
-  static const idValue = 'demo-provider';
+  static const idValue = AgentRun.demoProviderId;
 
   final EngagementAgent agent;
 
@@ -33,8 +33,13 @@ class DemoProvider implements EngagementProvider {
   @override
   bool get offline => true;
 
-  @override
+  /// Synchronous form, used by tests and by the model provider's first pass.
   AgentRun run(Engagement engagement, {Principal? principal}) {
     return agent.run(engagement, principal: principal);
+  }
+
+  @override
+  Future<AgentRun> runAsync(Engagement engagement, {Principal? principal}) {
+    return Future.value(run(engagement, principal: principal));
   }
 }

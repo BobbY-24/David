@@ -6,7 +6,9 @@ services:
       POSTGRES_PASSWORD: david
       POSTGRES_DB: david
     ports:
-      - "54329:5432"
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U david -d david"]
       interval: 5s
@@ -16,7 +18,7 @@ services:
   redis:
     image: redis:7
     ports:
-      - "63799:6379"
+      - "127.0.0.1:63799:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -32,8 +34,16 @@ services:
       QUEUE_CAP: "32"
       MAX_ATTEMPTS: "3"
       LEASE_SECONDS: "30"
+      # The key vault keeps its master key here. Set DAVID_MASTER_KEY instead to
+      # supply your own. DAVID_API_TOKEN, when set, is required on vault and
+      # model routes.
+      DAVID_DATA_DIR: /data
+      DAVID_API_TOKEN: ${DAVID_API_TOKEN:-}
+      DAVID_MAX_MODEL_CALLS_PER_DAY: ${DAVID_MAX_MODEL_CALLS_PER_DAY:-100}
     ports:
-      - "43124:43124"
+      - "127.0.0.1:43124:43124"
+    volumes:
+      - david-data:/data
     depends_on:
       postgres:
         condition: service_healthy
@@ -64,3 +74,7 @@ services:
         "--loglevel=INFO",
         "--concurrency=2",
       ]
+
+volumes:
+  pgdata:
+  david-data:

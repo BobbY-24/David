@@ -25,7 +25,7 @@ class JobsView extends StatelessWidget {
         const SizedBox(height: 16),
         if (board == null)
           const EmptyNote(
-            title: 'MetricPoint the job service',
+            title: 'Reading the job service',
             body: 'Checking health, the catalog, and the latency snapshot.',
           )
         else if (!board.ok)

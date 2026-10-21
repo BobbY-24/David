@@ -58,6 +58,24 @@ ThemeData davidTheme() {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? DavidColors.brass
+              : Colors.transparent,
+        ),
+        foregroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.disabled)) {
+            return DavidColors.faint;
+          }
+          return states.contains(WidgetState.selected)
+              ? DavidColors.brassInk
+              : DavidColors.ink;
+        }),
+        side: const WidgetStatePropertyAll(BorderSide(color: DavidColors.line)),
+      ),
+    ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: DavidColors.bg,

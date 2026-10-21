@@ -35,7 +35,7 @@ docker compose -f service/docker-compose.yml up --build -d
 flutter run -d web-server --web-hostname 127.0.0.1 --web-port 43123
 ```
 
-Open http://127.0.0.1:43123. The job API runs on http://127.0.0.1:43124. Stop the services with `docker compose -f service/docker-compose.yml down`.
+Open http://127.0.0.1:43123. The job API runs on http://127.0.0.1:43124, on this machine only. The key vault's master key is created in the `david-data` volume. Stop the services with `docker compose -f service/docker-compose.yml down`.
 
 <details>
 <summary>Prefer manual setup? Copy these commands.</summary>
@@ -52,7 +52,7 @@ Open http://127.0.0.1:43123. For the job service and its Postgres setup, see [Jo
 
 </details>
 
-The default run is the offline `DemoProvider`: deterministic, synthetic engagements, no network calls, and no key. A bring-your-own-key model provider is planned for the job service, and keys never go in the client. [Providers →](docs/DESK.md#providers)
+The default run is the offline `DemoProvider`: deterministic, synthetic engagements, no network calls, and no key. To score with your own Claude key instead, start the job service and add the key in **Settings**. It is encrypted by the service and never shown again. [Your own model key →](docs/KEYS.md)
 
 ## Engagements
 
@@ -74,6 +74,6 @@ Pick one and press **Run diligence**. The Control tab shows which loop ran and w
 
 ## Documentation
 
-[Desk guide](docs/DESK.md) · [Control plane](docs/CONTROL_PLANE.md) · [Job service](docs/JOB_SERVICE.md) · [Testing](docs/TESTING.md)
+[Desk guide](docs/DESK.md) · [Your own model key](docs/KEYS.md) · [Control plane](docs/CONTROL_PLANE.md) · [Job service](docs/JOB_SERVICE.md) · [Testing](docs/TESTING.md)
 
 David P0 · `grounded-control-v4` · [MIT license](LICENSE).

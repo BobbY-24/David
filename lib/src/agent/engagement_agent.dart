@@ -5,7 +5,7 @@ import '../control/rails.dart';
 import '../control/router.dart';
 import '../domain/models.dart';
 import '../retrieval/evidence_index.dart';
-import '../retrieval/text_match.dart';
+import 'scorer.dart';
 
 class _Execution {
   const _Execution({
@@ -70,7 +70,10 @@ const _panelReleaseCap = 0.5;
 /// goes through [ToolGateway]. Rails run before the first search and after
 /// the memo. The scorer still cites only retrieved ids.
 class EngagementAgent {
-  const EngagementAgent();
+  const EngagementAgent({this.scorer = const PhraseScorer()});
+
+  /// Scores each risk question. Phrase matching unless a provider swaps it.
+  final RiskScorer scorer;
 
   AgentRun run(Engagement engagement, {Principal? principal}) {
     final who = principal ?? Principal.deskOperator(engagement.id);
@@ -524,9 +527,9 @@ class EngagementAgent {
     List<RetrievalHit> retrieved,
     Set<String> skip,
   ) {
-    var worst = _judge(risk, retrieved, skip, 1);
+    var worst = scorer.judge(risk, retrieved, skip, 1);
     for (final hit in [...worst.supporting]) {
-      final without = _judge(risk, retrieved, {...skip, hit.unit.id}, 1);
+      final without = scorer.judge(risk, retrieved, {...skip, hit.unit.id}, 1);
       if (without.net < worst.net) {
         worst = without;
       }
@@ -807,7 +810,7 @@ class EngagementAgent {
   }) {
     final ranked = [
       for (final risk in engagement.riskQuestions)
-        _judge(risk, retrieved, skip, contradictScale),
+        scorer.judge(risk, retrieved, skip, contradictScale),
     ]..sort(_byNet);
     return ranked;
   }
@@ -818,85 +821,6 @@ class EngagementAgent {
       return byNet;
     }
     return a.riskId.compareTo(b.riskId);
-  }
-
-  RiskJudgment _judge(
-    RiskQuestion risk,
-    List<RetrievalHit> retrieved,
-    Set<String> skip,
-    double contradictScale,
-  ) {
-    final supporting = <RetrievalHit>[];
-    final contradicting = <RetrievalHit>[];
-    final matchedSupport = <String>[];
-    final matchedContradict = <String>[];
-    final missingSupport = <String>[];
-    final usable = retrieved
-        .where((hit) => !skip.contains(hit.unit.id))
-        .toList();
-    final supportScore = _scoreSignatures(
-      signatures: risk.support,
-      retrieved: usable,
-      into: supporting,
-      matched: matchedSupport,
-      missing: missingSupport,
-    );
-    final contradictScore =
-        _scoreSignatures(
-          signatures: risk.contradict,
-          retrieved: usable,
-          into: contradicting,
-          matched: matchedContradict,
-          missing: null,
-        ) *
-        contradictScale;
-    return RiskJudgment(
-      riskId: risk.id,
-      title: risk.title,
-      statement: risk.statement,
-      actionIfLead: risk.actionIfLead,
-      supportScore: supportScore,
-      contradictScore: contradictScore,
-      net: supportScore - contradictScore,
-      supporting: supporting,
-      contradicting: contradicting,
-      matchedSupport: matchedSupport,
-      matchedContradict: matchedContradict,
-      missingSupport: missingSupport,
-    );
-  }
-
-  double _scoreSignatures({
-    required List<Signature> signatures,
-    required List<RetrievalHit> retrieved,
-    required List<RetrievalHit> into,
-    required List<String> matched,
-    required List<String>? missing,
-  }) {
-    var total = 0.0;
-    final seen = into.map((hit) => hit.unit.id).toSet();
-    for (final signature in signatures) {
-      RetrievalHit? best;
-      for (final hit in retrieved) {
-        if (!phraseMatches(hit.unit.searchableText, signature.phrase)) {
-          continue;
-        }
-        if (best == null || hit.score > best.score) {
-          best = hit;
-        }
-      }
-      if (best == null) {
-        missing?.add(signature.phrase);
-        continue;
-      }
-      matched.add(signature.phrase);
-      final norm = best.score / (best.score + 2.5);
-      total += signature.weight * (0.65 + 0.35 * norm);
-      if (seen.add(best.unit.id)) {
-        into.add(best);
-      }
-    }
-    return total;
   }
 
   InvestigationReport _report({
