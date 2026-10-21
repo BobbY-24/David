@@ -60,3 +60,26 @@ class ModelUsage(Base):
     calls: Mapped[int] = mapped_column(Integer, default=0)
     input_tokens: Mapped[int] = mapped_column(Integer, default=0)
     output_tokens: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class AgentSpecVersion(Base):
+    """One immutable version of a user's agent spec. Never updated."""
+
+    __tablename__ = "agent_spec_versions"
+
+    spec_id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    version: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(120))
+    body: Mapped[dict] = mapped_column(JSON)
+    content_hash: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class CompanyProfile(Base):
+    """The one company profile this install uses."""
+
+    __tablename__ = "company_profiles"
+
+    id: Mapped[str] = mapped_column(String(20), primary_key=True)
+    body: Mapped[dict] = mapped_column(JSON, default=dict)
+    saved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

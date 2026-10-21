@@ -5,6 +5,7 @@ import '../domain/models.dart';
 import '../state/desk_controller.dart';
 import '../jobs/job_client.dart';
 import '../jobs/model_service.dart';
+import '../jobs/spec_service.dart';
 import 'agent_view.dart';
 import 'brief_view.dart';
 import 'control_view.dart';
@@ -13,15 +14,22 @@ import 'jobs_view.dart';
 import 'evidence_view.dart';
 import 'report_view.dart';
 import 'retrieval_view.dart';
+import 'library_view.dart';
 import 'settings_view.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
 class DeskPage extends StatefulWidget {
-  const DeskPage({super.key, this.jobClient, this.modelService});
+  const DeskPage({
+    super.key,
+    this.jobClient,
+    this.modelService,
+    this.specService,
+  });
 
   final JobClient? jobClient;
   final ModelService? modelService;
+  final SpecService? specService;
 
   @override
   State<DeskPage> createState() => _DeskPageState();
@@ -36,6 +44,7 @@ class _DeskPageState extends State<DeskPage> {
     desk = DeskController(
       jobClient: widget.jobClient,
       modelService: widget.modelService,
+      specService: widget.specService,
     );
   }
 
@@ -128,6 +137,7 @@ class _DeskPageState extends State<DeskPage> {
       DeskTab.report => ReportView(desk: desk),
       DeskTab.control => ControlView(desk: desk),
       DeskTab.jobs => JobsView(desk: desk),
+      DeskTab.library => LibraryView(desk: desk),
       DeskTab.settings => SettingsView(desk: desk),
     };
   }
@@ -407,6 +417,7 @@ class _TabStrip extends StatelessWidget {
       (DeskTab.report, 'Report'),
       (DeskTab.control, 'Control'),
       (DeskTab.jobs, 'Jobs'),
+      (DeskTab.library, 'Library'),
       (DeskTab.settings, 'Settings'),
     ];
     return DecoratedBox(

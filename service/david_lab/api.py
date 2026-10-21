@@ -19,6 +19,7 @@ from .metrics import prometheus
 from .runners import _CASES, catalog
 from .service import JobService, init_db
 from .settings import api_token, cors_origins, sweep_enabled
+from .specs import Profile, SpecError, SpecStore, Spec
 from .vault import KeyMissing, KeyUnreadable, Vault, VaultError, VaultUnavailable
 from .worker import dispatch_job, dispatch_job_later
 
@@ -27,6 +28,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 service = JobService(dispatch=dispatch_job, dispatch_later=dispatch_job_later)
 vault = Vault()
+specs = SpecStore()
 meter = llm.UsageMeter()
 
 _KEY_PATTERN = re.compile(r"sk-ant-[A-Za-z0-9_\-]{16,380}")
@@ -258,3 +260,50 @@ def model_judge(body: JudgeRequest, _auth: None = Depends(require_token)):
         raise _model_http(exc) from None
     _event("model_judged", engagement=body.engagement_id, model=result["model"], **result["usage"])
     return result
+
+
+def _spec_error(exc: SpecError) -> HTTPException:
+    return HTTPException(status_code=400, detail={"code": "spec_refused", "message": str(exc)})
+
+
+@app.get("/v1/profile")
+def get_profile(_auth: None = Depends(require_token)):
+    return specs.profile()
+
+
+@app.put("/v1/profile")
+def put_profile(body: Profile, _auth: None = Depends(require_token)):
+    return specs.save_profile(body)
+
+
+@app.get("/v1/specs")
+def list_specs(_auth: None = Depends(require_token)):
+    return {"items": specs.list_latest()}
+
+
+class NewSpecBody(BaseModel):
+    spec: Spec
+
+
+@app.post("/v1/specs", status_code=201)
+def create_spec(body: NewSpecBody, _auth: None = Depends(require_token)):
+    try:
+        return specs.create(body.spec)
+    except SpecError as exc:
+        raise _spec_error(exc) from None
+
+
+@app.get("/v1/specs/{spec_id}/versions/{version}")
+def get_spec_version(spec_id: str, version: int, _auth: None = Depends(require_token)):
+    found = specs.get(spec_id, version)
+    if found is None:
+        raise HTTPException(status_code=404, detail={"code": "not_found", "message": "No spec version with that id."})
+    return found
+
+
+@app.post("/v1/specs/{spec_id}/versions", status_code=201)
+def add_spec_version(spec_id: str, body: NewSpecBody, _auth: None = Depends(require_token)):
+    try:
+        return specs.create(body.spec, spec_id=spec_id)
+    except SpecError as exc:
+        raise _spec_error(exc) from None

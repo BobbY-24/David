@@ -8,6 +8,8 @@ import '../data/engagement_packs.dart';
 import '../domain/models.dart';
 import '../jobs/job_client.dart';
 import '../jobs/model_service.dart';
+import '../jobs/spec_service.dart';
+import '../spec/models.dart';
 import '../retrieval/evidence_index.dart';
 
 enum DeskTab {
@@ -19,6 +21,7 @@ enum DeskTab {
   report,
   control,
   jobs,
+  library,
   settings,
 }
 
@@ -27,14 +30,23 @@ class DeskController extends ChangeNotifier {
     EngagementProvider? provider,
     JobClient? jobClient,
     ModelService? modelService,
+    SpecService? specService,
   }) : demoProvider = provider ?? const DemoProvider(),
        _jobs = jobClient ?? HttpJobClient(),
-       _models = modelService ?? HttpModelService();
+       _models = modelService ?? HttpModelService(),
+       _specs = specService ?? HttpSpecService();
 
   /// The offline provider. Always available, needs no key.
   final EngagementProvider demoProvider;
   final JobClient _jobs;
   final ModelService _models;
+  final SpecService _specs;
+
+  /// The user's saved agent specs (latest version of each) and company profile.
+  List<StoredSpec> savedSpecs = const [];
+  CompanyProfile companyProfile = const CompanyProfile();
+  String? libraryError;
+  bool libraryBusy = false;
 
   /// What the service says about the saved key. Never the key itself.
   VaultStatus? vault;
@@ -120,6 +132,68 @@ class DeskController extends ChangeNotifier {
     if (next == DeskTab.settings) {
       refreshVault();
     }
+    if (next == DeskTab.library) {
+      refreshLibrary();
+    }
+  }
+
+  Future<void> refreshLibrary() async {
+    libraryBusy = true;
+    notifyListeners();
+    try {
+      savedSpecs = await _specs.list();
+      companyProfile = await _specs.profile();
+      libraryError = null;
+    } on ModelServiceException catch (caught) {
+      libraryError = caught.message;
+    } finally {
+      libraryBusy = false;
+      notifyListeners();
+    }
+  }
+
+  /// Checks the spec and saves it. Returns the first problem, or null when saved.
+  Future<String?> saveSpec(AgentSpec spec, {String? specId}) async {
+    final problems = spec.problems();
+    if (problems.isNotEmpty) {
+      return problems.first;
+    }
+    libraryBusy = true;
+    notifyListeners();
+    try {
+      if (specId == null) {
+        await _specs.create(spec);
+      } else {
+        await _specs.addVersion(specId, spec);
+      }
+      await refreshLibrary();
+      return null;
+    } on ModelServiceException catch (caught) {
+      return caught.message;
+    } finally {
+      libraryBusy = false;
+      notifyListeners();
+    }
+  }
+
+  /// Checks and saves the company profile. Returns the first problem, or null.
+  Future<String?> saveProfile(CompanyProfile profile) async {
+    final problems = profile.problems();
+    if (problems.isNotEmpty) {
+      return problems.first;
+    }
+    libraryBusy = true;
+    notifyListeners();
+    try {
+      companyProfile = await _specs.saveProfile(profile);
+      libraryError = null;
+      return null;
+    } on ModelServiceException catch (caught) {
+      return caught.message;
+    } finally {
+      libraryBusy = false;
+      notifyListeners();
+    }
   }
 
   Future<void> refreshVault() async {
@@ -196,6 +270,7 @@ class DeskController extends ChangeNotifier {
 
   Future<void> setServiceToken(String token) async {
     _models.setToken(token);
+    _specs.setToken(token);
     await refreshVault();
   }
 
