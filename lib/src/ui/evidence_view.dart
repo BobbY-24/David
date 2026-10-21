@@ -4,6 +4,7 @@ import '../domain/format.dart';
 import '../domain/models.dart';
 import '../state/desk_controller.dart';
 import 'theme.dart';
+import 'engagement_forms.dart';
 import 'widgets.dart';
 
 class EvidenceView extends StatelessWidget {
@@ -34,6 +35,10 @@ class EvidenceView extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
       children: [
+        if (desk.isUserEngagement(desk.current.id)) ...[
+          AddEvidenceCard(desk: desk),
+          const SizedBox(height: 16),
+        ],
         const Text(
           'Records and metric points stay attached to their source, collection time, and ingest seal. Open one to read provenance.',
           style: TextStyle(color: DavidColors.muted, height: 1.4),

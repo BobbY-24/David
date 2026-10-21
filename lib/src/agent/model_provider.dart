@@ -46,7 +46,12 @@ class ModelProvider implements EngagementProvider {
     if (first.retrieved.isEmpty) {
       return first;
     }
-    final sent = first.retrieved.take(maxEvidence).toList();
+    // A quarantined unit is never sent, even though the first pass retrieved it.
+    final quarantined = first.control.quarantinedEvidenceIds.toSet();
+    final sent = [
+      for (final hit in first.retrieved)
+        if (!quarantined.contains(hit.unit.id)) hit,
+    ].take(maxEvidence).toList();
     final retrievedIds = {for (final hit in sent) hit.unit.id};
     final judgment = await judge.judge(
       engagementId: engagement.id,

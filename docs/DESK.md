@@ -11,6 +11,7 @@ The desk is the Flutter web app. Each engagement opens on its own brief and has 
 - **Control.** The loop the router picked, the rails, the panel seats, and the audit log.
 - **Jobs.** Submits engagements to the job service. See [Job service](JOB_SERVICE.md).
 - **Library.** Your company profile and the agent specs you run, saved as numbered versions. See [Agent specs](SPECS.md).
+- **New engagement.** Starts a run from a saved spec for one counterparty. Your engagements appear in the rail beside the demos, and the Evidence tab lets you paste records for them. See [Your engagements](ENGAGEMENTS.md).
 - **Settings.** Connect your own Claude key, choose the model, and choose between the offline demo and Claude. See [Your own model key](KEYS.md).
 
 ## How negation is handled

@@ -19,7 +19,8 @@ from .metrics import prometheus
 from .runners import _CASES, catalog
 from .service import JobService, init_db
 from .settings import api_token, cors_origins, sweep_enabled
-from .specs import Profile, SpecError, SpecStore, Spec
+from .engagements import EngagementStore, EvidenceIn, Intake
+from .specs import Profile, Spec, SpecError, SpecStore
 from .vault import KeyMissing, KeyUnreadable, Vault, VaultError, VaultUnavailable
 from .worker import dispatch_job, dispatch_job_later
 
@@ -29,6 +30,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 service = JobService(dispatch=dispatch_job, dispatch_later=dispatch_job_later)
 vault = Vault()
 specs = SpecStore()
+user_engagements = EngagementStore(vault=vault, specs=specs)
 meter = llm.UsageMeter()
 
 _KEY_PATTERN = re.compile(r"sk-ant-[A-Za-z0-9_\-]{16,380}")
@@ -245,7 +247,12 @@ class JudgeRequest(BaseModel):
 def model_judge(body: JudgeRequest, _auth: None = Depends(require_token)):
     case = _CASES.get(body.engagement_id)
     if case is None:
-        raise HTTPException(status_code=404, detail={"code": "unknown_engagement", "message": "No engagement with that id."})
+        try:
+            case = user_engagements.build_case(body.engagement_id)
+        except VaultError as exc:
+            raise _vault_http(exc) from None
+        if case is None:
+            raise HTTPException(status_code=404, detail={"code": "unknown_engagement", "message": "No engagement with that id."})
     if body.model not in llm.ALLOWED_MODELS:
         raise _fail("bad_request", "That model is not allowed.")
     try:
@@ -307,3 +314,49 @@ def add_spec_version(spec_id: str, body: NewSpecBody, _auth: None = Depends(requ
         return specs.create(body.spec, spec_id=spec_id)
     except SpecError as exc:
         raise _spec_error(exc) from None
+
+
+def _engagement_spec_error(exc: SpecError) -> HTTPException:
+    return HTTPException(status_code=400, detail={"code": "spec_refused", "message": str(exc)})
+
+
+@app.get("/v1/engagements")
+def list_engagements(_auth: None = Depends(require_token)):
+    return {"items": user_engagements.list()}
+
+
+@app.post("/v1/engagements", status_code=201)
+def create_engagement(body: Intake, _auth: None = Depends(require_token)):
+    try:
+        return user_engagements.create(body)
+    except SpecError as exc:
+        raise _engagement_spec_error(exc) from None
+
+
+@app.get("/v1/engagements/{engagement_id}")
+def get_engagement(engagement_id: str, _auth: None = Depends(require_token)):
+    try:
+        found = user_engagements.get(engagement_id, with_text=True)
+    except VaultError as exc:
+        raise _vault_http(exc) from None
+    if found is None:
+        raise HTTPException(status_code=404, detail={"code": "not_found", "message": "No engagement with that id."})
+    return found
+
+
+@app.post("/v1/engagements/{engagement_id}/evidence", status_code=201)
+def add_evidence(engagement_id: str, body: EvidenceIn, _auth: None = Depends(require_token)):
+    try:
+        return user_engagements.add_evidence(engagement_id, body)
+    except SpecError as exc:
+        raise _engagement_spec_error(exc) from None
+    except VaultError as exc:
+        raise _vault_http(exc) from None
+
+
+@app.delete("/v1/engagements/{engagement_id}")
+def delete_engagement(engagement_id: str, _auth: None = Depends(require_token)):
+    if not user_engagements.delete(engagement_id):
+        raise HTTPException(status_code=404, detail={"code": "not_found", "message": "No engagement with that id."})
+    _event("engagement_deleted", engagement=engagement_id)
+    return {"deleted": True}

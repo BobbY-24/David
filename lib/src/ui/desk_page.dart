@@ -4,6 +4,7 @@ import '../domain/format.dart';
 import '../domain/models.dart';
 import '../state/desk_controller.dart';
 import '../jobs/job_client.dart';
+import '../jobs/engagement_service.dart';
 import '../jobs/model_service.dart';
 import '../jobs/spec_service.dart';
 import 'agent_view.dart';
@@ -14,6 +15,7 @@ import 'jobs_view.dart';
 import 'evidence_view.dart';
 import 'report_view.dart';
 import 'retrieval_view.dart';
+import 'engagement_forms.dart';
 import 'library_view.dart';
 import 'settings_view.dart';
 import 'theme.dart';
@@ -25,11 +27,13 @@ class DeskPage extends StatefulWidget {
     this.jobClient,
     this.modelService,
     this.specService,
+    this.engagementService,
   });
 
   final JobClient? jobClient;
   final ModelService? modelService;
   final SpecService? specService;
+  final EngagementService? engagementService;
 
   @override
   State<DeskPage> createState() => _DeskPageState();
@@ -45,7 +49,15 @@ class _DeskPageState extends State<DeskPage> {
       jobClient: widget.jobClient,
       modelService: widget.modelService,
       specService: widget.specService,
+      engagementService: widget.engagementService,
     );
+    // Load the user's engagements only when a service was given, so tests and
+    // the offline demo never reach for the network.
+    if (widget.engagementService != null) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => desk.refreshEngagements(),
+      );
+    }
   }
 
   @override
@@ -95,7 +107,11 @@ class _DeskPageState extends State<DeskPage> {
                                 ),
                               _CaseHeader(desk: desk),
                               _TabStrip(desk: desk),
-                              Expanded(child: _tabBody(desk)),
+                              Expanded(
+                                child: desk.newEngagementOpen
+                                    ? NewEngagementView(desk: desk)
+                                    : _tabBody(desk),
+                              ),
                               if (!showSide && desk.selected != null)
                                 SizedBox(
                                   height: 230,
@@ -225,6 +241,8 @@ class _ErrorBanner extends StatelessWidget {
   }
 }
 
+const newEngagementKey = ValueKey<String>('new-engagement');
+
 class CaseRail extends StatelessWidget {
   const CaseRail({super.key, required this.desk, this.compact = false});
 
@@ -257,6 +275,15 @@ class CaseRail extends StatelessWidget {
         const Padding(
           padding: EdgeInsets.fromLTRB(6, 4, 6, 10),
           child: SectionLabel('Engagements'),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: OutlinedButton.icon(
+            key: newEngagementKey,
+            onPressed: desk.openNewEngagement,
+            icon: const Icon(Icons.add, size: 18),
+            label: const Text('New engagement'),
+          ),
         ),
         for (var index = 0; index < desk.cases.length; index++)
           Padding(

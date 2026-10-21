@@ -8,7 +8,9 @@ import '../data/engagement_packs.dart';
 import '../domain/models.dart';
 import '../jobs/job_client.dart';
 import '../jobs/model_service.dart';
+import '../jobs/engagement_service.dart';
 import '../jobs/spec_service.dart';
+import '../spec/engagement_builder.dart';
 import '../spec/models.dart';
 import '../retrieval/evidence_index.dart';
 
@@ -31,16 +33,27 @@ class DeskController extends ChangeNotifier {
     JobClient? jobClient,
     ModelService? modelService,
     SpecService? specService,
+    EngagementService? engagementService,
   }) : demoProvider = provider ?? const DemoProvider(),
        _jobs = jobClient ?? HttpJobClient(),
        _models = modelService ?? HttpModelService(),
-       _specs = specService ?? HttpSpecService();
+       _specs = specService ?? HttpSpecService(),
+       _engagements = engagementService ?? HttpEngagementService();
 
   /// The offline provider. Always available, needs no key.
   final EngagementProvider demoProvider;
   final JobClient _jobs;
   final ModelService _models;
   final SpecService _specs;
+  final EngagementService _engagements;
+
+  /// The user's engagements, built into the agent's input. Demo engagements
+  /// are always first, then the user's.
+  final Map<String, Engagement> _userCases = {};
+  final Map<String, UserEngagement> _userBundles = {};
+  List<UserEngagement> userEngagementList = const [];
+  bool newEngagementOpen = false;
+  String? engagementError;
 
   /// The user's saved agent specs (latest version of each) and company profile.
   List<StoredSpec> savedSpecs = const [];
@@ -66,7 +79,11 @@ class DeskController extends ChangeNotifier {
   ServiceJob? serviceJob;
   String? serviceError;
   bool enqueueing = false;
-  final List<Engagement> cases = EngagementPacks.all;
+  List<Engagement> get cases => [...EngagementPacks.all, ..._userCases.values];
+
+  bool isUserEngagement(String id) => _userBundles.containsKey(id);
+
+  UserEngagement? get currentBundle => _userBundles[current.id];
   final Map<String, EvidenceIndex> _indexes = {};
 
   int caseIndex = 0;
@@ -82,7 +99,10 @@ class DeskController extends ChangeNotifier {
   bool manualSearched = false;
   String evidenceModality = 'all';
 
-  Engagement get current => cases[caseIndex];
+  Engagement get current {
+    final list = cases;
+    return list[caseIndex.clamp(0, list.length - 1)];
+  }
 
   EvidenceIndex indexFor(Engagement engagement) {
     return _indexes.putIfAbsent(
@@ -271,6 +291,7 @@ class DeskController extends ChangeNotifier {
   Future<void> setServiceToken(String token) async {
     _models.setToken(token);
     _specs.setToken(token);
+    _engagements.setToken(token);
     await refreshVault();
   }
 
@@ -401,6 +422,12 @@ class DeskController extends ChangeNotifier {
     if (running) {
       return;
     }
+    if (isUserEngagement(current.id) && !modelActive) {
+      error =
+          'Connect your Claude key in Settings to run your own engagements.';
+      notifyListeners();
+      return;
+    }
     final caseId = current.id;
     running = true;
     error = null;
@@ -417,7 +444,7 @@ class DeskController extends ChangeNotifier {
       if (caseId != current.id) {
         return;
       }
-      run = result;
+      run = _withCompanyRules(current.id, result);
       tab = DeskTab.agent;
     } on ModelServiceException catch (caught) {
       error = caught.message;
@@ -430,5 +457,104 @@ class DeskController extends ChangeNotifier {
     if (usedModel) {
       unawaited(refreshVault());
     }
+  }
+
+  void openNewEngagement() {
+    newEngagementOpen = true;
+    notifyListeners();
+    refreshEngagements();
+  }
+
+  void closeNewEngagement() {
+    newEngagementOpen = false;
+    notifyListeners();
+  }
+
+  /// Reloads the user's engagements from the service and rebuilds each case.
+  Future<void> refreshEngagements() async {
+    final keep = _userBundles.containsKey(current.id) ? current.id : null;
+    try {
+      companyProfile = await _specs.profile();
+      final items = await _engagements.list();
+      final built = <String, UserEngagement>{};
+      for (final item in items) {
+        built[item.id] = await _engagements.get(item.id);
+      }
+      _indexes.removeWhere((id, _) => _userCases.containsKey(id));
+      _userCases.clear();
+      _userBundles
+        ..clear()
+        ..addAll(built);
+      for (final bundle in built.values) {
+        _userCases[bundle.id] = buildEngagement(bundle, companyProfile);
+      }
+      userEngagementList = items;
+      engagementError = null;
+      if (keep != null) {
+        _select(keep);
+      }
+    } on ModelServiceException catch (caught) {
+      engagementError = caught.message;
+    }
+    notifyListeners();
+  }
+
+  /// Creates a user engagement. Returns the first problem, or null when created.
+  Future<String?> createEngagement(Map<String, Object?> intake) async {
+    try {
+      final created = await _engagements.create(intake);
+      newEngagementOpen = false;
+      await refreshEngagements();
+      _select(created.id);
+      return null;
+    } on ModelServiceException catch (caught) {
+      return caught.message;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  /// Adds one unit to the current user engagement. Returns a problem, or null.
+  Future<String?> addEvidence(Map<String, Object?> body) async {
+    final id = current.id;
+    if (!isUserEngagement(id)) {
+      return 'Evidence can only be added to your own engagements.';
+    }
+    try {
+      await _engagements.addEvidence(id, body);
+      await refreshEngagements();
+      _select(id);
+      return null;
+    } on ModelServiceException catch (caught) {
+      return caught.message;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  void _select(String id) {
+    final index = cases.indexWhere((engagement) => engagement.id == id);
+    if (index < 0) {
+      return;
+    }
+    caseIndex = index;
+    tab = DeskTab.brief;
+    run = null;
+    error = null;
+  }
+
+  /// A user run gets the company's exposure rule applied to its memo.
+  AgentRun _withCompanyRules(String engagementId, AgentRun result) {
+    final bundle = _userBundles[engagementId];
+    if (bundle == null) {
+      return result;
+    }
+    final report = applyExposureRule(
+      result.report,
+      dealValue: bundle.dealValue,
+      maxExposure: companyProfile.maxExposure,
+      currency: companyProfile.currency,
+    );
+    return withReport(result, report);
   }
 }
